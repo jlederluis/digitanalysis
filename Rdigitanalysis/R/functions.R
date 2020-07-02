@@ -209,50 +209,7 @@ make_class = function(filepath, col_analyzing, delim=','){
   return(DigitData)
 }
 
-############################################################
-#User friendly function
-############################################################
 
-#gives the table for the left/right aligned table for a single numeric data column
-#digitdata is an object of the class DigitAnalysis!
-#desired_col should be a string!
-single_column_aligned = function(digitdata, desired_col, align_diretion='left') {
-  if (is.na(match(desired_col, colnames(digitdata@numbers)))){
-    #throw error
-    stop("Specified desired_col is not a numerical data column in the specified DigitAnalysis class object")
-  } else {
-    #add a space at the end to avoid picking up alternative superstring column names
-    checking = paste(desired_col, '')
-    original_df = NA
-
-    if (align_diretion == 'left') {
-      original_df = DigitData@left_aligned
-    }
-    else if (align_diretion == 'right') {
-      original_df = DigitData@right_aligned
-    }
-    else {
-      stop("align_direction must be either 'left' or 'right'")
-    }
-
-    #create output table
-    single_align_df = data.frame(matrix(ncol = 0, nrow = length(original_df[,1])))
-    column_names = colnames(original_df)
-
-    for (i in 1:length(column_names)){
-      if (grepl(checking, column_names[i], fixed=TRUE)){
-        single_align_df[[column_names[i]]] = NA
-        single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
-      }
-    }
-
-    return(single_align_df)
-  }
-}
-
-
-#a=single_column_aligned(DigitData, "ALEXP", 'left')
-#head(a,5)
 
 ###########################################################################################################################################################################################
 #Digit test functions
@@ -318,6 +275,171 @@ Benford_table = function(N, out_fp, save=TRUE){
 #Benford_table(N=8, out_fp='C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
 
+############################################################################################################
+#the following funnctions help parse data into desirable data forms ready for analysis
+############################################################################################################
+
+
+#gives the table for the left/right aligned table for a single numeric data column ############################
+#digitdata is an object of the class DigitAnalysis!                               ############################ Also user friendly, can let user use it to check their data
+#desired_col should be a string!
+single_column_aligned = function(digitdata, desired_col, align_diretion='left') {
+  if (is.na(match(desired_col, colnames(digitdata@numbers)))){
+    #throw error
+    stop("Specified desired_col is not a numerical data column in the specified DigitAnalysis class object")
+  } else {
+    #add a space at the end to avoid picking up alternative superstring column names
+    checking = paste(desired_col, '')
+    original_df = NA
+
+    if (align_diretion == 'left') {
+      original_df = DigitData@left_aligned
+    }
+    else if (align_diretion == 'right') {
+      original_df = DigitData@right_aligned
+    }
+    else {
+      stop("align_direction must be either 'left' or 'right'")
+    }
+
+    #create output table
+    single_align_df = data.frame(matrix(ncol = 0, nrow = length(original_df[,1])))
+    column_names = colnames(original_df)
+
+    for (i in 1:length(column_names)){
+      if (grepl(checking, column_names[i], fixed=TRUE)){
+        single_align_df[[column_names[i]]] = NA
+        single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
+      }
+    }
+
+    return(single_align_df)
+  }
+}
+
+
+#a=single_column_aligned(DigitData, "ALEXP", 'left')
+#head(a,5)
+
+#remove last digit if desired
+drop_last_digit_places = function(digitdata, single_column_digits, align_direction='left'){
+  #left aligned
+  if (align_direction == 'left'){
+    rows = dim(single_column_digits)[1]
+    cols = dim(single_column_digits)[2]
+    for (row in 1:rows){
+      #find the first column that is NA, which is the last digit + 1
+      index = 1
+      while ((index <= cols) && (!(is.na(single_column_digits[row, index])))){ #########might have potential bug here... & vs. &&
+        index = index + 1
+      }
+      if (index <= cols + 1) {
+        #index - 1 is the last digit; turn that cell to NA
+        single_column_digits[row, index-1] = NA
+      }
+    }
+  }
+
+  #right aligned
+  else if (align_direction == 'right'){
+    column_names = colnames(single_column_digits)
+    #drop all columns for 1s
+    for (i in 1:length(column_names)){
+      if (grepl(' 1s' , column_names[i], fixed=TRUE)){
+        print(column_names[i])
+        #drops = c(column_names[i])
+        single_column_digits = single_column_digits[ , !(colnames(single_column_digits) %in% c(column_names[i]))]
+      }
+    }
+  }
+  return(single_column_digits)
+}
+
+
+#remove first digit if desired
+drop_first_digit_places = function(digitdata, single_column_digits, align_direction='left'){
+
+  #left aligned
+  if (align_direction == 'left'){
+    column_names = colnames(single_column_digits)
+    #drop all columns for 1st digit
+    for (i in 1:length(column_names)){
+      if (grepl('1st digit' , column_names[i], fixed=TRUE)){
+        single_column_digits = single_column_digits[ , !(colnames(single_column_digits) %in% c(column_names[i]))]
+      }
+    }
+  }
+
+  #right aligned
+  else if (align_direction == 'right'){
+    rows = dim(single_column_digits)[1]
+    cols = dim(single_column_digits)[2]
+    for (row in 1:rows){
+      #find the first column that is not NA, which is the first digit
+      index = 1
+      while ((index <= cols) && (is.na(single_column_digits[row, index]))){ #########might have potential bug here... & vs. &&
+        index = index + 1
+      }
+      #turn that cell to NA
+      single_column_digits[row, index] = NA
+    }
+  }
+  return(single_column_digits)
+}
+
+#gets the desired data columns for analysis, can be left or right aligned
+#also in the mean time drop the first and last digit places if it is desired
+grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figit=TRUE, last_digit_test_included=FALSE, align_direction='left'){
+
+  digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
+  for (col_name in data_columns){
+    single_column_digits = single_column_aligned(digitdata, col_name, align_direction)
+
+    ###!!!!!!!!!!!!!!!!!!!!!!!
+    #remove last digit before remove first, to avoid problems like there are 1-digit numbers
+    if (last_digit_test_included){
+      single_column_digits = drop_last_digit_places(digitdata, single_column_digits, align_direction)
+    }
+    if (skip_first_figit){
+      single_column_digits = drop_first_digit_places(digitdata, single_column_digits, align_direction)
+    }
+
+    #single_column_digits = parse(single_column_digits)
+    digits_table = cbind(digits_table, single_column_digits)
+  }
+  return(digits_table)
+}
+
+#on desired aligned columns, extract only the desired digit places in a dropping column based way
+#only applies for left aligned digits data!!!!!!!!!!
+parse_digit_places = function(digitdata, digits_table, look_or_omit){
+
+  #find the names of the digit places to drop
+  if (look_or_omit == 'omit'){
+    digit_places_names = digitdata@left_aligned_column_names[digit_places]
+  }
+  if (look_or_omit == 'look'){
+    digit_places_names = digitdata@left_aligned_column_names[-digit_places]
+  }
+
+  #create a copy of the table to be returned
+  output = data.frame(digits_table)
+  colnames(output) = gsub("."," ",colnames(output), fixed=TRUE)
+
+
+  #drop by scanning each column name
+  for (position_name in digit_places_names){
+    for (i in 1:length(colnames(digits_table))){
+      if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE)){
+        #drop this column since it is the digit place unwanted
+        output = output[ , !(colnames(output) %in% c(colnames(digits_table[i])))]
+      }
+    }
+  }
+  return(output)
+}
+
+
 ############################################################
 #all digits test
 ############################################################
@@ -365,158 +487,6 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
 
 }
 
-#
-#load Benford table
-contingency_table = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-#get rid of '.' replacing ' ' problem when loading csv to df
-colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
-contingency_table
-
-
-
-
-#gets the desired data columns for analysis, can be left or right aligned
-grab_desired_aligned_columns = function(digitdata, data_columns, align_direction='left'){
-  digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
-  for (col_name in data_columns){
-    single_column_digits = single_column_aligned(digitdata, col_name, align_direction)
-
-    #single_column_digits = parse(single_column_digits)
-    digits_table = cbind(digits_table, single_column_digits)
-  }
-  return(digits_table)
-}
-
-#(inside grab)
-#removed the undesired digit places from the extracted numeric data to be analyzed, can be left or right aligned
-parse_desired_digits = function(digitdata, single_column_digits, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, align_direction='left'){
-
-}
-
-digitdata = DigitData
-data_columns = c("ALEXP", "BENTOT")
-align_direction = 'left'
-
-single_column_digits= grab_desired_aligned_column(digitdata, data_columns, align_direction)
-head(single_column_digits)
-skip_first_figit=TRUE
-last_digit_test_included=TRUE
-
-#remove last digit before remove first, to avoid problems like there are 1-digit numbers
-if (last_digit_test_included){
-
-  #left aligned
-  if (align_direction == 'left'){
-    rows = dim(single_column_digits)[1]
-    cols = dim(single_column_digits)[2]
-    for (row in 1:rows){
-      #find the first column that is NA, which is the last digit + 1
-      index = 1
-      while ((index <= cols) && (!(is.na(single_column_digits[row, index])))){ #########might have potential bug here... & vs. &&
-        index = index + 1
-      }
-      if (index <= cols + 1) {
-        #index - 1 is the last digit; turn that cell to NA
-        single_column_digits[row, index-1] = NA
-      }
-    }
-  }
-
-  #right aligned
-  else if (align_direction == 'right'){
-    column_names = colnames(single_column_digits)
-    #drop all columns for 1s
-    for (i in 1:length(column_names)){
-      if (grepl(' 1s' , column_names[i], fixed=TRUE)){
-        print(column_names[i])
-        #drops = c(column_names[i])
-        single_column_digits = single_column_digits[ , !(colnames(single_column_digits) %in% c(column_names[i]))]
-      }
-    }
-  }
-}
-head(single_column_digits)
-
-
-#remove first digit
-if (skip_first_figit){
-
-  #left aligned
-  if (align_direction == 'left'){
-    column_names = colnames(single_column_digits)
-    #drop all columns for 1st digit
-    for (i in 1:length(column_names)){
-      if (grepl('1st digit' , column_names[i], fixed=TRUE)){
-        single_column_digits = single_column_digits[ , !(colnames(single_column_digits) %in% c(column_names[i]))]
-      }
-    }
-  }
-
-  #right aligned
-  else if (align_direction == 'right'){
-    rows = dim(single_column_digits)[1]
-    cols = dim(single_column_digits)[2]
-    for (row in 1:rows){
-      #find the first column that is not NA, which is the first digit
-      index = 1
-      while ((index <= cols) && (is.na(single_column_digits[row, index]))){ #########might have potential bug here... & vs. &&
-        index = index + 1
-      }
-      #turn that cell to NA
-      single_column_digits[row, index] = NA
-    }
-  }
-}
-head(single_column_digits)
-
-
-
-digit_places = c(1,2,3)
-
-look_or_omit = 'omit'
-
-#digits_table
-digits_table = single_column_digits
-
-
-#on desired aligned columns, extract only the desired digit places in a dropping column based way
-#only applies for left aligned digits data!!!!!!!!!!
-parse_digit_places = function(digitdata, digits_table, look_or_omit){
-
-  #find the names of the digit places to drop
-  if (look_or_omit == 'omit'){
-    digit_places_names = digitdata@left_aligned_column_names[digit_places]
-  }
-  if (look_or_omit == 'look'){
-    digit_places_names = digitdata@left_aligned_column_names[-digit_places]
-  }
-
-  #create a copy of the table to be returned
-  output = data.frame(digits_table)
-  colnames(output) = gsub("."," ",colnames(output), fixed=TRUE)
-
-
-  #drop by scanning each column name
-  for (position_name in digit_places_names){
-    for (i in 1:length(colnames(digits_table))){
-      if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE)){
-        #drop this column since it is the digit place unwanted
-        output = output[ , !(colnames(output) %in% c(colnames(digits_table[i])))]
-      }
-    }
-  }
-  return(output)
-}
-
-output = parse_digit_places(digitdata, digits_table, look_or_omit)
-head(output)
-
-
-##break on category
-
-##split round and unround
-
-
 #############################################################
 #############################################################
 #############################################################
@@ -533,8 +503,48 @@ head(DigitData@right_aligned)
 #############################################################
 
 
+#
+#load Benford table
+contingency_table = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
+#get rid of '.' replacing ' ' problem when loading csv to df
+colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
+contingency_table
+
+data_columns = c("ALEXP", "BENTOT")
+align_direction = 'left'
+skip_first_figit=TRUE
+last_digit_test_included=FALSE
+digits_table = grab_desired_aligned_columns(DigitData, data_columns, skip_first_figit, last_digit_test_included, align_direction)
+head(digits_table)
 
 
+
+
+digit_places = c(2,3)
+look_or_omit = 'look'
+
+usable_data = parse_digit_places(DigitData, digits_table, look_or_omit)
+head(usable_data)
+
+clean = DigitData@cleaned
+head(clean[, clean[["DIST"]] == unique(clean$DIST)[1]][,1:10])
+#helper
+##break on category
+
+
+#helper
+##split round and unround
+
+
+
+
+
+
+
+
+
+
+######
 
 head(DigitData@raw,2)
 head(DigitData@cleaned,2)
@@ -542,7 +552,6 @@ head(DigitData@numbers,2)
 a=head(DigitData@left_aligned,2)
 b=head(DigitData@right_aligned,2)
 
-######
 test = DigitAnalysis(cleaned = data.frame(matrix(ncol = 1, nrow = 1)), values=data.frame(matrix(ncol = 1, nrow = 1)))
 test
 slotNames(class(DigitAnalysis))
