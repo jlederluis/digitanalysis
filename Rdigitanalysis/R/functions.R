@@ -1,5 +1,6 @@
 ############################################################
 #Functions for digit analysis R package
+###Data input functions in this file
 #Wenjun Chang
 #Summer 2020
 ############################################################
@@ -11,7 +12,7 @@ rm(list = ls())
 gc()
 #force numerical representation rather than scientific
 options(scipen = 999)
-
+##############################
 
 
 ############################################################
@@ -23,7 +24,7 @@ options(scipen = 999)
 DigitAnalysis = setClass('DigitAnalysis', slots = c(raw="data.frame", cleaned="data.frame",
                                                     numbers="data.frame", left_aligned="data.frame",
                                                     right_aligned="data.frame", left_aligned_column_names='character',
-                                                    right_aligned_column_names='character'))
+                                                    right_aligned_column_names='character', max='numeric'))
 
 
 ############################################################
@@ -204,7 +205,7 @@ make_class = function(filepath, col_analyzing, delim=','){
   ########################creation of DigitAnalysis class object########################
 
   DigitData = DigitAnalysis(raw=raw_data, cleaned=cleaned_data, numbers=numeric_data, left_aligned=left_aligned_data, right_aligned=right_aligned_data,
-                            left_aligned_column_names=left_aligned_column_names, right_aligned_column_names=right_aligned_column_names)
+                            left_aligned_column_names=left_aligned_column_names, right_aligned_column_names=right_aligned_column_names, max=0)
 
   return(DigitData)
 }
@@ -263,6 +264,8 @@ Benford_table = function(N, out_fp, save=TRUE){
       contingency_table[[paste('Digit Place', as.character(n))]] = current_freqs
     }
   }
+  #drop the weird "X" column in df #############Guess it does not work, reload again it appears
+  contingency_table = contingency_table[ , !(colnames(contingency_table) %in% c("X"))]
 
   #save file if specified
   if (save) {
@@ -273,6 +276,14 @@ Benford_table = function(N, out_fp, save=TRUE){
 
 #
 #Benford_table(N=8, out_fp='C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
+
+#load Benford table given filepath
+load_Benford_table = function(fp){
+  contingency_table = read.csv(fp)
+  #get rid of '.' replacing ' ' problem when loading csv to df
+  colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
+  return(contingency_table)
+}
 
 
 ############################################################################################################
@@ -395,6 +406,16 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figi
   for (col_name in data_columns){
     single_column_digits = single_column_aligned(digitdata, col_name, align_direction)
 
+    #update the max attribute of digitdata for use in other functions
+    if (digitdata@max < as.numeric(length(single_column_digits))){
+      print('sfdsff')
+      print(head(single_column_digits))
+      print(as.numeric(length(single_column_digits)))
+      print(digitdata@max)
+      digitdata@max = as.numeric(length(single_column_digits))
+      print(digitdata@max)
+    }
+
     ###!!!!!!!!!!!!!!!!!!!!!!!
     #remove last digit before remove first, to avoid problems like there are 1-digit numbers
     if (last_digit_test_included){
@@ -404,15 +425,15 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figi
       single_column_digits = drop_first_digit_places(digitdata, single_column_digits, align_direction)
     }
 
-    #single_column_digits = parse(single_column_digits)
     digits_table = cbind(digits_table, single_column_digits)
   }
-  return(digits_table)
+  return(list('digits_table'=digits_table, 'digitdata'=digitdata))
 }
+
 
 #on desired aligned columns, extract only the desired digit places in a dropping column based way
 #only applies for left aligned digits data!!!!!!!!!!
-parse_digit_places = function(digitdata, digits_table, look_or_omit){
+parse_digit_places = function(digitdata, digits_table, digit_places, look_or_omit){
 
   #find the names of the digit places to drop
   if (look_or_omit == 'omit'){
@@ -423,8 +444,8 @@ parse_digit_places = function(digitdata, digits_table, look_or_omit){
   }
 
   #create a copy of the table to be returned
-  output = data.frame(digits_table)
-  colnames(output) = gsub("."," ",colnames(output), fixed=TRUE)
+  usable_data = data.frame(digits_table)
+  colnames(usable_data) = gsub("."," ",colnames(usable_data), fixed=TRUE)
 
 
   #drop by scanning each column name
@@ -432,11 +453,114 @@ parse_digit_places = function(digitdata, digits_table, look_or_omit){
     for (i in 1:length(colnames(digits_table))){
       if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE)){
         #drop this column since it is the digit place unwanted
-        output = output[ , !(colnames(output) %in% c(colnames(digits_table[i])))]
+        usable_data = usable_data[ , !(colnames(usable_data) %in% c(colnames(digits_table[i])))]
       }
     }
   }
-  return(output)
+  return(usable_data)
+}
+
+
+#parse usable_data to  obtain observation table s.t. we have exclusively the desired digits and digit places
+obtain_observation = function(digitdata, usable_data, look_or_omit, skip_first_figit, last_digit_test_included, omit_05){
+  #create a table for collecting observations for n=max digit places
+  observation_table = NA
+  if (last_digit_test_included){
+    observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max-1)) #one less digit place
+  } else {
+    observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max))
+  }
+  #fill up observation table from usable data columns
+  digit_place_names = digitdata@left_aligned_column_names
+  #name the columns
+  colnames(observation_table) = digit_place_names[1:length(observation_table)]
+
+  for (i in 1:length(usable_data)){
+    #figure out the digit place it is in
+    for (j in 1:length(observation_table)){
+      if (grepl(paste('',digit_place_names[j]), colnames(usable_data)[i], fixed=TRUE)){
+        #it is a column for digit place j
+        #get the table for frequency count for column i
+        occurances = table(usable_data[,i])
+        #update it to column j of observation table
+        print(occurances)
+        for (name in names(occurances)){
+          digit = as.integer(name)
+          print(observation_table[digit+1, j] + occurances[name])
+          #digit + 1 since index starts from 1 and digit starts from 0
+          observation_table[digit+1 , j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)
+        }
+      }
+    }
+  }
+
+  if (length(omit_05) == 2){
+    #drop both 0 and 5
+    observation_table = observation_table[-c(1,6), ]
+  }
+  else if (length(omit_05) == 1){
+    #drop 0
+    if (!(is.na(omit_05))){
+      observation_table = observation_table[-c(1), ]
+    }
+    #otherwise, omit_05 is NA so do nothing
+  }
+
+  #find the names of the digit places to drop
+  if (look_or_omit == 'omit'){
+    observation_table = observation_table[ , -digit_places]
+  }
+  if (look_or_omit == 'look'){
+    observation_table = observation_table[ , digit_places]
+  }
+  #drop first digit col
+  if (skip_first_figit){
+    observation_table = observation_table[ , !(colnames(observation_table) %in% c('1st Digit'))]
+  }
+  return(observation_table)
+}
+
+
+#parse the contigency table s.t. we have exclusively the desired digits and digit places
+parse_contigency_table = function(digitdata, contingency_table, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05){
+  #drop the "x" and Digits column for table
+  contingency_table = contingency_table[ , !(colnames(contingency_table) %in% c("Digits", "X"))]
+
+  if (length(omit_05) == 2){
+    #drop both 0 and 5
+    contingency_table = contingency_table[-c(1,6), ]
+  }
+  else if (length(omit_05) == 1){
+    #drop 0
+    if (!(is.na(omit_05))){
+      contingency_table = contingency_table[-c(1), ]
+    }
+    #otherwise, omit_05 is NA so do nothing
+  }
+
+  #drop the extra digit places in precomputred table
+
+  #####checkings
+  end = digitdata@max
+  if (last_digit_test_included){
+    end = end - 1
+  }
+  contingency_table = contingency_table[ , 1:end]
+  #####more checkings
+
+  #find the names of the digit places to drop/use
+  if (look_or_omit == 'omit'){
+    contingency_table = contingency_table[ , -digit_places]
+  }
+  else if (look_or_omit == 'look'){
+    contingency_table = contingency_table[ , digit_places]
+  }
+
+  #####more checkings....
+  if (skip_first_figit){
+    contingency_table = contingency_table[ , !(colnames(contingency_table) %in% c('Digit Place 1'))]
+  }
+  return(contingency_table)
 }
 
 
@@ -482,54 +606,187 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
     }
   }
 
+  if (length(omit_05) == 1){
+    ###check omit only 5, which is not allowed
+    if (!(is.na(omit_05)) && (omit_05 == 5)){
+      stop('cannot omit only 5 without also omitting 0 first')
+    }
+  }
+
+  if (length(digit_places) == 1){
+    #thus should not have -1 as part of the array
+    if (last_digit_test_included){
+      stop('not using any data')
+    }
+    if (skip_first_figit){
+      if (digit_places == 1){
+        stop('not using any data')
+      }
+    }
+  }
+
+  #######################################################################
+  #parse the data
   #######################################################################
 
+  align_direction = 'left'
 
+  #get the digits of the desired data columns to be analyzed
+  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_figit, last_digit_test_included, align_direction)
+  digitdata = lst$digitdata
+  digits_table = lst$digits_table
+
+  #get only the wanted digit places
+  usable_data = parse_digit_places(digitdata, digits_table, digit_places, look_or_omit)
+
+  #parse only needed parts of contingency table
+  contingency_table = parse_contigency_table(digitdata, contingency_table, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+
+  #get observation table from usable data
+  observation_table = obtain_observation(digitdata, usable_data, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+
+
+
+  #######################################################################
+  #do chi square test
+  #######################################################################
+
+  #helper
+  ##break on category
+  ##break on round unround
+
+
+  Xsq=chisq.test(as.matrix(observation_table), p = as.matrix(contingency_table))
+
+  print(observation_table)
+  print(contingency_table)
+  return(Xsq)
+
+  #this chisquare test has some problem
 }
 
 #############################################################
 #############################################################
+#tesiting
 #############################################################
 
+
+
+# #############try it with given data
+#
+# #load data input functions
+# data_columns = c("ALEXP","BENTOT")#, "BENM", "BENF")
+# fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
+#
+# DigitData = make_class(filepath = fp, col_analyzing = data_columns)
+# #head(DigitData@right_aligned)
+#
+# #############################################################
+# #############################################################
+# #############################################################
+#
+# align_direction = 'left'
+# skip_first_figit=FALSE
+# last_digit_test_included=FALSE
+# lst = grab_desired_aligned_columns(DigitData, data_columns, skip_first_figit, last_digit_test_included, align_direction)
+# DigitData = lst$digitdata
+# digits_table = lst$digits_table
+# head(digits_table)
+#
+# digit_places = c(1,2,3)
+# look_or_omit = 'look'
+# DigitData@max
+#
+# usable_data = parse_digit_places(DigitData, digits_table, digit_places, look_or_omit)
+# head(usable_data)
+#
+# #
+# #load Benford table
+# contingency_table = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
+# #get rid of '.' replacing ' ' problem when loading csv to df
+# colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
+#
+#
+#
+# contingency_table
+#
+#
+# #parse omit digits
+# omit_05 = c(0,5)
+# #length of observed table
+# look_or_omit = 'look'
+# digit_places = c(1,2,3)
+#
+# contingency_table=parse_contigency_table(DigitData, contingency_table, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+# contingency_table
+#
+# observation_table = obtain_observation(DigitData, usable_data, look_or_omit, skip_first_figit, last_digit_test_included)
+# observation_table
+#
+#
+#
+#
+# Xsq=chisq.test(as.matrix(observation_table), p = as.matrix(contingency_table))
+# Xsq$observed   # observed counts (same as M)
+# Xsq$expected   # expected counts under the null
+# Xsq$residuals  # Pearson residuals
+# Xsq$stdres     # standardized residuals
+
+
+
+#############################################################
+#############################################################
+#############################################################
 #############try it with given data
+
+#load data input functions
 data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
+#head(DigitData@right_aligned)
 
-head(DigitData@right_aligned)
-#############################################################
-#############################################################
-#############################################################
-
-
-#
-#load Benford table
-contingency_table = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-#get rid of '.' replacing ' ' problem when loading csv to df
-colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
+contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 contingency_table
 
-data_columns = c("ALEXP", "BENTOT")
-align_direction = 'left'
-skip_first_figit=TRUE
-last_digit_test_included=FALSE
-digits_table = grab_desired_aligned_columns(DigitData, data_columns, skip_first_figit, last_digit_test_included, align_direction)
-head(digits_table)
+# #
+# #load Benford table
+# contingency_table = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
+# #get rid of '.' replacing ' ' problem when loading csv to df
+# colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
+# contingency_table
 
-
-
-
-digit_places = c(2,3)
+digit_places = c(1,2,3)
 look_or_omit = 'look'
+skip_first_figit=FALSE
+omit_05 = NA#c(0,5)
+# break_out=NA
+# distribution='Benford'
+# plot=TRUE
+last_digit_test_included=FALSE
+# unpacking_rounding_column=NA
 
-usable_data = parse_digit_places(DigitData, digits_table, look_or_omit)
-head(usable_data)
+Xsq=all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places, look_or_omit = look_or_omit,
+                           skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=NA, distribution='Benford', plot=TRUE,
+                           last_digit_test_included=FALSE, unpacking_rounding_column=NA)
 
-clean = DigitData@cleaned
-head(clean[, clean[["DIST"]] == unique(clean$DIST)[1]][,1:10])
+Xsq$observed   # observed counts (same as M)
+Xsq$expected   # expected counts under the null
+Xsq$residuals  # Pearson residuals
+Xsq$stdres     # standardized residuals
+
+
+
+
+
+
+
 #helper
 ##break on category
+clean = DigitData@cleaned
+
+head(clean[, clean[["DIST"]] == unique(clean$DIST)[1]][1:10])
+
 
 
 #helper
@@ -544,7 +801,7 @@ head(clean[, clean[["DIST"]] == unique(clean$DIST)[1]][,1:10])
 
 
 
-######
+######some garbage
 
 head(DigitData@raw,2)
 head(DigitData@cleaned,2)
@@ -570,3 +827,4 @@ ceiling(x)
 round(x, digits = 0)
 
 ######
+
