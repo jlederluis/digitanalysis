@@ -572,6 +572,82 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, lo
   return(contingency_table)
 }
 
+#split on category and perform chi square test on data for each category
+break_by_category = function(digitdata, break_out){
+
+  if (is.na(match(break_out, colnames(digitdata@cleaned)))) {
+    stop('specified category is not a column in the data')
+  }
+
+  indexes_of_categories = list()
+
+  for (category_name in unique(digitdata@cleaned[, break_out])){
+    #what if there is NA? havent encountered yet...I guess ignore
+
+    #get the rows for each broken-down category
+    rows = which(digitdata@cleaned[[break_out]] %in% category_name)
+
+    #add rows to the named element in list
+    indexes_of_categories[[category_name]] = rows
+  }
+
+  return(indexes_of_categories)
+}
+
+#split round and unround numbers on specified column to perform unpacking round number test
+unpacking_round_number_split = function(digitdata, unpacking_rounding_column){
+  if (is.na(match(unpacking_rounding_column, colnames(digitdata@cleaned)))) {
+    stop('specified category is not a column in the data')
+  }
+  if (typeof(digitdata@cleaned[[unpacking_rounding_column]]) == "character"){
+    stop('the column for splitting unround and round numbers must be a column with numbers')
+  }
+
+  rounded_rows = which(digitdata@cleaned[[unpacking_rounding_column]] %% 10 == 0)
+
+  return(rounded_rows)
+}
+
+
+#find degree of freedom helper
+get_df = function(table, standard=FALSE){
+  #standard df = (r-1)(c-1)
+  if (standard){
+    return((dim(table)[1]-1) * (dim(table)[2]-1))
+  }
+
+  df = dim(table)[1] * dim(table)[2] - length(table)
+  if (grepl('1', colnames(table)[1], fixed=TRUE)){
+    df = df - 1
+  }
+  return(df)
+}
+
+#chi square test for goodness of fit
+chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
+  if (freq){
+    #turn freq into numbers
+    for (i in 1:length(expected_table)){
+      expected_table[, i] = expected_table[, i] *sum(observed_table[, i])
+    }
+  }
+
+  #if first digit is used, turn digit 0 freq to 1 for both tables,
+  #to avoid NaN in computing test stats
+  if (grepl('1', colnames(expected_table)[1], fixed=TRUE)){
+    observed_table[1,1] = 1
+    expected_table[1,1] = 1
+  }
+
+  test_stats = sum((observed_table - expected_table)^2/expected_table)
+
+  df = get_df(expected_table)
+
+  p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
+
+  return(p_value)
+}
+
 
 ############################################################
 #all digits test
@@ -670,13 +746,13 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
     round_numbers_indexes = unpacking_round_number_split(digitdata, unpacking_rounding_column)
 
     #perform chi square test on rounded rows
-    #[rounded_rows, ]
-    obs_round = obtain_observation(digitdata, usable_data[rounded_rows, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+    #[round_numbers_indexes, ]
+    obs_round = obtain_observation(digitdata, usable_data[round_numbers_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
     p_values[paste('round entries in', unpacking_rounding_column)] = chi_square_gof(obs_round, contingency_table)
 
     #perform chi square test on unrounded rows
-    #[-rounded_rows, ]
-    obs_unround = obtain_observation(digitdata, usable_data[-rounded_rows, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+    #[-round_numbers_indexes, ]
+    obs_unround = obtain_observation(digitdata, usable_data[-round_numbers_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
     p_values[paste('unround entries in', unpacking_rounding_column)] = chi_square_gof(obs_unround, contingency_table)
 
     ##############################
@@ -756,238 +832,6 @@ omit_05 = NA#c(0,5)
 last_digit_test_included=FALSE
 # unpacking_rounding_column=NA
 
-
-
 all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places, look_or_omit = look_or_omit,
                 skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out='DIST', distribution='Benford', plot=TRUE,
-                last_digit_test_included=FALSE, unpacking_rounding_column='BENTOT')
-
-
-
-#############try it with given data
-
-#load data input functions
-data_columns = c("ALEXP","BENTOT")#, "BENM", "BENF")
-fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
-
-DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-#head(DigitData@right_aligned)
-
-#############################################################
-#############################################################
-#############################################################
-
-align_direction = 'left'
-skip_first_figit=FALSE
-last_digit_test_included=FALSE
-lst = grab_desired_aligned_columns(DigitData, data_columns, skip_first_figit, last_digit_test_included, align_direction)
-DigitData = lst$digitdata
-digits_table = lst$digits_table
-head(digits_table)
-
-digit_places = c(1,2,3)
-look_or_omit = 'look'
-DigitData@max
-
-usable_data = parse_digit_places(DigitData, digits_table, digit_places, look_or_omit)
-head(usable_data)
-
-#
-#load Benford table
-contingency_table = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-#get rid of '.' replacing ' ' problem when loading csv to df
-colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
-
-
-
-contingency_table
-
-
-#parse omit digits
-omit_05 = c(0,5)
-#length of observed table
-look_or_omit = 'look'
-digit_places = c(1,2,3)
-
-contingency_table=parse_contigency_table(DigitData, contingency_table, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-contingency_table
-
-observation_table = obtain_observation(DigitData, usable_data, look_or_omit, skip_first_figit, last_digit_test_included)
-observation_table
-
-
-
-
-Xsq=chisq.test(as.matrix(observation_table), p = as.matrix(contingency_table))
-Xsq$observed   # observed counts (same as M)
-Xsq$expected   # expected counts under the null
-Xsq$residuals  # Pearson residuals
-Xsq$stdres     # standardized residuals
-
-category = 'DIST'
-
-clean = DigitData@cleaned[,1:20]
-
-if (is.na(match(category, colnames(clean)))) {
-  stop('specified category is not a column in the data')
-}
-
-names(table(clean[, category]))
-unique(clean[[category]])
-
-which(clean[[category]] %in% names(table(clean[, category]))[1])
-which(clean[[category]] %in% unique(clean[[category]])[1])
-
-for (category_name in unique(clean[["DIST"]])){
-  #what if there is NA? havent encountered yet...I guess ignore
-
-  #get the rows for each broken-down category
-  rows = which(clean[[category]] %in% category_name)
-  print(rows)
-
-  #perform chisq test on it and return the stats and plot
-
-  #chisq test()
-  #plot()
-}
-
-
-
-#split on category and perform chi square test on data for each category
-break_by_category = function(digitdata, break_out){
-
-  if (is.na(match(break_out, colnames(digitdata@cleaned)))) {
-    stop('specified category is not a column in the data')
-  }
-
-  indexes_of_categories = list()
-
-  for (category_name in unique(digitdata@cleaned[, break_out])){
-    #what if there is NA? havent encountered yet...I guess ignore
-
-    #get the rows for each broken-down category
-    rows = which(digitdata@cleaned[[break_out]] %in% category_name)
-
-    #add rows to the named element in list
-    indexes_of_categories[[category_name]] = rows
-  }
-
-  return(indexes_of_categories)
-}
-
-##split round and unround numbers on specified column to perform unpacking round number test
-unpacking_round_number_split = function(digitdata, unpacking_rounding_column){
-  if (is.na(match(unpacking_rounding_column, colnames(digitdata@cleaned)))) {
-    stop('specified category is not a column in the data')
-  }
-  if (typeof(digitdata@cleaned[[unpacking_rounding_column]]) == "character"){
-    stop('the column for splitting unround and round numbers must be a column with numbers')
-  }
-
-  rounded_rows = which(digitdata@cleaned[[unpacking_rounding_column]] %% 10 == 0)
-
-  return(rounded_rows)
-}
-
-
-#find degree of freedom helper
-get_df = function(table, standard=FALSE){
-  #standard df = (r-1)(c-1)
-  if (standard){
-    return((dim(table)[1]-1) * (dim(table)[2]-1))
-  }
-
-  df = dim(table)[1] * dim(table)[2] - length(table)
-  if (grepl('1', colnames(table)[1], fixed=TRUE)){
-    df = df - 1
-  }
-  return(df)
-}
-
-#chi square test for goodness of fit
-chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
-  if (freq){
-    #turn freq into numbers
-    for (i in 1:length(expected_table)){
-      expected_table[, i] = expected_table[, i] *sum(observed_table[, i])
-    }
-  }
-
-  #if first digit is used, turn digit 0 freq to 1 for both tables,
-  #to avoid NaN in computing test stats
-  if (grepl('1', colnames(expected_table)[1], fixed=TRUE)){
-    observed_table[1,1] = 1
-    expected_table[1,1] = 1
-  }
-
-  test_stats = sum((observed_table - expected_table)^2/expected_table)
-
-  df = get_df(expected_table)
-
-  p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
-
-  return(p_value)
-}
-
-freq = TRUE
-observed_table = Xsq[[1]]
-observed_table[1,1] = 0
-observed_table = matrix(c(3:12, 5,6,6,5,5,6,6,5,5,5), ncol = 2)
-expected_table = Xsq[[2]][,2:3]
-
-observed_table
-expected_table
-
-
-if (freq){
-  #turn freq into numbers
-  for (i in 1:length(expected_table)){
-    expected_table[, i] = expected_table[, i] *sum(observed_table[, i])
-  }
-}
-
-#if first digit is used, turn digit 0 freq to 1 for both tables,
-#to avoid NaN in computing test stats
-if (grepl('1', colnames(expected_table)[1], fixed=TRUE)){
-  print('sdsd')
-  observed_table[1,1] = 1
-  expected_table[1,1] = 1
-}
-expected_table
-observed_table
-(observed_table - expected_table)^2/expected_table
-a = sum((observed_table - expected_table)^2/expected_table)
-a
-df = get_df(expected_table)
-df = 1*9#18
-
-pchisq(a, df = df, lower.tail = FALSE)
-
-
-######some garbage
-
-head(DigitData@raw,2)
-head(DigitData@cleaned,2)
-head(DigitData@numbers,2)
-a=head(DigitData@left_aligned,2)
-b=head(DigitData@right_aligned,2)
-
-test = DigitAnalysis(cleaned = data.frame(matrix(ncol = 1, nrow = 1)), values=data.frame(matrix(ncol = 1, nrow = 1)))
-test
-slotNames(class(DigitAnalysis))
-
-test@values = data.frame(x=1)
-test
-data.frame(1)
-slot(test, "cleaned")
-test@values
-
-x = 123.55
-trunc(x)
-floor(x)
-ceiling(x)
-
-round(x, digits = 0)
-
-######
-
+                last_digit_test_included=FALSE, unpacking_rounding_column=NA)
