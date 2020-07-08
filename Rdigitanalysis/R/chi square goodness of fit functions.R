@@ -14,6 +14,8 @@ get_df = function(table, standard=FALSE){
   }
 
   df = dim(table)[1] * dim(table)[2] - length(table)
+
+  #if it include first digit place, one less df due to 0 has freq 0
   if (grepl('1', colnames(table)[1], fixed=TRUE)){
     df = df - 1
   }

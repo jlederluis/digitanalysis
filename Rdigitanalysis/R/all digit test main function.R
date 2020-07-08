@@ -13,7 +13,7 @@
 
 ################main function############
 #performs all-digit place two-way chi square test vs Benford’s Law
-#DigitData is the class object;
+#digitdata is the class object;
 #data_columns are the names of numerical columns of data to be analyzed (defaulted as 'all' to the entire number table)
 #digit_places are the indexes of digit places desired to test on
 ###can be single digit for single digit test, or an array of digits for multiple digit test
@@ -88,6 +88,13 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   #get observation table from usable data
   observation_table = obtain_observation(digitdata, usable_data, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
 
+
+  print("contingency_table")
+  print(contingency_table)
+
+  print("observation_table")
+  print(observation_table)
+
   #######################################################################
   #do chi square test
   #######################################################################
@@ -144,6 +151,9 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
       p_values[category_name] = chi_square_gof(obs_in_category, contingency_table)
     }
   }
+
+  print('results')
+  print(p_values)
 
   return(p_values)
 }

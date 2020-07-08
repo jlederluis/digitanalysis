@@ -54,7 +54,7 @@ contingency_table
 # colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
 # contingency_table
 
-digit_places = c(1,2,3)
+digit_places = c(1)#c(1,2,3)
 look_or_omit = 'look'
 skip_first_figit=FALSE
 omit_05 = c(0,5)
@@ -64,6 +64,6 @@ break_out='DIST'
 last_digit_test_included=FALSE
 unpacking_rounding_column='ALEXP'
 
-all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places, look_or_omit = look_or_omit,
+result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places, look_or_omit = look_or_omit,
                 skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
                 last_digit_test_included=FALSE, unpacking_rounding_column=unpacking_rounding_column)

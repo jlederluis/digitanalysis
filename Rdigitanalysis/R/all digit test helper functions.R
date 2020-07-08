@@ -49,9 +49,6 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left') 
 }
 
 
-#a=single_column_aligned(DigitData, "ALEXP", 'left')
-#head(a,5)
-
 #remove last digit if desired
 drop_last_digit_places = function(digitdata, single_column_digits, align_direction='left'){
   #left aligned
@@ -227,10 +224,10 @@ obtain_observation = function(digitdata, usable_data, look_or_omit, skip_first_f
 
   #find the names of the digit places to drop
   if (look_or_omit == 'omit'){
-    observation_table = observation_table[ , -digit_places]
+    observation_table = observation_table[-digit_places]
   }
   if (look_or_omit == 'look'){
-    observation_table = observation_table[ , digit_places]
+    observation_table = observation_table[digit_places]
   }
   #drop first digit col
   if (skip_first_figit){
@@ -268,10 +265,10 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, lo
 
   #find the names of the digit places to drop/use
   if (look_or_omit == 'omit'){
-    contingency_table = contingency_table[ , -digit_places]
+    contingency_table = contingency_table[-digit_places]
   }
   else if (look_or_omit == 'look'){
-    contingency_table = contingency_table[ , digit_places]
+    contingency_table = contingency_table[digit_places]
   }
 
   #####more checkings....
@@ -292,6 +289,10 @@ break_by_category = function(digitdata, break_out){
 
   if (is.na(match(break_out, colnames(digitdata@cleaned)))) {
     stop('specified category is not a column in the data')
+  }
+
+  if (typeof(digitdata@cleaned[, break_out]) != "character"){
+    stop('specified break out column is not a category column')
   }
 
   indexes_of_categories = list()
