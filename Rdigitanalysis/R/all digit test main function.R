@@ -124,7 +124,7 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
     ##break on category if specified, then also need to break by category on round and unround
     if (!(is.na(break_out))){
       #get indexes for each category
-      indexes_of_categories = break_by_category(digitdata, break_out) #this is a list since unequal number of entries for each category
+      indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
 
       #breeak by category for round, and unround
       for (category_name in names(indexes_of_categories)){
@@ -142,7 +142,7 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   ##break on category if specified
   if (!(is.na(break_out))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata, break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
 
     #breeak by category for all
     for (category_name in names(indexes_of_categories)){

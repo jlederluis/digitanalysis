@@ -5,26 +5,6 @@
 #Summer 2020
 ############################################################
 
-#############prelim############
-#clear workspace
-rm(list = ls())
-#free up R memory
-gc()
-#force numerical representation rather than scientific
-#options(scipen = 999)
-options(scipen = 1)
-options(digits = 2)
-##############################
-
-############################################################
-#digit pair test
-############################################################
-
-#load data input functions
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data input functions.R')
-
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all digit test helper functions.R')
-
 
 ############################################################
 #some helper functions
@@ -33,11 +13,11 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 
 #find the frequency of terminal digit pairs occuring in the data being analzyed
 #return a vector of [# pairs, # not pairs]
-counts_observed = function(digitData, data_columns, omit_05, skip_first_figit, last_digit_test_included, indexes=NA){
+counts_observed = function(digitdata, data_columns, omit_05, skip_first_figit, last_digit_test_included, indexes=NA){
   occurances = data.frame(matrix(nrow = 0, ncol = 2))
 
   for (desired_col in data_columns){
-    digit_pair_table = single_column_aligned(digitData, desired_col, align_diretion='right')
+    digit_pair_table = single_column_aligned(digitdata, desired_col, align_diretion='right')
 
     #omit last digit if last digit test is included
     if (last_digit_test_included){
@@ -45,7 +25,7 @@ counts_observed = function(digitData, data_columns, omit_05, skip_first_figit, l
     }
 
     #for break out, we separate into categories by indexing
-    if (!(is.na(indexes))){
+    if (!(is.na(indexes[1]))){ ####might have bug here...did [1] to get rid of warnings
       digit_pair_table = digit_pair_table[indexes, ]
     }
 
@@ -136,7 +116,6 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), skip_first_
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution
   p = freq_true(omit_05)
 
-
   #get the observed counts for number of terminal digit pairs
   counts = counts_observed(digitdata, data_columns, omit_05, skip_first_figit, last_digit_test_included)
 
@@ -148,7 +127,7 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), skip_first_
 
   if (!(is.na(break_out))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata, break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
 
     #breeak by category for all
     for (category_name in names(indexes_of_categories)){
@@ -159,26 +138,7 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), skip_first_
       p_values[category_name] = p_value_in_category
     }
   }
-
   return(p_values)
 }
 
-
-#load data input functions
-data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
-fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
-
-DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-head(DigitData@right_aligned)
-#get the right aligned data for each desired col
-
-#row bind them together
-
-skip_first_figit = TRUE
-last_digit_test_included = TRUE
-omit_05 = 0
-data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
-break_out = 'DIST'
-
-digit_pairs_test(DigitData, data_columns, omit_05, skip_first_figit, last_digit_test_included, break_out)
 

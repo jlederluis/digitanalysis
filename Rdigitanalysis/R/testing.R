@@ -32,28 +32,32 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load main function for all digit test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all digit test main function.R')
 
+#load all functions for digit pair test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\digit pair test.R')
+
+#load all functions for rounding test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\rounding test.R')
+
+#load all functions for repeat test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\repeat test.R')
+
 
 #############################################################
 #############try it with given data##########################
 #############################################################
 
-
+#test data input and benford table functions
 #load data input functions
 data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-#head(DigitData@right_aligned)
 
 contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 contingency_table
-# #
-# #load Benford table
-# contingency_table = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-# #get rid of '.' replacing ' ' problem when loading csv to df
-# colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
-# contingency_table
 
+
+#test all digits test
 digit_places = c(1)#c(1,2,3)
 look_or_omit = 'look'
 skip_first_figit=FALSE
@@ -67,3 +71,38 @@ unpacking_rounding_column='ALEXP'
 result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places, look_or_omit = look_or_omit,
                 skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
                 last_digit_test_included=FALSE, unpacking_rounding_column=unpacking_rounding_column)
+
+
+
+#test rounding test
+omit_05 = c(0,5)
+data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
+break_out = 'DIST'
+rounding_test(DigitData, data_columns, omit_05, break_out)
+
+
+
+#test digit pair test
+skip_first_figit = TRUE
+last_digit_test_included = TRUE
+omit_05 = NA
+data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
+break_out = 'DIST'
+
+digit_pairs_test(DigitData, data_columns, omit_05, skip_first_figit, last_digit_test_included, break_out)
+
+
+
+#test repeat test
+duplicate_matching_cols = c('ALEXP', 'DIST', 'BENTOT')
+remove_duplicate = TRUE
+break_out = 'DIST'
+
+sector_column = NA#'SECTOR'
+sector_grouping = NA#list(Sector1=c("MICRO", "TRN"), Sector2=c("CW" , "GE"), Sector3=c("TRAVEL", "VEHICLES"))
+# failure_factor = 3
+
+sector_grouping
+
+repeat_test(DigitData, duplicate_matching_cols, remove_duplicate=remove_duplicate, break_out=break_out, sector_column=sector_column, sector_grouping=sector_grouping, failure_factor=3)
+

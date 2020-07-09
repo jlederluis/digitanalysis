@@ -285,23 +285,24 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, lo
 
 
 #split on category and perform chi square test on data for each category
-break_by_category = function(digitdata, break_out){
+#data is a data frame, usually the cleaned df or any parsed version of it from digitdata class object
+break_by_category = function(data, break_out){
 
-  if (is.na(match(break_out, colnames(digitdata@cleaned)))) {
+  if (is.na(match(break_out, colnames(data)))) {
     stop('specified category is not a column in the data')
   }
 
-  if (typeof(digitdata@cleaned[, break_out]) != "character"){
+  if (typeof(data[, break_out]) != "character"){
     stop('specified break out column is not a category column')
   }
 
   indexes_of_categories = list()
 
-  for (category_name in unique(digitdata@cleaned[, break_out])){
+  for (category_name in unique(data[, break_out])){
     #what if there is NA? havent encountered yet...I guess ignore
 
     #get the rows for each broken-down category
-    rows = which(digitdata@cleaned[[break_out]] %in% category_name)
+    rows = which(data[[break_out]] %in% category_name)
 
     #add rows to the named element in list
     indexes_of_categories[[category_name]] = rows
