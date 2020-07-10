@@ -13,7 +13,7 @@
 
 #find the frequency of terminal digit pairs occuring in the data being analzyed
 #return a vector of [# pairs, # not pairs]
-counts_observed = function(digitdata, data_columns, omit_05, skip_first_figit, last_digit_test_included, indexes=NA){
+counts_observed = function(digitdata, data_columns, omit_05, min_length, last_digit_test_included, indexes=NA){
   occurances = data.frame(matrix(nrow = 0, ncol = 2))
 
   for (desired_col in data_columns){
@@ -29,20 +29,14 @@ counts_observed = function(digitdata, data_columns, omit_05, skip_first_figit, l
       digit_pair_table = digit_pair_table[indexes, ]
     }
 
-    if (skip_first_figit){
-      #only the last three digits
-      digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-2):ncol(digit_pair_table)]
-      ##remove incomplete rows (with nans/length < 3)
-      digit_pair_table = digit_pair_table[complete.cases(digit_pair_table), ]
-      #only use last two digits
-      digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-1):ncol(digit_pair_table)]
-    }
-    else {
-      #only the last two digits
-      digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-1):ncol(digit_pair_table)]
-      #remove incomplete rows (with nans/length < 2)
-      digit_pair_table = digit_pair_table[complete.cases(digit_pair_table), ]
-    }
+    #remove all numbers that has length less than min_length
+
+    #only the last three digits
+    digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-min_length+1):ncol(digit_pair_table)]
+    ##remove incomplete rows (with nans/length < min_length)
+    digit_pair_table = digit_pair_table[complete.cases(digit_pair_table), ]
+    #only use last two digits
+    digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-1):ncol(digit_pair_table)]
 
     #need to coerce the names to be identical before rbind
     colnames(digit_pair_table) = colnames(occurances)
@@ -103,7 +97,7 @@ freq_true = function(omit_05){
 #need ADD distribution and plot parameter
 ####
 
-digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), skip_first_figit=TRUE, last_digit_test_included=FALSE, break_out=NA){
+digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), min_length=3, last_digit_test_included=FALSE, break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -113,11 +107,20 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), skip_first_
     }
   }
 
+  if (is.na(min_length)){
+    stop('min length must be an integer >= 2')
+  }
+  else if (min_length < 2){
+    stop('min length must be an integer >= 2')
+  }
+
+
+
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution
   p = freq_true(omit_05)
 
   #get the observed counts for number of terminal digit pairs
-  counts = counts_observed(digitdata, data_columns, omit_05, skip_first_figit, last_digit_test_included)
+  counts = counts_observed(digitdata, data_columns, omit_05, min_length, last_digit_test_included)
 
   #get p_value from binomial test
   p_value = binom.test(counts, p)$p.value
@@ -132,7 +135,7 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), skip_first_
     #breeak by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
-      counts_in_category = counts_observed(digitdata, data_columns, omit_05, skip_first_figit, last_digit_test_included, indexes_of_category)
+      counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, last_digit_test_included, indexes_of_category)
       p_value_in_category = binom.test(counts_in_category, p)$p.value
 
       p_values[category_name] = p_value_in_category

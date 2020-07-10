@@ -83,13 +83,13 @@ rounding_test(DigitData, data_columns, omit_05, break_out)
 
 
 #test digit pair test
-skip_first_figit = TRUE
+min_length = 3
 last_digit_test_included = TRUE
 omit_05 = NA
 data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
 break_out = 'DIST'
 
-digit_pairs_test(DigitData, data_columns, omit_05, skip_first_figit, last_digit_test_included, break_out)
+digit_pairs_test(DigitData, data_columns, omit_05, min_length, last_digit_test_included, break_out)
 
 
 
