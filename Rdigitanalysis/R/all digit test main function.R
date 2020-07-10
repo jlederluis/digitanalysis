@@ -101,24 +101,50 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
 
   df = get_df(contingency_table)
 
-  p_values = data.frame(all=chi_square_gof(observation_table, contingency_table))
+  #normal all digit test
+  if (is.na(unpacking_rounding_column)){
+    p_values = data.frame(all=chi_square_gof(observation_table, contingency_table))
+
+    ##break on category if specified
+    if (!(is.na(break_out))){
+      #get indexes for each category
+      indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
+
+      #breeak by category for all
+      for (category_name in names(indexes_of_categories)){
+        indexes_of_category = indexes_of_categories[[category_name]]
+        obs_in_category = obtain_observation(digitdata, usable_data[indexes_of_category, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+        p_values[category_name] = chi_square_gof(obs_in_category, contingency_table)
+      }
+    }
+    print('results')
+    print(p_values)
+    return(p_values)
+  }
 
   ##################################
 
   ##break on round unround
-  if (!(is.na(unpacking_rounding_column))){
+  ##perform unpack round digit test
+  else {
+    #intilaize a 2D table
+    p_values = data.frame(matrix(nrow = 2, ncol = 0))
+    rownames(p_values) = c('round', 'unround')
+
     #unpack by round numbers indexes
     round_numbers_indexes = unpacking_round_number_split(digitdata, unpacking_rounding_column)
 
+
+    p_values[unpacking_rounding_column] = NA
     #perform chi square test on rounded rows
     #[round_numbers_indexes, ]
     obs_round = obtain_observation(digitdata, usable_data[round_numbers_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-    p_values[paste('round entries in', unpacking_rounding_column)] = chi_square_gof(obs_round, contingency_table)
+    p_values[unpacking_rounding_column]['round', ] = chi_square_gof(obs_round, contingency_table)
 
     #perform chi square test on unrounded rows
     #[-round_numbers_indexes, ]
     obs_unround = obtain_observation(digitdata, usable_data[-round_numbers_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-    p_values[paste('unround entries in', unpacking_rounding_column)] = chi_square_gof(obs_unround, contingency_table)
+    p_values[unpacking_rounding_column]['unround', ] = chi_square_gof(obs_unround, contingency_table)
 
     ##############################
     ##break on category if specified, then also need to break by category on round and unround
@@ -128,33 +154,20 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
 
       #breeak by category for round, and unround
       for (category_name in names(indexes_of_categories)){
+        p_values[category_name] = NA
+
         round_in_category_indexes = intersect(indexes_of_categories[[category_name]], round_numbers_indexes)
         obs_round_in_category = obtain_observation(digitdata, usable_data[round_in_category_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-        p_values[paste(category_name, '& round entries in', unpacking_rounding_column)] = chi_square_gof(obs_round_in_category, contingency_table)
+        p_values[category_name]['round', ] = chi_square_gof(obs_round_in_category, contingency_table)
 
         unround_in_category_indexes = setdiff(indexes_of_categories[[category_name]], round_in_category_indexes)
         obs_unround_in_category = obtain_observation(digitdata, usable_data[unround_in_category_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-        p_values[paste(category_name, '& round entries in', unpacking_rounding_column)] = chi_square_gof(obs_unround_in_category, contingency_table)
+        p_values[category_name]['unround', ] = chi_square_gof(obs_unround_in_category, contingency_table)
       }
     }
   }
-
-  ##break on category if specified
-  if (!(is.na(break_out))){
-    #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
-
-    #breeak by category for all
-    for (category_name in names(indexes_of_categories)){
-      indexes_of_category = indexes_of_categories[[category_name]]
-      obs_in_category = obtain_observation(digitdata, usable_data[indexes_of_category, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-      p_values[category_name] = chi_square_gof(obs_in_category, contingency_table)
-    }
-  }
-
   print('results')
   print(p_values)
-
   return(p_values)
 }
 

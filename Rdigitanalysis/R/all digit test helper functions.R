@@ -167,7 +167,7 @@ parse_digit_places = function(digitdata, digits_table, digit_places, look_or_omi
     for (i in 1:length(colnames(digits_table))){
       if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE)){
         #drop this column since it is the digit place unwanted
-        usable_data = usable_data[ , !(colnames(usable_data) %in% c(colnames(digits_table[i])))]
+        usable_data = usable_data[!(colnames(usable_data) %in% c(colnames(digits_table[i])))]
       }
     }
   }
@@ -194,17 +194,25 @@ obtain_observation = function(digitdata, usable_data, look_or_omit, skip_first_f
   for (i in 1:length(usable_data)){
     #figure out the digit place it is in
     for (j in 1:length(observation_table)){
+      #print(usable_data)
+      #print(paste('',digit_place_names[j]))
+      #print(colnames(usable_data)[i])
+      #print(grepl(paste('',digit_place_names[j]), colnames(usable_data)[i], fixed=TRUE))
+
       if (grepl(paste('',digit_place_names[j]), colnames(usable_data)[i], fixed=TRUE)){
         #it is a column for digit place j
         #get the table for frequency count for column i
         occurances = table(usable_data[,i])
         #update it to column j of observation table
         #print(occurances)
-        for (name in names(occurances)){
-          digit = as.integer(name)
-          #print(observation_table[digit+1, j] + occurances[name])
-          #digit + 1 since index starts from 1 and digit starts from 0
-          observation_table[digit+1 , j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)
+        #this occurances can be a null table
+        if (!(is.null(occurances))){
+          for (name in names(occurances)){
+            digit = as.integer(name)
+            #print(observation_table[digit+1, j] + occurances[name])
+            #digit + 1 since index starts from 1 and digit starts from 0
+            observation_table[digit+1 , j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)
+          }
         }
       }
     }
