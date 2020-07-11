@@ -5,26 +5,6 @@
 #Summer 2020
 ############################################################
 
-# #############prelim############
-# #clear workspace
-# rm(list = ls())
-# #free up R memory
-# gc()
-# #force numerical representation rather than scientific
-# #options(scipen = 999)
-# options(scipen = 1)
-# options(digits = 2)
-# ##############################
-#
-# ############################################################
-# #digit pair test
-# ############################################################
-#
-# #load data input functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data input functions.R')
-#
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all digit test helper functions.R')
-
 
 ############################################################
 #helper function

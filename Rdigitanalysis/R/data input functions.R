@@ -40,20 +40,22 @@ round_data = function(data, method='round'){
 
 #find the length of the largest number in a data column
 max_length = function(data){
-  max = 0
-  for (i in 1:length(data)){
-    if (!(is.na(data[i]))) {
-      if (floor(log10(data[i]))+1 > max){
-        max = floor(log10(data[i]))+1
-      }
-    }
-  }
+  max = max(floor(log10(data[!(is.na(data))]))+1)
+  # max = 0
+  # for (i in 1:length(data)){
+  #   if (!(is.na(data[i]))) {
+  #     if (floor(log10(data[i]))+1 > max){
+  #       max = floor(log10(data[i]))+1
+  #     }
+  #   }
+  # }
   return(max)
 }
 
 #drop rows with NaNs or empty strings in any numeric data column
 drop_nan_empty = function(df, col_conerned){
   output = data.frame(df)
+  #output = complete.cases(output[col_conerned[i]]) ?? not sure if this work
   for (i in 1:length(col_conerned)){
     output = output[!(is.na(output[[col_conerned[i]]]) | output[[col_conerned[i]]]==""), ]
   }
