@@ -123,7 +123,7 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), min_length=
   counts = counts_observed(digitdata, data_columns, omit_05, min_length, last_digit_test_included)
 
   #get p_value from binomial test
-  p_value = binom.test(counts, p)$p.value
+  p_value = binom.test(counts, p = p)$p.value #has to specify p = p !!!!!!
 
   #a dataframe of p values to return
   p_values = data.frame(all=p_value)

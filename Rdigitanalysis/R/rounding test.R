@@ -43,7 +43,7 @@ compute_percent_rounded_digits = function(data, omit_05) {
 }
 
 ################main function############
-#performs terminal digit pair binomial test vs uniform distribution (Benford’s Law)
+#performs terminal digit pair binomial test vs uniform distribution (Benford's Law)
 #digitdata is the class object;
 #data_columns are the names of numerical columns of data to be analyzed (defaulted as 'all' to the entire number table)
 #omit_05 means if we count which of trailing 0 or 5 as rounded

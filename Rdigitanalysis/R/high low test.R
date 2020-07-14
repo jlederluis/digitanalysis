@@ -6,118 +6,124 @@
 ############################################################
 
 
-#############prelim############
-#clear workspace
-rm(list = ls())
-#free up R memory
-gc()
-#force numerical representation rather than scientific
-#options(scipen = 999)
-options(scipen = 1)
-options(digits = 2)
-##############################
+############################################################
+#helper function
+############################################################
 
+#compute the high low digit binomial test by digit place for desired data columns
+#a helper function for the main function
+high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical, skip_first_figit){
+  #intialize a table for storing total high and low digits counts for each digit place
+  high_and_low_total_counts = data.frame(matrix(0, nrow = 2, ncol = digitdata@max))
+  #name col and row for debug purpose
+  rownames(high_and_low_total_counts) = c('high digit counts', 'low digits counts')
+  colnames(high_and_low_total_counts) = digitdata@left_aligned_column_names[1:length(high_and_low_total_counts)]
 
-#load data input functions
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data input functions.R')
+  #count high low digits in each column
+  for (name in colnames(data)){
+    for (i in 1:length(digitdata@left_aligned_column_names)){
+      if (grepl(digitdata@left_aligned_column_names[i], name, fixed = TRUE)){
+        #i is the digit place of this column
 
-#load functions for computing Benford table
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\Benford table functions.R')
+        #get frequency of each digit in each digit place
+        counts_obs = table(data[name])
+        if (!(is.na(omit_05[1]))){
+          counts_obs = counts_obs[-omit_05]
+        }
 
-#load helper functions for all digit test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all digit test helper functions.R')
+        #get total occurances of high digit places
+        high_counts_obs = sum(counts_obs[as.character(high)], na.rm = TRUE)
+        low_counts_obs = sum(counts_obs) - high_counts_obs
 
-#load chi square test GOF functions
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\chi square goodness of fit functions.R')
+        #update counts table
+        high_and_low_total_counts[i] = high_and_low_total_counts[i] + c(high_counts_obs, low_counts_obs)
+      }
+    }
+  }
 
-#load main function for all digit test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all digit test main function.R')
-
-#load all functions for digit pair test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\digit pair test.R')
-
-#load all functions for rounding test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\rounding test.R')
-
-#load all functions for repeat test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\repeat test.R')
-
-
-#test data input and benford table functions
-#load data input functions
-data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
-fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
-
-DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-
-contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-contingency_table
-
-high = c('6', '7', '8', '9')
-omit_05 = c(0, 5)
-
-
-
-
-# #overthinked
-# #+1 since digit start at 0 but index start at 1
-# high_digit_counts = counts_obs[intersect(names(counts_obs), high)] #the high digits counts for each present in this digit place
-# high_digits_indexes = as.integer(intersect(names(counts_obs), high)) + 1 #the high digits indexes in contingency table
-#
-# low_digit_counts = counts_obs[setdiff(names(counts_obs), high)] #the low digits counts for each present in this digit place
-# low_digits_indexes = as.integer(setdiff(names(counts_obs), high)) + 1 #the low digits indexes in contingency table
-# high_digits_indexes
-# low_digits_indexes
-#
-# high_digit_counts
-# low_digit_counts
-#
-#
-#
-# counts_obs
-# sum(counts_obs)
-#
-# high_freq_theoratical = sum(contingency_table[[1]][high_digits_indexes]*high_digit_counts)
-#
-#
-# low_freq_theoratical = sum(contingency_table[[1]][low_digits_indexes]*low_digit_counts)
-#
-# sum(contingency_table[[1]][as.integer(names(counts_obs))+1]*counts_obs)
-# sum(contingency_table[[1]][-(as.integer(names(counts_obs))+1)])
-
-
-#get table for the theoratical high to low freqency in each digit place
-#if omit_05 in high, then should throw error...no way should it be omiited and counted as highh digit
-#drop X and Digits column of contingency table
-high_freq_theoratical = contingency_table[!(colnames(contingency_table) %in% c('X', 'Digits'))]
-
-
-#get the frequency for high digits in each digit place
-high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.integer(high)+1,]))) #+1 since digit start at 0 but index start at 1
-rownames(high_freq_theoratical) = 'high digits freq'
-
-high_freq_theoratical[1]
-
-
-
-data = single_column_aligned(DigitData, "ALEXP", 'left')
-#i is the ith digit place always since it is from the left
-for (i in 1:length(data)){
-
-  #get frequency of each digit in each digit place
-  counts_obs = table(data[i])
-  counts_obs = counts_obs[-omit_05]
-
-  #get freqency of high and low digit places
-  high_counts_obs = sum(counts_obs[high])
-  total_counts_obs = sum(counts_obs)
+  #intilaize p value table
+  p_values = data.frame(matrix(nrow = 1, ncol = 0))
 
   #get p_value from binomial test
-  p_value = binom.test(high_counts_obs, total_counts_obs, high_freq_theoratical[i])$p.value
-
-  print(p_value)
-
+  for (i in 1:length(high_and_low_total_counts)){
+    p_value = binom.test(high_and_low_total_counts[[i]], p = high_freq_theoratical[i])$p.value
+    p_values[[colnames(high_and_low_total_counts)[i]]] = p_value
+  }
+  #drop 1st digit place if this is true
+  if (skip_first_figit){
+    p_values = p_values[-1]
+  }
+  rownames(p_values) = 'p value'
+  return(p_values)
 }
 
-high_low_counts_obs[1,]
-as.array(high_low_counts_obs)
+
+################main function############
+#performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test
+#digitdata is the class object;
+#contingency_table is the Benford table
+#data_columns are the names of numerical columns of data to be analyzed (defaulted as 'all' to the entire number table)
+#high is an array of digits in integer (in fact both char and int should be fine) that specifies the digits that are classified as high digits, defaulted to c(6,7,8,9)
+#omit_05 means if we count which of trailing 0 or 5 as rounded
+#omit_05 has three options: omit both 0 and 5->c(0,5)/c(5,0); omit only 0->0 or c(0); and omit neither->NA (when no rounding test is performed)
+#if analysis by groups is desired, break_out should specify the deisred category to break upon--> we perform a 'year' effect anaylsis instead of a general high low digit test
+
+
+####
+#need ADD plot parameter
+####
+high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,8,9), omit_05=c(0,5), skip_first_figit=TRUE, last_digit_test_included=FALSE, break_out=NA){
+
+  #checkings
+  if (length(omit_05) == 1){
+    ###check omit only 5, which is not allowed
+    if (!(is.na(omit_05)) && (omit_05 == 5)){
+      stop('cannot omit only 5 without also omitting 0 first')
+    }
+  }
+
+  #get table for the theoratical high to low freqency in each digit place
+  #if omit_05 in high, then should throw error...no way should it be omiited and counted as highh digit
+  #drop X and Digits column of contingency table
+  high_freq_theoratical = contingency_table[!(colnames(contingency_table) %in% c('X', 'Digits'))]
+
+  #get the frequency for high digits in each digit place
+  high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.integer(high)+1,]))) #+1 since digit start at 0 but index start at 1
+  rownames(high_freq_theoratical) = 'high digits freq'
+
+  #get the data columns desired
+  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_figit=skip_first_figit, last_digit_test_included=last_digit_test_included, align_direction='left')
+  data = lst$digits_table
+  digitdata = lst$digitdata
+
+  #perform a standard high low test
+  if (is.na(break_out)){
+    p_values = high_low_by_digit_place(digitdata, data, high, high_freq_theoratical, skip_first_figit)
+    return(p_values)
+  }
+
+  #perform a 'year effect' high low test break by category
+  else {
+    #initlaize a list to be returned
+    output = list()
+
+    #get indexes for each category
+    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=break_out) #this is a list since unequal number of entries for each category
+
+    #break by category for all
+    for (category_name in names(indexes_of_categories)){
+      indexes_of_category = indexes_of_categories[[category_name]]
+      data_of_category = data.frame(data[indexes_of_category, ])
+      #when do data.frame.... col names changes from A BC to A.BC
+      colnames(data_of_category) = gsub("."," ",colnames(data_of_category), fixed=TRUE)
+
+      #get p_values for this category ('year')
+      p_values = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, skip_first_figit)
+
+      #update returning list
+      output[[category_name]] = p_values
+    }
+    return(output)
+  }
+}
+

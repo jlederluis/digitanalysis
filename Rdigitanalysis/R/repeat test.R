@@ -103,7 +103,7 @@ repeat_test = function(digitdata, duplicate_matching_cols, remove_duplicate=TRUE
       #get indexes for each category
       indexes_of_categories = break_by_category(data, break_out) #this is a list since unequal number of entries for each category
 
-      #breeak by category for all
+      #break by category for all
       for (category_name in names(indexes_of_categories)){
         indexes_of_category = indexes_of_categories[[category_name]]
         data_of_category = data.frame(data[indexes_of_category, ])
