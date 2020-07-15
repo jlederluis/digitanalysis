@@ -86,7 +86,6 @@ align_digits = function(indata, outdata, naming_method, align_direction='left', 
         outdata[[paste(colname, naming_method[k])]][j] = as.integer(chars[k])
       }
     }
-
   }
   return(outdata)
 }
@@ -147,14 +146,19 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
     col_name = col_analyzing[i]
 
     #update by 'align_left' or 'align_right'
-    aligned_data = align_digits(indata=as.numeric(gsub(0, NA, cleaned_data[[col_name]])), outdata=aligned_data, naming_method=naming_method, align_direction=align_direction, colname=col_name)
-    #we replace 0 by NA for digit analysis
+
+    indata = cleaned_data[[col_name]]
+    #replace 0 by NA for digit analysis
+    indata[indata == 0] = NA
+
+    aligned_data = align_digits(indata=indata, outdata=aligned_data, naming_method=naming_method, align_direction=align_direction, colname=col_name) ###NAs introduced by coercion
+
   }
 
   return(aligned_data)
 }
 
-
+#make_aligned_data(DigitData@cleaned, 'ALEXP', DigitData@right_aligned_column_names, align_direction='right')
 
 ############################################################
 #Data input main function
