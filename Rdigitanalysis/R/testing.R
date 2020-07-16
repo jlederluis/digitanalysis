@@ -44,6 +44,9 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load all functions for high low test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\high low test.R')
 
+#load all functions for padding test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\padding test.R')
+
 
 #############################################################
 #############try it with given data##########################
@@ -119,4 +122,22 @@ last_digit_test_included = FALSE
 break_out = 'YEAR'
 
 high_low_test(DigitData, contingency_table, data_columns, high, omit_05, skip_first_figit, last_digit_test_included, break_out)
+
+
+
+#test padding test
+data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
+max_length = 7
+num_digits = 5
+N = 10 #120k datasets took 15 mins
+omit_05 = c(0,5)
+break_out = 'DIST'
+
+a=padding_test(DigitData, contingency_table, data_columns, max_length, num_digits, N, omit_05, break_out)
+a
+a$diff_in_mean
+a$p_values
+a$expected_mean
+a$observed_mean
+
 

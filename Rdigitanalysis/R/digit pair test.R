@@ -132,7 +132,7 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), min_length=
     #get indexes for each category
     indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
 
-    #breeak by category for all
+    #break by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
       counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, last_digit_test_included, indexes_of_category)

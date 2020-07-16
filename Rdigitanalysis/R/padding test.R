@@ -5,51 +5,15 @@
 #Summer 2020
 ############################################################
 
+
+
 ############################################################
-#helper function
+#helper functions
 ############################################################
 
 
-#############prelim############
-#clear workspace
-rm(list = ls())
-#free up R memory
-gc()
-#force numerical representation rather than scientific
-#options(scipen = 999)
-options(scipen = 1)
-options(digits = 2)
-##############################
 
-#load data input functions
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data input functions.R')
-
-#load functions for computing Benford table
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\Benford table functions.R')
-
-#load helper functions for all digit test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all digit test helper functions.R')
-
-#load chi square test GOF functions
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\chi square goodness of fit functions.R')
-
-#load main function for all digit test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all digit test main function.R')
-
-#load all functions for digit pair test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\digit pair test.R')
-
-#load all functions for rounding test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\rounding test.R')
-
-#load all functions for repeat test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\repeat test.R')
-
-#load all functions for high low test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\high low test.R')
-
-
-
+##################!!!!!!!!!!!!!!!!might also use else where
 #get Benford mean in each digit place after specifying omitting 0 and 5 or not
 get_benford_mean = function(contingency_table, omit_05){
   #create a table for the mean of benford distribution in each digit place
@@ -65,15 +29,21 @@ get_benford_mean = function(contingency_table, omit_05){
   }
   #/ sum(contingency_table[name] to normailize if p does not sum to 1
   for (name in colnames(Benford_mean)){
-    Benford_mean[name] = sum(contingency_table[name] * contingency_table['Digits'] / sum(contingency_table[name]))
+    #renormialize
+    contingency_table[name] = contingency_table[name] / sum(contingency_table[name])
+    #get mean
+    Benford_mean[name] = sum(contingency_table[name] * contingency_table['Digits'])
   }
-  return(Benford_mean)
+  return(list(Benford_mean=Benford_mean, contingency_table=contingency_table))
 }
 
-
+##################!!!!!!!!!!!!!!!!might also use else where
 #return the merged rows of all data columns aligned-right digits
-combine_by_columns = function(digitdata, data_columns){
+combine_by_columns = function(digitdata, data_columns, indexes=NA){
   data = single_column_aligned(digitdata, desired_col=data_columns[1], align_diretion='right')
+  if (!(is.na(indexes[1]))){
+    data = data[indexes, ]
+  }
   colnames(data) = rev(digitdata@right_aligned_column_names[1:length(data)])
 
   if (length(data_columns) > 1){
@@ -89,8 +59,6 @@ combine_by_columns = function(digitdata, data_columns){
 
   return(data)
 }
-
-
 
 get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digits){
   if (max_length < num_digits){
@@ -141,12 +109,14 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
     expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
   }
 
-  return(list(expected_mean=expected_mean, final_data=final_data))
+  return(list(expected_mean=expected_mean, final_data=final_data, freq=freq, freq_table=freq_table))
 }
-
 
 #get the observed mean from data
 get_observed_mean = function(data, num_digits){
+  if (num_digits > length(data)){
+    stop('the number of digits desired to evaluate is greater than the max length number in the dataset')
+  }
   #the digit places from right we are interested in
   data = data[(length(data)-num_digits+1):length(data)]
   if (!(is.na(omit_05[1]))){
@@ -158,12 +128,83 @@ get_observed_mean = function(data, num_digits){
       data[data == 5] = NA
     }
   }
-  observed_mean = colMeans(data, na.rm = TRUE)
+  observed_mean = data.frame(t(colMeans(data, na.rm = TRUE))) #do t() such that it is a dataframe
+  colnames(observed_mean) = colnames(data)#change col names cuz it is weird due to data.frame()
   return(observed_mean)
 }
 
-#main fucntion
-padding_test = function(digitdata, contingency_table, data_columns, max_length, num_digits, omit_05){
+
+#Stimulate N Benford distribution datasets with matchig digit places as the observed
+#return the mean of each of the N stimulated dataset
+Benford_stimulation = function(N, freq_table, expected_mean, contingency_table){
+
+  #sample each digit place from right according to frequency table of our observed dataset
+  #initialize the returned table
+  stimulated_mean = data.frame(matrix(nrow = 0, ncol = length(expected_mean)))
+  colnames(stimulated_mean) = colnames(expected_mean)
+
+  #stimulate n datasets
+  for (n in 1:N){
+    #initialize the row for this stimulated set
+    stimulated_mean[paste('sample', as.character(n)), ] = NA
+    for (i in 1:length(freq_table)){
+      #the frequency of each left-aligned digits in each right-aligned digit
+      freq_of_digit_position = freq_table[[i]]
+
+      #stimulate data
+      stimulated_numbers = c()
+      for (j in 1:length(freq_of_digit_position)){
+        #returns logical(0) if sample 0 number
+        size = freq_of_digit_position[j]
+        if (size != 0){
+          #sample according to the digit place probability and with the size
+          stimulated_numbers = c(stimulated_numbers, sample(contingency_table[['Digits']], size = size, replace = TRUE, prob = contingency_table[[paste('Digit Place', as.character(j))]]))
+        }
+      }
+      stimulated_mean[paste('sample', as.character(n)), ][i] = mean(stimulated_numbers)
+    }
+  }
+  return(stimulated_mean)
+}
+
+
+#get p_value for comparing with MC stimulated datasets
+get_p_value = function(observed_mean, stimulated_mean){
+  p_values = data.frame(matrix(nrow=1, ncol=length(observed_mean)))
+  colnames(p_values) = colnames(observed_mean)
+
+  for (i in 1:length(observed_mean)){
+    #combine observed and stimulated and find rank of observed
+    #first row is observation --> first index
+    p_values[i] = rank(-rbind(observed_mean, stimulated_mean)[[i]])[1] / (length(stimulated_mean[,i]) + 1) ####not sure N+1?
+  }
+  return(p_values)
+}
+
+
+################main function############
+#performs padding test vs stimulations of Benford conforming datasets via percentile
+#digitdata is the class object;
+#contingency_table is the Benford table
+#data_columns are the names of numerical columns of data to be analyzed (defaulted as 'all' to the entire number table)
+#max length is the length of the longest numbers considered, default to 8, which is the length of the pre-computed Benford table
+#num_digits is the total number of digits aligned from the right to be analyzed, defaulted to 5, so ananlying 1s to 10ks digit place
+#N is the number of Benford conforming datasets to stimulate
+#omit_05 means if we count which of trailing 0 or 5 as rounded
+#omit_05 has three options: omit both 0 and 5->c(0,5)/c(5,0); omit only 0->0 or c(0); and omit neither->NA (when no rounding test is performed)
+#if analysis by groups is desired, break_out should specify the deisred category to break upon
+
+#return a list object, where
+#expected_mean is the expected mean by Benford's Law
+#observed_mean is the mean of the input data
+#diff_in_mean is the mean difference betweeen observed_mean and expected_mean
+#p_values is the percentile of the observed dataset among all stimulated datasets, in decreasing order
+
+
+####
+#need ADD plot parameter
+####
+padding_test = function(digitdata, contingency_table, data_columns, max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -174,122 +215,69 @@ padding_test = function(digitdata, contingency_table, data_columns, max_length, 
   }
 
   #get benford mean in each digit place
-  Benford_mean = get_benford_mean(contingency_table, omit_05)
+  Benford = get_benford_mean(contingency_table, omit_05)
+  Benford_mean = Benford$Benford_mean
+  contingency_table = Benford$contingency_table
+
+  ######################################################
   #get combined by rows data for all data columns needed
-  combined_data = combine_by_columns(digitdata, data_columns)
+  combined_data = combine_by_columns(digitdata, data_columns, indexes=NA)
 
   #get expected and observed mean in each digit position
   lst = get_expected_mean(digitdata, combined_data, Benford_mean, max_length, num_digits)
+  freq_table=lst$freq_table
+
   expected_mean = lst$expected_mean
+  rownames(expected_mean) = 'all'
+
   observed_mean = get_observed_mean(lst$final_data, num_digits)
+  rownames(observed_mean) = 'all'
 
   #get the difference in expected and observed mean in each digit position
   diff_in_mean = observed_mean - expected_mean
-  return(diff_in_mean)
+  rownames(diff_in_mean) = 'all'
 
-  #need to do MC....
+  #Monte Carlo Stimulation of N datasets and get mean
+  stimulated_mean = Benford_stimulation(N, freq_table, expected_mean, contingency_table)
+
+  #get p values by comparing with stimulation
+  p_values = get_p_value(observed_mean, stimulated_mean)
+  rownames(p_values) = 'all'
+  ######################################################
+
+  #break out by category
+  if (!(is.na(break_out))){
+    #get indexes for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
+
+    #break by category for all
+    for (category_name in names(indexes_of_categories)){
+      indexes_of_category = indexes_of_categories[[category_name]]
+
+
+      ######################################################
+      #get combined by rows data for all data columns needed
+      combined_data_of_category = combine_by_columns(digitdata, data_columns, indexes=indexes_of_category)
+
+      #get expected and observed mean in each digit position
+      lst = get_expected_mean(digitdata, combined_data_of_category, Benford_mean, max_length, num_digits)
+      freq_table=lst$freq_table
+
+      expected_mean[category_name, ] = lst$expected_mean
+
+      observed_mean[category_name, ] = get_observed_mean(lst$final_data, num_digits)
+
+      #get the difference in expected and observed mean in each digit position
+      diff_in_mean[category_name, ]  = observed_mean[category_name, ] - expected_mean[category_name, ]
+
+      #Monte Carlo Stimulation of N datasets and get mean
+      stimulated_mean = Benford_stimulation(N, freq_table, expected_mean[category_name, ], contingency_table)
+
+      #get p values by comparing with stimulation
+      p_values[category_name, ] = get_p_value(observed_mean[category_name, ], stimulated_mean)
+      ######################################################
+    }
+  }
+  return(list(diff_in_mean=diff_in_mean, p_values=p_values, expected_mean=expected_mean, observed_mean=observed_mean))
 }
-
-
-#############################################################
-#############try it with given data##########################
-#############################################################
-
-#test data input and benford table functions
-#load data input functions
-data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
-fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
-
-DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-
-contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-contingency_table
-
-omit_05=c(0,5)
-
-data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
-max_length = 7
-num_digits = 5
-
-
-padding_test(DigitData, contingency_table, data_columns, max_length, num_digits, omit_05)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Benford_mean = get_benford_mean(contingency_table, omit_05)
-Benford_mean
-
-
-combined_data = combine_by_columns(DigitData, data_columns)
-
-
-
-
-max_length = 7
-num_digits = 5
-
-
-lst = get_expected_mean(DigitData, combined_data, Benford_mean, max_length, num_digits)
-expected_mean = lst$expected_mean
-observed_mean = get_observed_mean(lst$final_data, num_digits)
-
-expected_mean
-observed_mean
-
-diff_in_mean = observed_mean - expected_mean
-diff_in_mean
-
-
-
-
-
-
-
-##get the observed mean now
-data_to_use = data[indexes_to_use, ]
-data_to_use = data_to_use[(length(data_to_use)-num_digits+1):length(data_to_use)]
-data_to_use[data_to_use == 0] = NA
-data_to_use[data_to_use == 5] = NA
-data_to_use
-observed_mean = colMeans(data_to_use, na.rm = TRUE)
-observed_mean
-
-
-diff_in_mean = observed_mean - expected_mean
-diff_in_mean
-
-data = single_column_aligned(DigitData, desired_col='ALEXP', align_diretion='right')
-colnames(data) = rev(DigitData@right_aligned_column_names[1:length(data)])
-data2 = single_column_aligned(DigitData, desired_col='BENTOT', align_diretion='right')
-colnames(data2) = rev(DigitData@right_aligned_column_names[1:length(data2)])
-a= dplyr::bind_rows(data2, data)
-a[rev(DigitData@right_aligned_column_names[1:length(a)])]
-
-
-
-
-
 
