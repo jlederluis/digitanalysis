@@ -281,8 +281,15 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, lo
 
   #####more checkings....
   if (skip_first_figit){
-    contingency_table = contingency_table[ , !(colnames(contingency_table) %in% c('Digit Place 1'))]
+    contingency_table = contingency_table[!(colnames(contingency_table) %in% c('Digit Place 1'))]
   }
+
+  #renormalize each column to sum to 1
+  for (name in colnames(contingency_table)){
+    #renormialize
+    contingency_table[name] = contingency_table[name] / sum(contingency_table[name])
+  }
+
   return(contingency_table)
 }
 

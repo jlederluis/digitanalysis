@@ -12,7 +12,7 @@
 
 #compute the high low digit binomial test by digit place for desired data columns
 #a helper function for the main function
-high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical, skip_first_figit){
+high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical, skip_first_figit, omit_05){
   #intialize a table for storing total high and low digits counts for each digit place
   high_and_low_total_counts = data.frame(matrix(0, nrow = 2, ncol = digitdata@max))
   #name col and row for debug purpose
@@ -86,10 +86,23 @@ high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,
   #if omit_05 in high, then should throw error...no way should it be omiited and counted as highh digit
   #drop X and Digits column of contingency table
   high_freq_theoratical = contingency_table[!(colnames(contingency_table) %in% c('X', 'Digits'))]
+  rownames(high_freq_theoratical) = 0:9
+
+  #drop 0 and/or 5
+  if (!(is.na(omit_05[1]))){
+    high_freq_theoratical = high_freq_theoratical[-(omit_05+1), ]  ### +1 since omit_05 is digits begins with 0, while indexes begins with 1
+  }
+
+  ###normalize the columns after (if) dropping 0 and/or 5
+  for (name in colnames(high_freq_theoratical)){
+    #renormialize
+    high_freq_theoratical[name] = high_freq_theoratical[name] / sum(high_freq_theoratical[name])
+  }
 
   #get the frequency for high digits in each digit place
-  high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.integer(high)+1,]))) #+1 since digit start at 0 but index start at 1
+  high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.character(high), ])))
   rownames(high_freq_theoratical) = 'high digits freq'
+
 
   #get the data columns desired
   lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_figit=skip_first_figit, last_digit_test_included=last_digit_test_included, align_direction='left')
@@ -98,7 +111,7 @@ high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,
 
   #perform a standard high low test
   if (is.na(break_out)){
-    p_values = high_low_by_digit_place(digitdata, data, high, high_freq_theoratical, skip_first_figit)
+    p_values = high_low_by_digit_place(digitdata, data, high, high_freq_theoratical, skip_first_figit, omit_05)
     return(p_values)
   }
 
@@ -118,7 +131,7 @@ high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,
       colnames(data_of_category) = gsub("."," ",colnames(data_of_category), fixed=TRUE)
 
       #get p_values for this category ('year')
-      p_values = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, skip_first_figit)
+      p_values = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, skip_first_figit, omit_05)
 
       #update returning list
       output[[category_name]] = p_values
