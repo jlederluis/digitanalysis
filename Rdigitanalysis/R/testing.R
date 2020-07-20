@@ -69,18 +69,17 @@ contingency_table
 #test all digits test
 data_columns = 'ALEXP'
 digit_places = 'all'# c(1,2,3)
-look_or_omit = 'look'
 skip_first_figit=TRUE
 omit_05 = c(0,5)
 break_out='DIST'
 # distribution='Benford'
 # plot=TRUE
-last_digit_test_included=FALSE
+skip_last_digit=FALSE
 unpacking_rounding_column=NA#'ALEXP'
 
-result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places, look_or_omit = look_or_omit,
-                skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
-                last_digit_test_included=FALSE, unpacking_rounding_column=unpacking_rounding_column)
+result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
+                         skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
+                         skip_last_digit=FALSE, unpacking_rounding_column=unpacking_rounding_column)
 
 
 
@@ -94,12 +93,12 @@ rounding_test(DigitData, data_columns, omit_05, break_out)
 
 #test digit pair test
 min_length = 3
-last_digit_test_included = TRUE
+skip_last_digit = TRUE
 omit_05 = NA
 data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
 break_out = 'DIST'
 
-digit_pairs_test(DigitData, data_columns, omit_05, min_length, last_digit_test_included, break_out)
+digit_pairs_test(DigitData, data_columns, omit_05, min_length, skip_last_digit, break_out)
 
 
 
@@ -122,10 +121,10 @@ data_columns = c("ALEXP", "BENTOT")
 high = c(6,7,8,9)
 omit_05 = c(0,5)
 skip_first_figit = TRUE
-last_digit_test_included = FALSE
+skip_last_digit = FALSE
 break_out = 'YEAR'
 
-high_low_test(DigitData, contingency_table, data_columns, high, omit_05, skip_first_figit, last_digit_test_included, break_out)
+high_low_test(DigitData, contingency_table, data_columns, high, omit_05, skip_first_figit, skip_last_digit, break_out)
 
 
 

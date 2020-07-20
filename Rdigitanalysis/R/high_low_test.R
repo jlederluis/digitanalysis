@@ -72,7 +72,7 @@ high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical,
 ####
 #need ADD plot parameter
 ####
-high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,8,9), omit_05=c(0,5), skip_first_figit=TRUE, last_digit_test_included=FALSE, break_out=NA){
+high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,8,9), omit_05=c(0,5), skip_first_figit=TRUE, skip_last_digit=FALSE, break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -105,7 +105,7 @@ high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,
 
 
   #get the data columns desired
-  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_figit=skip_first_figit, last_digit_test_included=last_digit_test_included, align_direction='left')
+  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_figit=skip_first_figit, skip_last_digit=skip_last_digit, align_direction='left')
   data = lst$digits_table
   digitdata = lst$digitdata
 
