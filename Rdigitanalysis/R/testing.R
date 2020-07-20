@@ -1,5 +1,5 @@
 ############################################################
-#Tesiting; run the fucntions
+#Testing; run the functions
 #Wenjun Chang
 #Summer 2020
 ############################################################
@@ -47,6 +47,9 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load all functions for padding test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\padding_test.R')
 
+#load all plotting functions
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\plotting_functions.R')
+
 
 #############################################################
 #############try it with given data##########################
@@ -64,15 +67,16 @@ contingency_table
 
 
 #test all digits test
-digit_places = c(1)#c(1,2,3)
+data_columns = 'ALEXP'
+digit_places = 'all'# c(1,2,3)
 look_or_omit = 'look'
-skip_first_figit=FALSE
+skip_first_figit=TRUE
 omit_05 = c(0,5)
 break_out='DIST'
 # distribution='Benford'
 # plot=TRUE
 last_digit_test_included=FALSE
-unpacking_rounding_column='ALEXP'
+unpacking_rounding_column=NA#'ALEXP'
 
 result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places, look_or_omit = look_or_omit,
                 skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
@@ -104,8 +108,8 @@ duplicate_matching_cols = c('ALEXP', 'DIST', 'BENTOT')
 remove_duplicate = TRUE
 break_out = 'DIST'
 
-sector_column = NA#'SECTOR'
-sector_grouping = NA#list(Sector1=c("MICRO", "TRN"), Sector2=c("CW" , "GE"), Sector3=c("TRAVEL", "VEHICLES"))
+sector_column = 'SECTOR'
+sector_grouping = list(Sector1=c("MICRO", "TRN"), Sector2=c("CW" , "GE"), Sector3=c("TRAVEL", "VEHICLES"))
 # failure_factor = 3
 
 sector_grouping
@@ -135,9 +139,30 @@ break_out = 'DIST'
 
 a=padding_test(DigitData, contingency_table, data_columns, max_length, num_digits, N, omit_05, break_out)
 a
-a$diff_in_mean
+data.frame(t(a$diff_in_mean))
 a$p_values
 a$expected_mean
 a$observed_mean
+
+
+#test plot
+data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
+max_length = 7
+num_digits = 5
+N = 10
+omit_05 = c(0,5)
+
+test=padding_test(DigitData, contingency_table, data_columns, max_length, num_digits, N, omit_05, break_out=NA)$diff_in_mean
+s=hist_2D(test, hline=mean(as.matrix(test)))
+s
+
+#2d with variables test
+test2=padding_test(DigitData, contingency_table, data_columns, max_length, num_digits, N, omit_05, break_out="DIST")$diff_in_mean[1:3, ]
+a=hist_2D_variables(test2)
+a
+
+#test multiple plots
+plots = list(a, a, a, a)
+plot_multiple_hist2d(plots)
 
 

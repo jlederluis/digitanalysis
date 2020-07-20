@@ -170,7 +170,8 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
 make_class = function(filepath, col_analyzing, delim=','){
   #data format: row is observation; column is category; must be csv!!!
   #raw input data->'raw' of the class
-  raw_data = read.csv(filepath, sep=delim)
+  raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
+  raw_data = raw_data[colSums(!is.na(raw_data)) > 0]
 
   ####################################
   ############important###############

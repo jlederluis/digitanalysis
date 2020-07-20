@@ -23,6 +23,7 @@ get_df = function(table, standard=FALSE){
 }
 
 #chi square test for goodness of fit
+#freq denotes whether the expected table is in decimal
 chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
   if (freq){
     #turn freq into numbers
@@ -33,12 +34,12 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
 
   #if first digit is used, turn digit 0 freq to 1 for both tables,
   #to avoid NaN in computing test stats
-  if (grepl('1', colnames(expected_table)[1], fixed=TRUE)){
-    observed_table[1,1] = 1
-    expected_table[1,1] = 1
-  }
+  # if (grepl('1', colnames(expected_table)[1], fixed=TRUE)){
+  #   observed_table[1,1] = 1
+  #   expected_table[1,1] = 1
+  # }
 
-  test_stats = sum((observed_table - expected_table)^2/expected_table)
+  test_stats = sum((observed_table - expected_table)^2/expected_table, na.rm = TRUE)
 
   df = get_df(expected_table)
 

@@ -7,7 +7,7 @@
 
 
 ############################################################################################################
-#the following funnctions help parse data into desirable data forms ready for analysis
+#the following functions help parse data into desirable data forms ready for analysis
 ############################################################################################################
 
 
@@ -163,11 +163,13 @@ parse_digit_places = function(digitdata, digits_table, digit_places, look_or_omi
 
 
   #drop by scanning each column name
-  for (position_name in digit_places_names){
-    for (i in 1:length(colnames(digits_table))){
-      if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE)){
-        #drop this column since it is the digit place unwanted
-        usable_data = usable_data[!(colnames(usable_data) %in% c(colnames(digits_table[i])))]
+  if (!(is.na(digit_places_names[1]))){
+    for (position_name in digit_places_names){
+      for (i in 1:length(colnames(digits_table))){
+        if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE)){
+          #drop this column since it is the digit place unwanted
+          usable_data = usable_data[!(colnames(usable_data) %in% c(colnames(digits_table[i])))]
+        }
       }
     }
   }
@@ -176,7 +178,7 @@ parse_digit_places = function(digitdata, digits_table, digit_places, look_or_omi
 
 
 #parse usable_data to  obtain observation table s.t. we have exclusively the desired digits and digit places
-obtain_observation = function(digitdata, usable_data, look_or_omit, skip_first_figit, last_digit_test_included, omit_05){
+obtain_observation = function(digitdata, usable_data, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05){
   #create a table for collecting observations for n=max digit places
   observation_table = NA
   if (last_digit_test_included){

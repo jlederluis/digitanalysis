@@ -68,6 +68,12 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
     }
   }
 
+  if (digit_places == 'all'){
+    if (look_or_omit == 'omit'){
+      stop('performing all digit tests on NO data!')
+    }
+  }
+
   #######################################################################
   #parse the data
   #######################################################################
@@ -80,14 +86,20 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   digits_table = lst$digits_table
 
   #get only the wanted digit places
+  if (digit_places == 'all'){
+    digit_places = seq(1, digitdata@max)
+    if (skip_first_figit){
+      digit_places = seq(2, digitdata@max)
+    }
+  }
+
   usable_data = parse_digit_places(digitdata, digits_table, digit_places, look_or_omit)
 
   #parse only needed parts of contingency table
   contingency_table = parse_contigency_table(digitdata, contingency_table, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
 
   #get observation table from usable data
-  observation_table = obtain_observation(digitdata, usable_data, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-
+  observation_table = obtain_observation(digitdata, usable_data, digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
 
   print("contingency_table")
   print(contingency_table)
@@ -99,11 +111,14 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   #do chi square test
   #######################################################################
 
-  df = get_df(contingency_table)
+  df = get_df(contingency_table)#, standard = TRUE) ##############
+
+  print('degrees of freedom')
+  print(df)
 
   #normal all digit test
   if (is.na(unpacking_rounding_column)){
-    p_values = data.frame(all=chi_square_gof(observation_table, contingency_table))
+    p_values = data.frame(all=chi_square_gof(observation_table, contingency_table, df))
 
     ##break on category if specified
     if (!(is.na(break_out))){
@@ -113,8 +128,8 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
       #breeak by category for all
       for (category_name in names(indexes_of_categories)){
         indexes_of_category = indexes_of_categories[[category_name]]
-        obs_in_category = obtain_observation(digitdata, usable_data[indexes_of_category, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-        p_values[category_name] = chi_square_gof(obs_in_category, contingency_table)
+        obs_in_category = obtain_observation(digitdata, usable_data[indexes_of_category, ], digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+        p_values[category_name] = chi_square_gof(obs_in_category, contingency_table, df)
       }
     }
     print('results')
@@ -138,13 +153,13 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
     p_values[unpacking_rounding_column] = NA
     #perform chi square test on rounded rows
     #[round_numbers_indexes, ]
-    obs_round = obtain_observation(digitdata, usable_data[round_numbers_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-    p_values[unpacking_rounding_column]['round', ] = chi_square_gof(obs_round, contingency_table)
+    obs_round = obtain_observation(digitdata, usable_data[round_numbers_indexes, ], digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+    p_values[unpacking_rounding_column]['round', ] = chi_square_gof(obs_round, contingency_table, df)
 
     #perform chi square test on unrounded rows
     #[-round_numbers_indexes, ]
-    obs_unround = obtain_observation(digitdata, usable_data[-round_numbers_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-    p_values[unpacking_rounding_column]['unround', ] = chi_square_gof(obs_unround, contingency_table)
+    obs_unround = obtain_observation(digitdata, usable_data[-round_numbers_indexes, ], digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+    p_values[unpacking_rounding_column]['unround', ] = chi_square_gof(obs_unround, contingency_table, df)
 
     ##############################
     ##break on category if specified, then also need to break by category on round and unround
@@ -157,12 +172,12 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
         p_values[category_name] = NA
 
         round_in_category_indexes = intersect(indexes_of_categories[[category_name]], round_numbers_indexes)
-        obs_round_in_category = obtain_observation(digitdata, usable_data[round_in_category_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-        p_values[category_name]['round', ] = chi_square_gof(obs_round_in_category, contingency_table)
+        obs_round_in_category = obtain_observation(digitdata, usable_data[round_in_category_indexes, ], digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+        p_values[category_name]['round', ] = chi_square_gof(obs_round_in_category, contingency_table, df)
 
         unround_in_category_indexes = setdiff(indexes_of_categories[[category_name]], round_in_category_indexes)
-        obs_unround_in_category = obtain_observation(digitdata, usable_data[unround_in_category_indexes, ], look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
-        p_values[category_name]['unround', ] = chi_square_gof(obs_unround_in_category, contingency_table)
+        obs_unround_in_category = obtain_observation(digitdata, usable_data[unround_in_category_indexes, ], digit_places, look_or_omit, skip_first_figit, last_digit_test_included, omit_05)
+        p_values[category_name]['unround', ] = chi_square_gof(obs_unround_in_category, contingency_table, df)
       }
     }
   }
