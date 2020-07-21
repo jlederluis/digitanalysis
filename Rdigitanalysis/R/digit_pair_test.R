@@ -13,16 +13,11 @@
 
 #find the frequency of terminal digit pairs occuring in the data being analzyed
 #return a vector of [# pairs, # not pairs]
-counts_observed = function(digitdata, data_columns, omit_05, min_length, skip_last_digit, indexes=NA){
+counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes=NA){
   occurances = data.frame(matrix(nrow = 0, ncol = 2))
 
   for (desired_col in data_columns){
     digit_pair_table = single_column_aligned(digitdata, desired_col, align_diretion='right')
-
-    #omit last digit if last digit test is included
-    if (skip_last_digit){
-      digit_pair_table = digit_pair_table[-ncol(digit_pair_table)]
-    }
 
     #for break out, we separate into categories by indexing
     if (!(is.na(indexes[1]))){ ####might have bug here...did [1] to get rid of warnings
@@ -90,14 +85,13 @@ freq_true = function(omit_05){
 #omit_05 has three options: omit both 0 and 5->c(0,5)/c(5,0); omit only 0->0 or c(0); and omit neither->NA (when no rounding test is performed)
 #if analysis by groups is desired, break_out should specify the deisred category to break upon
 #distribution can be 'Benford' or 'Uniform' or more ???
-#if skip_last_digit is true, will omit last digit before analysis, since we don't want tests to overlap
 
 
 ####
 #need ADD distribution and plot parameter
 ####
 
-digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, skip_last_digit=FALSE, break_out=NA){
+digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -123,7 +117,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
   data_columns = get_data_columns(digitdata, data_columns)
 
   #get the observed counts for number of terminal digit pairs
-  counts = counts_observed(digitdata, data_columns, omit_05, min_length, skip_last_digit)
+  counts = counts_observed(digitdata, data_columns, omit_05, min_length)
 
   #get p_value from binomial test
   p_value = binom.test(counts, p = p)$p.value #has to specify p = p !!!!!!
@@ -138,7 +132,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
     #break by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
-      counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, skip_last_digit, indexes_of_category)
+      counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, indexes_of_category)
       p_value_in_category = binom.test(counts_in_category, p)$p.value
 
       p_values[category_name] = p_value_in_category

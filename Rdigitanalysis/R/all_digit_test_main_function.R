@@ -81,16 +81,11 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
       digit_places = seq(2, digitdata@max)
     }
   }
-  print('1')
 
   usable_data = parse_digit_places(digitdata, digits_table, digit_places)
 
-  print('2')
-
   #parse only needed parts of contingency table
   contingency_table = parse_contigency_table(digitdata, contingency_table, digit_places, skip_first_figit, skip_last_digit, omit_05)
-
-  print('3')
 
   #get observation table from usable data
   observation_table = obtain_observation(digitdata, usable_data, digit_places, skip_first_figit, skip_last_digit, omit_05)
