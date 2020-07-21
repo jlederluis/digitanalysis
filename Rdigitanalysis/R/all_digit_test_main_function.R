@@ -29,6 +29,9 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
                            omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit=FALSE){
 
   #############some logical stuff to check and throw errors on###########
+  if (class(digitdata)[1] != 'DigitAnalysis'){
+    stop("digitdata must be an object in the class DigitAnalysis.Check function make_class()!")
+  }
   #this must be multiple digits test
   if ((digit_places != 'all') && (length(digit_places) > 1 )){
     #thus should not have -1 as part of the array

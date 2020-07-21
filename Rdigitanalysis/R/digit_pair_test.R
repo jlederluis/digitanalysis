@@ -108,8 +108,6 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
     stop('min length must be an integer >= 2')
   }
 
-
-
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution
   p = freq_true(omit_05)
 

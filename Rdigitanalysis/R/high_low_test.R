@@ -112,6 +112,7 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
   data = lst$digits_table
   digitdata = lst$digitdata
 
+  #############################################################
   #perform a standard high low test
   if (is.na(break_out)){
     p_values = high_low_by_digit_place(digitdata, data, high, high_freq_theoratical, skip_first_figit, omit_05)
