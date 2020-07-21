@@ -72,7 +72,7 @@ high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical,
 ####
 #need ADD plot parameter
 ####
-high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,8,9), omit_05=c(0,5), skip_first_figit=TRUE, skip_last_digit=FALSE, break_out=NA){
+high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_figit=TRUE, skip_last_digit=FALSE, break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -103,6 +103,9 @@ high_low_test = function(digitdata, contingency_table, data_columns, high=c(6,7,
   high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.character(high), ])))
   rownames(high_freq_theoratical) = 'high digits freq'
 
+
+  #handle the data_columns = 'all' situation
+  data_columns = get_data_columns(digitdata, data_columns)
 
   #get the data columns desired
   lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_figit=skip_first_figit, skip_last_digit=skip_last_digit, align_direction='left')

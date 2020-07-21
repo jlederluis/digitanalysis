@@ -10,6 +10,17 @@
 #the following functions help parse data into desirable data forms ready for analysis
 ############################################################################################################
 
+#handle the data_columns = 'all' situation
+get_data_columns = function(digitdata, data_columns){
+  #if 'all', use all data columns in the numeric columns specified by user
+  if (length(data_columns) == 1){
+    if (data_columns == 'all'){
+      data_columns = colnames(digitdata@numbers)
+    }
+  }
+  return(data_columns)
+}
+
 
 #gives the table for the left/right aligned table for a single numeric data column ############################
 #digitdata is an object of the class DigitAnalysis!                               ############################ Also user friendly, can let user use it to check their data
@@ -118,6 +129,10 @@ drop_first_digit_places = function(digitdata, single_column_digits, align_direct
 grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figit=TRUE, skip_last_digit=FALSE, align_direction='left'){
 
   digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
+
+  #handle the data_columns = 'all' situation
+  data_columns = get_data_columns(digitdata, data_columns)
+
   for (col_name in data_columns){
     single_column_digits = single_column_aligned(digitdata, col_name, align_direction)
 

@@ -97,7 +97,7 @@ freq_true = function(omit_05){
 #need ADD distribution and plot parameter
 ####
 
-digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), min_length=3, skip_last_digit=FALSE, break_out=NA){
+digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, skip_last_digit=FALSE, break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -118,6 +118,9 @@ digit_pairs_test = function(digitdata, data_columns, omit_05=c(0,5), min_length=
 
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution
   p = freq_true(omit_05)
+
+  #handle the data_columns = 'all' situation
+  data_columns = get_data_columns(digitdata, data_columns)
 
   #get the observed counts for number of terminal digit pairs
   counts = counts_observed(digitdata, data_columns, omit_05, min_length, skip_last_digit)

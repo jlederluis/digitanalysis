@@ -67,8 +67,8 @@ contingency_table
 
 
 #test all digits test
-data_columns = 'ALEXP'
-digit_places = 'all'# c(1,2,3)
+data_columns = 'all'#'ALEXP'
+digit_places =  'all'# c(1,2,3)
 skip_first_figit=TRUE
 omit_05 = c(0,5)
 break_out='DIST'
@@ -104,16 +104,15 @@ digit_pairs_test(DigitData, data_columns, omit_05, min_length, skip_last_digit, 
 
 #test repeat test
 duplicate_matching_cols = c('ALEXP', 'DIST', 'BENTOT')
-remove_duplicate = TRUE
 break_out = 'DIST'
-
+data_columns = 'all'
 sector_column = 'SECTOR'
 sector_grouping = list(Sector1=c("MICRO", "TRN"), Sector2=c("CW" , "GE"), Sector3=c("TRAVEL", "VEHICLES"))
 # failure_factor = 3
 
 sector_grouping
 
-repeat_test(DigitData, duplicate_matching_cols, remove_duplicate=remove_duplicate, break_out=break_out, sector_column=sector_column, sector_grouping=sector_grouping, failure_factor=3)
+repeat_test(DigitData, data_columns, duplicate_matching_cols, break_out=break_out, sector_column=sector_column, sector_grouping=sector_grouping, failure_factor=3)
 
 
 #test high low test

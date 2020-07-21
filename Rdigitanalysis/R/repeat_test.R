@@ -12,12 +12,7 @@
 
 
 #find the percent of repeats in the given data based on given definition of a repeat (what columns need to match)
-find_percent_repeats = function(data, duplicate_matching_cols, remove_duplicate){
-
-  if (remove_duplicate){
-    #remove duplicate entries
-    data = unique(data)
-  }
+find_percent_repeats = function(data, duplicate_matching_cols){
 
   #find repeats based on specified definition of a repeat
   columns_for_repeat_check = data[duplicate_matching_cols]
@@ -48,7 +43,7 @@ percent_repeats_by_sector = function(data, sector_column, sector_grouping){
 
     data_of_sector = data.frame(data[indexes_of_sector, ])
 
-    percent_repeats_in_sector = find_percent_repeats(data_of_sector, duplicate_matching_cols, remove_duplicate)
+    percent_repeats_in_sector = find_percent_repeats(data_of_sector, duplicate_matching_cols)
 
     sector_table[sector_name, ] = percent_repeats_in_sector
   }
@@ -60,7 +55,6 @@ percent_repeats_by_sector = function(data, sector_column, sector_grouping){
 #performs repeat test / or sector effect test
 #digitdata is the class object;
 #duplicate_matching_cols are the names of columns of data needs to be matched exactly in order to be defined as a repeat
-#remove_duplicate if TRUE will remove all duplicates that are exactly the same in every single column in the original data
 #if analysis by groups is desired, break_out should specify the deisred category to break upon
 #sector_column is the column for splitting the data into sectors for separate analysis
 ###if it is specified (not NA), then it will perform a sectorized test instead of a normal repeat test
@@ -73,7 +67,7 @@ percent_repeats_by_sector = function(data, sector_column, sector_grouping){
 
 #IF NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
 
-repeat_test = function(digitdata, duplicate_matching_cols, remove_duplicate=TRUE, break_out=NA, sector_column=NA, sector_grouping=NA, failure_factor=3){
+repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols, break_out=NA, sector_column=NA, sector_grouping=NA, failure_factor=3){
   if (!(is.na(sector_column))){
     if (is.na(match(sector_column, colnames(digitdata@cleaned)))){
       stop('specified column to analyze sector effect is not a column in the data')
@@ -87,13 +81,16 @@ repeat_test = function(digitdata, duplicate_matching_cols, remove_duplicate=TRUE
     }
   }
 
-  #cleaned data from original
-  data = digitdata@cleaned[1:30]#############################neeed change
+  #handle the data_columns = 'all' situation
+  data_columns = get_data_columns(digitdata, data_columns)
+
+  #the columns we want to analyze
+  data = digitdata@cleaned[data_columns]
 
   #perform repeat test
   if (is.na(sector_column)){
     #percent repeats for all
-    percent_repeats_all = find_percent_repeats(data, duplicate_matching_cols, remove_duplicate)
+    percent_repeats_all = find_percent_repeats(data, duplicate_matching_cols)
 
     #df to store stats
     percent_repeats_table = data.frame(all=percent_repeats_all)
@@ -107,7 +104,7 @@ repeat_test = function(digitdata, duplicate_matching_cols, remove_duplicate=TRUE
       for (category_name in names(indexes_of_categories)){
         indexes_of_category = indexes_of_categories[[category_name]]
         data_of_category = data.frame(data[indexes_of_category, ])
-        percent_repeats_in_category = find_percent_repeats(data_of_category, duplicate_matching_cols, remove_duplicate)
+        percent_repeats_in_category = find_percent_repeats(data_of_category, duplicate_matching_cols)
 
         percent_repeats_table[category_name] = percent_repeats_in_category #a value
       }

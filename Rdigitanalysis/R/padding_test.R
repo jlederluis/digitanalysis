@@ -204,7 +204,7 @@ get_p_value = function(observed_mean, stimulated_mean){
 ####
 #need ADD plot parameter
 ####
-padding_test = function(digitdata, contingency_table, data_columns, max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA){
+padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -220,6 +220,9 @@ padding_test = function(digitdata, contingency_table, data_columns, max_length=8
   contingency_table = Benford$contingency_table
 
   ######################################################
+  #handle the data_columns = 'all' situation
+  data_columns = get_data_columns(digitdata, data_columns)
+
   #get combined by rows data for all data columns needed
   combined_data = combine_by_columns(digitdata, data_columns, indexes=NA)
 

@@ -54,7 +54,7 @@ compute_percent_rounded_digits = function(data, omit_05) {
 ####
 #need ADD plot parameter
 ####
-rounding_test = function(digitdata, data_columns, omit_05=c(0,5), break_out=NA){
+rounding_test = function(digitdata, data_columns='all', omit_05=c(0,5), break_out=NA){
 
   #checkings
   if (length(omit_05) == 1){
@@ -66,6 +66,9 @@ rounding_test = function(digitdata, data_columns, omit_05=c(0,5), break_out=NA){
       stop('neither trailing 0 or 5 is counted as rounded digits')
     }
   }
+
+  #handle the data_columns = 'all' situation
+  data_columns = get_data_columns(digitdata, data_columns)
 
   #the columns we want to analyze
   data = digitdata@cleaned[data_columns]
