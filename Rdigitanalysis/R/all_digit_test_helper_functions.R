@@ -35,10 +35,10 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left') 
     original_df = NA
 
     if (align_diretion == 'left') {
-      original_df = DigitData@left_aligned
+      original_df = digitdata@left_aligned
     }
     else if (align_diretion == 'right') {
-      original_df = DigitData@right_aligned
+      original_df = digitdata@right_aligned
     }
     else {
       stop("align_direction must be either 'left' or 'right'")
@@ -54,7 +54,6 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left') 
         single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
       }
     }
-
     return(single_align_df)
   }
 }
@@ -133,6 +132,8 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figi
   #handle the data_columns = 'all' situation
   data_columns = get_data_columns(digitdata, data_columns)
 
+  digitdata@max = 0
+
   for (col_name in data_columns){
     single_column_digits = single_column_aligned(digitdata, col_name, align_direction)
 
@@ -154,7 +155,6 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figi
     if (skip_first_figit){
       single_column_digits = drop_first_digit_places(digitdata, single_column_digits, align_direction)
     }
-
     digits_table = cbind(digits_table, single_column_digits)
   }
   return(list('digits_table'=digits_table, 'digitdata'=digitdata))

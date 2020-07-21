@@ -32,6 +32,9 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load main function for all digit test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_main_function.R')
 
+#load functionS for unpack round numbers test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\unpack_round_numbers_test.R')
+
 #load all functions for digit pair test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\digit_pair_test.R')
 
@@ -75,12 +78,25 @@ break_out='DIST'
 # distribution='Benford'
 # plot=TRUE
 skip_last_digit=FALSE
-unpacking_rounding_column=NA#'ALEXP'
 
 result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
-                         skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
-                         skip_last_digit=FALSE, unpacking_rounding_column=unpacking_rounding_column)
+                         skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit)
 
+
+#test unpack round numbers test
+unpacking_rounding_column='ALEXP'
+data_columns = 'all'#'ALEXP'
+digit_places =  'all'# c(1,2,3)
+skip_first_figit=TRUE
+omit_05 = c(0,5)
+break_out='DIST'
+# distribution='Benford'
+# plot=TRUE
+skip_last_digit=FALSE
+
+unpack = unpack_round_numbers_test(digitdata = DigitData, contingency_table = contingency_table, unpacking_rounding_column = unpacking_rounding_column, data_columns = data_columns,
+                           digit_places = digit_places, skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
+                           skip_last_digit = skip_last_digit)
 
 
 #test rounding test
