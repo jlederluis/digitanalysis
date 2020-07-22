@@ -53,6 +53,9 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load all plotting functions
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\plotting_functions.R')
 
+#load input check function
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\input_check_function.R')
+
 
 #############################################################
 #############try it with given data##########################
@@ -63,31 +66,53 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 
+test = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL 2.csv', stringsAsFactors=FALSE)
+
+omitting_index = which(is.na(test$ALEXP.Values))
+
+
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
+omitting_index
+
+DigitData_match = DigitData
+DigitData_match@cleaned = DigitData_match@cleaned[-omitting_index, ]
+DigitData_match@numbers = DigitData_match@numbers[-omitting_index, ]
+DigitData_match@left_aligned = DigitData_match@left_aligned[-omitting_index, ]
+DigitData_match@right_aligned = DigitData_match@right_aligned[-omitting_index, ]
+
+
 
 contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-contingency_table
+
 
 
 #test all digits test
-data_columns = 'all'#'ALEXP'
+data_columns = 'ALEXP'
 digit_places =  'all'# c(1,2,3)
-skip_first_figit=TRUE
+skip_first_digit=TRUE
 omit_05 = c(0,5)
 break_out='DIST'
 # distribution='Benford'
 # plot=TRUE
 skip_last_digit=FALSE
 
+#match the data with Jetson's
+result = all_digits_test(digitdata = DigitData_match, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
+                         skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit)
+
+order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
+result[order]
+
+
 result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
-                         skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit)
+                         skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit)
 
 
 #test unpack round numbers test
 unpacking_rounding_column='ALEXP'
 data_columns = 'all'#'ALEXP'
 digit_places =  'all'# c(1,2,3)
-skip_first_figit=TRUE
+skip_first_digit=TRUE
 omit_05 = c(0,5)
 break_out='DIST'
 # distribution='Benford'
@@ -95,7 +120,7 @@ break_out='DIST'
 skip_last_digit=FALSE
 
 unpack = unpack_round_numbers_test(digitdata = DigitData, contingency_table = contingency_table, unpacking_rounding_column = unpacking_rounding_column, data_columns = data_columns,
-                           digit_places = digit_places, skip_first_figit = skip_first_figit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
+                           digit_places = digit_places, skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE,
                            skip_last_digit = skip_last_digit)
 
 
@@ -134,11 +159,11 @@ repeat_test(DigitData, data_columns, duplicate_matching_cols, break_out=break_ou
 data_columns = c("ALEXP", "BENTOT")
 high = c(6,7,8,9)
 omit_05 = c(0,5)
-skip_first_figit = TRUE
+skip_first_digit = TRUE
 skip_last_digit = FALSE
 break_out = 'YEAR'
 
-high_low_test(DigitData, contingency_table, data_columns, high, omit_05, skip_first_figit, skip_last_digit, break_out)
+high_low_test(DigitData, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, break_out)
 
 
 

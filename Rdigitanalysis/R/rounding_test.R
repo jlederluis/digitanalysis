@@ -56,16 +56,18 @@ compute_percent_rounded_digits = function(data, omit_05) {
 ####
 rounding_test = function(digitdata, data_columns='all', omit_05=c(0,5), break_out=NA){
 
-  #checkings
-  if (length(omit_05) == 1){
-    ###check omit only 5, which is not allowed
-    if (!(is.na(omit_05)) && (omit_05 == 5)){
-      stop('cannot omit only 5 without also omitting 0 first')
-    }
-    else if (is.na(omit_05)){
-      stop('neither trailing 0 or 5 is counted as rounded digits')
-    }
-  }
+  #check input
+  input_check(digitdata=digitdata, contingency_table=NA, data_columns=data_columns, omit_05=omit_05, break_out=break_out)
+
+  # if (length(omit_05) == 1){
+  #   ###check omit only 5, which is not allowed
+  #   if (!(is.na(omit_05)) && (omit_05 == 5)){
+  #     stop('cannot omit only 5 without also omitting 0 first')
+  #   }
+  #   else if (is.na(omit_05)){
+  #     stop('neither trailing 0 or 5 is counted as rounded digits')
+  #   }
+  # }
 
   #handle the data_columns = 'all' situation
   data_columns = get_data_columns(digitdata, data_columns)

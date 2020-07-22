@@ -206,13 +206,15 @@ get_p_value = function(observed_mean, stimulated_mean){
 ####
 padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA){
 
-  #checkings
-  if (length(omit_05) == 1){
-    ###check omit only 5, which is not allowed
-    if (!(is.na(omit_05)) && (omit_05 == 5)){
-      stop('cannot omit only 5 without also omitting 0 first')
-    }
-  }
+  #check input
+  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
+              break_out=break_out, max_length=max_length, num_digits=num_digits, N=N)
+  # if (length(omit_05) == 1){
+  #   ###check omit only 5, which is not allowed
+  #   if (!(is.na(omit_05)) && (omit_05 == 5)){
+  #     stop('cannot omit only 5 without also omitting 0 first')
+  #   }
+  # }
 
   #get benford mean in each digit place
   Benford = get_benford_mean(contingency_table, omit_05)

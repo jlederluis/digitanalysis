@@ -93,19 +93,22 @@ freq_true = function(omit_05){
 
 digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, break_out=NA){
 
-  #checkings
-  if (length(omit_05) == 1){
-    ###check omit only 5, which is not allowed
-    if (!(is.na(omit_05)) && (omit_05 == 5)){
-      stop('cannot omit only 5 without also omitting 0 first')
-    }
-  }
+  #check input
+  input_check(digitdata=digitdata, data_columns=data_columns, omit_05=omit_05, break_out=break_out, min_length=min_length)
 
+  # if (length(omit_05) == 1){
+  #   ###check omit only 5, which is not allowed
+  #   if (!(is.na(omit_05)) && (omit_05 == 5)){
+  #     stop('cannot omit only 5 without also omitting 0 first')
+  #   }
+  # }
+
+  #check min_length
   if (is.na(min_length)){
-    stop('min length must be an integer >= 2')
+    stop("min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test!")
   }
   else if (min_length < 2){
-    stop('min length must be an integer >= 2')
+    stop("min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test!")
   }
 
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution

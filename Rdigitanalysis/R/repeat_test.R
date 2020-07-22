@@ -68,6 +68,11 @@ percent_repeats_by_sector = function(data, sector_column, sector_grouping){
 #IF NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
 
 repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols, break_out=NA, sector_column=NA, sector_grouping=NA, failure_factor=3){
+
+  #check input
+  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols,sector_column=sector_column, sector_grouping=sector_grouping)
+
+  #check if the sector columns are valid
   if (!(is.na(sector_column))){
     if (is.na(match(sector_column, colnames(digitdata@cleaned)))){
       stop('specified column to analyze sector effect is not a column in the data')

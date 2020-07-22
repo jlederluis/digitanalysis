@@ -55,6 +55,10 @@ get_round_unround_digitdata = function(digitdata, unpacking_rounding_column){
 unpack_round_numbers_test = function(digitdata, contingency_table, unpacking_rounding_column, data_columns='all', digit_places='all',
                                       skip_first_figit=FALSE, omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE,
                                       skip_last_digit=FALSE){
+  #check input
+  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
+              skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, distribution=distribution, plot=plot,
+              skip_last_digit=skip_last_digit, unpacking_rounding_column=unpacking_rounding_column)
 
   #unpack by round numbers indexes in the specified column
   lst = get_round_unround_digitdata(digitdata, unpacking_rounding_column)

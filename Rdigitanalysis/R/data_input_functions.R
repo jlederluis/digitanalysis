@@ -167,10 +167,23 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
 ###parse and clean the data for digit analysis
 ###col_analyzing can be specified as any of numeric_data='sdfsfsf' or numeric_data=c('dsdfsfsf') or numeric_data=c('dsdfsfsf',...)
 ###option to use delimeters with ',' as default
-make_class = function(filepath, col_analyzing, delim=','){
+#filetype can be csv or excel
+make_class = function(filepath, col_analyzing, delim=',', filetype='csv'){
   #data format: row is observation; column is category; must be csv!!!
   #raw input data->'raw' of the class
-  raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
+  raw_data = NA
+  if (filetype == 'csv'){
+    raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
+  }
+  else if (filetype == 'excel'){
+    raw_data = readxl::read_excel(filepath) #really bad...takes 10 mins to load
+    raw_data = data.frame(raw_data) #turn to dataframe..before is some weird type called tibble
+  }
+  else {
+    stop('input file must be either csv or excel (.xls or .xlsx) file')
+  }
+
+  #remove all unnecessary blank columns
   raw_data = raw_data[colSums(!is.na(raw_data)) > 0]
 
   ####################################

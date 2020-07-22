@@ -12,7 +12,7 @@
 
 #compute the high low digit binomial test by digit place for desired data columns
 #a helper function for the main function
-high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical, skip_first_figit, omit_05){
+high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical, skip_first_digit, omit_05){
   #intialize a table for storing total high and low digits counts for each digit place
   high_and_low_total_counts = data.frame(matrix(0, nrow = 2, ncol = digitdata@max))
   #name col and row for debug purpose
@@ -50,7 +50,7 @@ high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical,
     p_values[[colnames(high_and_low_total_counts)[i]]] = p_value
   }
   #drop 1st digit place if this is true
-  if (skip_first_figit){
+  if (skip_first_digit){
     p_values = p_values[-1]
   }
   rownames(p_values) = 'p value'
@@ -72,15 +72,18 @@ high_low_by_digit_place = function(digitdata, data, high, high_freq_theoratical,
 ####
 #need ADD plot parameter
 ####
-high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_figit=TRUE, skip_last_digit=FALSE, break_out=NA){
+high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=TRUE, skip_last_digit=FALSE, break_out=NA){
 
-  #checkings
-  if (length(omit_05) == 1){
-    ###check omit only 5, which is not allowed
-    if (!(is.na(omit_05)) && (omit_05 == 5)){
-      stop('cannot omit only 5 without also omitting 0 first')
-    }
-  }
+  #check input
+  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
+              omit_05=omit_05, break_out=break_out, skip_last_digit=skip_last_digit, high=high)
+
+  # if (length(omit_05) == 1){
+  #   ###check omit only 5, which is not allowed
+  #   if (!(is.na(omit_05)) && (omit_05 == 5)){
+  #     stop('cannot omit only 5 without also omitting 0 first')
+  #   }
+  # }
 
   #get table for the theoratical high to low freqency in each digit place
   #if omit_05 in high, then should throw error...no way should it be omiited and counted as highh digit
@@ -108,14 +111,14 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
   data_columns = get_data_columns(digitdata, data_columns)
 
   #get the data columns desired
-  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_figit=skip_first_figit, skip_last_digit=skip_last_digit, align_direction='left')
+  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, align_direction='left')
   data = lst$digits_table
   digitdata = lst$digitdata
 
   #############################################################
   #perform a standard high low test
   if (is.na(break_out)){
-    p_values = high_low_by_digit_place(digitdata, data, high, high_freq_theoratical, skip_first_figit, omit_05)
+    p_values = high_low_by_digit_place(digitdata, data, high, high_freq_theoratical, skip_first_digit, omit_05)
     return(p_values)
   }
 
@@ -135,7 +138,7 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
       colnames(data_of_category) = gsub("."," ",colnames(data_of_category), fixed=TRUE)
 
       #get p_values for this category ('year')
-      p_values = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, skip_first_figit, omit_05)
+      p_values = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, skip_first_digit, omit_05)
 
       #update returning list
       output[[category_name]] = p_values

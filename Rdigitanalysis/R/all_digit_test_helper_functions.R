@@ -125,7 +125,7 @@ drop_first_digit_places = function(digitdata, single_column_digits, align_direct
 
 #gets the desired data columns for analysis, can be left or right aligned
 #also in the mean time drop the first and last digit places if it is desired
-grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figit=TRUE, skip_last_digit=FALSE, align_direction='left'){
+grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digit=FALSE, skip_last_digit=FALSE, align_direction='left'){
 
   digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
 
@@ -152,7 +152,7 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_figi
     if (skip_last_digit){
       single_column_digits = drop_last_digit_places(digitdata, single_column_digits, align_direction)
     }
-    if (skip_first_figit){
+    if (skip_first_digit){
       single_column_digits = drop_first_digit_places(digitdata, single_column_digits, align_direction)
     }
     digits_table = cbind(digits_table, single_column_digits)
@@ -187,7 +187,7 @@ parse_digit_places = function(digitdata, digits_table, digit_places){
 
 
 #parse usable_data to  obtain observation table s.t. we have exclusively the desired digits and digit places
-obtain_observation = function(digitdata, usable_data, digit_places, skip_first_figit, skip_last_digit, omit_05){
+obtain_observation = function(digitdata, usable_data, digit_places, skip_first_digit, skip_last_digit, omit_05){
   #create a table for collecting observations for n=max digit places
   observation_table = NA
   if (skip_last_digit){
@@ -245,14 +245,14 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_f
   observation_table = observation_table[digit_places]
 
   #drop first digit col
-  if (skip_first_figit){
+  if (skip_first_digit){
     observation_table = observation_table[!(colnames(observation_table) %in% c('1st Digit'))]
   }
   return(observation_table)
 }
 
 #parse the contigency table s.t. we have exclusively the desired digits and digit places
-parse_contigency_table = function(digitdata, contingency_table, digit_places, skip_first_figit, skip_last_digit, omit_05){
+parse_contigency_table = function(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05){
   #drop the "x" and Digits column for table
   contingency_table = contingency_table[ , !(colnames(contingency_table) %in% c("Digits", "X"))]
 
@@ -282,7 +282,7 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, sk
   contingency_table = contingency_table[digit_places]
 
   #####more checkings....
-  if (skip_first_figit){
+  if (skip_first_digit){
     contingency_table = contingency_table[!(colnames(contingency_table) %in% c('Digit Place 1'))]
   }
 
