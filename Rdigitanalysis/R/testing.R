@@ -80,10 +80,16 @@ DigitData_match@numbers = DigitData_match@numbers[-omitting_index, ]
 DigitData_match@left_aligned = DigitData_match@left_aligned[-omitting_index, ]
 DigitData_match@right_aligned = DigitData_match@right_aligned[-omitting_index, ]
 
+a=test$ALEXP.Values
+length(which(!(is.na(a))))
+length(omitting_index)+length(which(!(is.na(a))))
+dim(DigitData_match@cleaned)
 
-
-contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-
+# contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
+# contingency_table = contingency_table[!colnames(contingency_table) %in% c('a', 'X')]
+# contingency_table
+# saveRDS(contingency_table, file = "benford_table.RData")
+readRDS(file = "benford_table.RData")
 
 
 #test all digits test
@@ -106,6 +112,32 @@ result[order]
 
 result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit)
+
+
+c=DigitData_match@cleaned$DIST
+index=which(c=='Baringo')
+d=DigitData_match@cleaned$ALEXP
+length(d[index])
+baringo_numbers = d[index]
+# count num digits
+sum(floor(log10(baringo_numbers)) + 1)
+baringo_digits = single_column_aligned(digitdata = DigitData_match, desired_col = 'ALEXP', align_diretion = 'left')[index,]
+length(baringo_digits[,1])
+
+#skip first
+
+num_digits = 0
+baringo_digits = strsplit(as.character(baringo_numbers), '')
+for (i in baringo_digits){
+  # skip first
+  ii = i[-1]
+  iii = ii[!ii %in% c('5', '0')]
+  num_digits = num_digits + length(iii)
+}
+num_digits
+# baringo_digits = baringo_digits[-c(1)]
+# length(baringo_digits[baringo_digits != 5][baringo_digits != 0][!is.na(baringo_digits)])
+
 
 
 #test unpack round numbers test

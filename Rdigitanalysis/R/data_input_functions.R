@@ -53,14 +53,14 @@ max_length = function(data){
 }
 
 #drop rows with NaNs or empty strings in any numeric data column
-drop_nan_empty = function(df, col_conerned){
-  output = data.frame(df)
-  #output = complete.cases(output[col_conerned[i]]) ?? not sure if this work
-  for (i in 1:length(col_conerned)){
-    output = output[!(is.na(output[[col_conerned[i]]]) | output[[col_conerned[i]]]==""), ]
-  }
-  return(output)
-}
+# drop_nan_empty = function(df, col_conerned){
+#   output = data.frame(df)
+#   output = complete.cases(output[col_conerned]) #?? not sure if this work
+#   # for (i in 1:length(col_conerned)){
+#   #   output = output[!(is.na(output[[col_conerned[i]]]) | output[[col_conerned[i]]]==""), ]
+#   # }
+#   return(output)
+# }
 
 #align the digits from the left/right of a data column and update it to the specified data frame
 align_digits = function(indata, outdata, naming_method, align_direction='left', colname='Unknown'){
@@ -101,7 +101,7 @@ make_cleaned_data = function(raw_data, col_analyzing){
   cleaned_data = data.frame(raw_data) #make copy without pointer issue
 
   #drop rows with NaNs or empty strings in any numeric data column
-  cleaned_data = drop_nan_empty(cleaned_data, col_analyzing)
+  # cleaned_data = drop_nan_empty(cleaned_data, col_analyzing)
 
   for (i in 1:length(col_analyzing)) {
     #name of current data column modifying
