@@ -13,16 +13,7 @@
 #N <= 6 takes roughly no time, but N > 6 are suspicious
 #N = 7 takes 5 mins
 #N = 8 takes 30 mins
-
-#' Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law)
-#'
-#' @param N Number of digits to generate
-#' @param out_fp Filepath to save the table to. Default to NA.
-#' @param save TRUE or FALSE: saving the table or not. Default to FALSE.
-#'
-#' @return Benford contingency table generated.
-#' @export
-Benford_table = function(N, out_fp=NA, save=FALSE){
+Benford_table = function(N, out_fp, save=TRUE){
 
   contingency_table = data.frame(Digits=0:9)
   for (n in 1:N){
@@ -94,14 +85,8 @@ Benford_table = function(N, out_fp=NA, save=FALSE){
 #Benford_table(N=8, out_fp='C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
 #load Benford table given filepath
-
-#' Loads Benford contingency table
-#'
-#' @param table_fp Filepath where the developers storing the table
-#'
-#' @return The loaded Benford table
-load_Benford_table = function(table_fp){
-  contingency_table = read.csv(table_fp)
+load_Benford_table = function(fp){
+  contingency_table = read.csv(fp)
   #get rid of '.' replacing ' ' problem when loading csv to df
   colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
   #name the rows from 0 to 9

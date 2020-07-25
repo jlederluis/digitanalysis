@@ -7,16 +7,6 @@
 
 
 #find degree of freedom helper
-#' Compute the degrees of freedom
-#'
-#'
-#' @param table
-#' @param standard
-#'
-#' @return
-#' @export
-#'
-#' @examples
 get_df = function(table, standard=FALSE){
   #standard df = (r-1)(c-1)
   if (standard){
@@ -63,4 +53,3 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
   return(p_value)
 }
 
-#‘C:/Users/happy/OneDrive - California Institute of Technology/Documents/R/win-library/4.0’
