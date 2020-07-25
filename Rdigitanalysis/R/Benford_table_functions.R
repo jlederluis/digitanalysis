@@ -69,6 +69,18 @@ Benford_table = function(N, out_fp, save=TRUE){
 # write.csv(contingency_table, 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
 
+# #hardcode uniform distribution table for 100 digit places with entries = 0.1 strictly
+# uniform_table = data.frame(matrix(nrow = 10, ncol = 0))
+# rownames(uniform_table) = 0:9
+# uniform_table
+# for (i in 1:100){
+#   uniform_table[paste('Digit Place', i)] = rep(0.1, 10)
+# }
+# saveRDS(uniform_table, file = "data/uniform_table.RData")
+# #uniform table here
+# readRDS(file = "data/uniform_table.RData")
+
+
 #
 #Benford_table(N=8, out_fp='C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 

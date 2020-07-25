@@ -14,7 +14,7 @@
 get_data_columns = function(digitdata, data_columns){
   #if 'all', use all data columns in the numeric columns specified by user
   if (length(data_columns) == 1){
-    if (data_columns == 'all'){
+    if (data_columns[1] == 'all'){
       data_columns = colnames(digitdata@numbers)
     }
   }
@@ -29,7 +29,8 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left') 
   if (is.na(match(desired_col, colnames(digitdata@numbers)))){
     #throw error
     stop("Specified desired_col is not a numerical data column in the specified DigitAnalysis class object")
-  } else {
+  }
+  else {
     #add a space at the end to avoid picking up alternative superstring column names
     checking = paste(desired_col, '')
     original_df = NA
@@ -54,13 +55,17 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left') 
         single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
       }
     }
+
+    #remove all na columns
+    #happening cuz of testing
+    single_align_df = single_align_df[colSums(!is.na(single_align_df)) > 0]
     return(single_align_df)
   }
 }
 
 
 #remove last digit if desired
-drop_last_digit_places = function(digitdata, single_column_digits, align_direction='left'){
+drop_last_digit_places = function(single_column_digits, align_direction='left'){
   #left aligned
   if (align_direction == 'left'){
     rows = dim(single_column_digits)[1]
@@ -77,23 +82,32 @@ drop_last_digit_places = function(digitdata, single_column_digits, align_directi
       }
     }
   }
-
   #right aligned
   else if (align_direction == 'right'){
     column_names = colnames(single_column_digits)
     #drop all columns for 1s
     for (i in 1:length(column_names)){
       if (grepl(' 1s' , column_names[i], fixed=TRUE)){
-        single_column_digits = single_column_digits[ , !(colnames(single_column_digits) %in% c(column_names[i]))]
+        single_column_digits = single_column_digits[!(colnames(single_column_digits) %in% c(column_names[i]))]
       }
     }
+  }
+  else{
+    stop("align_direction must be either 'left' or 'right'")
   }
   return(single_column_digits)
 }
 
+# i = 1
+# a = c(1,2,3,NA, NA)
+# while ((i<=10) && (!(is.na(a[i])))){
+#   print(i)
+#   i = i +1
+# }
+# i
 
 #remove first digit if desired
-drop_first_digit_places = function(digitdata, single_column_digits, align_direction='left'){
+drop_first_digit_places = function(single_column_digits, align_direction='left'){
 
   #left aligned
   if (align_direction == 'left'){
@@ -101,11 +115,10 @@ drop_first_digit_places = function(digitdata, single_column_digits, align_direct
     #drop all columns for 1st digit
     for (i in 1:length(column_names)){
       if (grepl('1st digit' , column_names[i], fixed=TRUE)){
-        single_column_digits = single_column_digits[ , !(colnames(single_column_digits) %in% c(column_names[i]))]
+        single_column_digits = single_column_digits[!(colnames(single_column_digits) %in% c(column_names[i]))]
       }
     }
   }
-
   #right aligned
   else if (align_direction == 'right'){
     rows = dim(single_column_digits)[1]
@@ -119,6 +132,9 @@ drop_first_digit_places = function(digitdata, single_column_digits, align_direct
       #turn that cell to NA
       single_column_digits[row, index] = NA
     }
+  }
+  else{
+    stop("align_direction must be either 'left' or 'right'")
   }
   return(single_column_digits)
 }
@@ -143,6 +159,8 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digi
       #print(head(single_column_digits))
       #print(as.numeric(length(single_column_digits)))
       #print(digitdata@max)
+      #print(single_column_digits)
+      #print(FALSE %in% is.na(single_column_digits[as.numeric(length(single_column_digits))]))
       digitdata@max = as.numeric(length(single_column_digits))
       #print(digitdata@max)
     }
@@ -150,10 +168,10 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digi
     ###!!!!!!!!!!!!!!!!!!!!!!!
     #remove last digit before remove first, to avoid problems like there are 1-digit numbers
     if (skip_last_digit){
-      single_column_digits = drop_last_digit_places(digitdata, single_column_digits, align_direction)
+      single_column_digits = drop_last_digit_places(single_column_digits, align_direction)
     }
     if (skip_first_digit){
-      single_column_digits = drop_first_digit_places(digitdata, single_column_digits, align_direction)
+      single_column_digits = drop_first_digit_places(single_column_digits, align_direction)
     }
     digits_table = cbind(digits_table, single_column_digits)
   }
@@ -163,6 +181,30 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digi
 #on desired aligned columns, extract only the desired digit places in a dropping column based way
 #only applies for left aligned digits data!!!!!!!!!!
 parse_digit_places = function(digitdata, digits_table, digit_places){
+
+  # #find the names of the digit places to use
+  # digit_places_names = digitdata@left_aligned_column_names[digit_places]
+  #
+  # print(digit_places)
+  # print(digit_places_names)
+  #
+  # #create a copy of the table to be returned
+  # usable_data = data.frame(digits_table)
+  # colnames(usable_data) = gsub("."," ",colnames(usable_data), fixed=TRUE)
+  #
+  # print(usable_data)
+  #
+  # #drop by scanning each column name
+  # if (!(is.na(digit_places_names[1]))){
+  #   for (position_name in digit_places_names){
+  #     for (i in 1:length(colnames(digits_table))){
+  #       if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE) == FALSE){
+  #         #drop this column since it is the digit place unwanted
+  #         usable_data = usable_data[!(colnames(usable_data) %in% c(colnames(digits_table[i])))]
+  #       }
+  #     }
+  #   }
+  # }
 
   #find the names of the digit places to drop
   digit_places_names = digitdata@left_aligned_column_names[-digit_places]
@@ -188,20 +230,22 @@ parse_digit_places = function(digitdata, digits_table, digit_places){
 
 #parse usable_data to  obtain observation table s.t. we have exclusively the desired digits and digit places
 obtain_observation = function(digitdata, usable_data, digit_places, skip_first_digit, skip_last_digit, omit_05){
-  #create a table for collecting observations for n=max digit places
-  observation_table = NA
-  if (skip_last_digit){
-    observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max-1)) #one less digit place
-  } else {
-    observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max))
-  }
+  #create a table for collecting observations for n=max digit places, upper bound
+  observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max))
+  # observation_table = NA
+  # if (skip_last_digit){
+  #   observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max-1)) #one less digit place
+  # } else {
+  #   observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max))
+  # }
+
   #fill up observation table from usable data columns
   digit_place_names = digitdata@left_aligned_column_names
   #name the columns
   colnames(observation_table) = digit_place_names[1:length(observation_table)]
   #name the rows
   rownames(observation_table) = 0:9
-
+  #print(usable_data)
   for (i in 1:length(usable_data)){
     #figure out the digit place it is in
     for (j in 1:length(observation_table)){
@@ -214,21 +258,21 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
         #it is a column for digit place j
         #get the table for frequency count for column i
         occurances = table(usable_data[,i])
-        #update it to column j of observation table
+        #print(digit_place_names[j])
         #print(occurances)
+        #update it to column j of observation table
         #this occurances can be a null table
         if (!(is.null(occurances))){
           for (name in names(occurances)){
             digit = as.integer(name)
             #print(observation_table[digit+1, j] + occurances[name])
             #digit + 1 since index starts from 1 and digit starts from 0
-            observation_table[digit+1 , j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)
+            observation_table[digit+1, j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)    ######can simplify
           }
         }
       }
     }
   }
-
   if (length(omit_05) == 2){
     #drop both 0 and 5
     observation_table = observation_table[-c(1,6), ]
@@ -254,7 +298,8 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
 #parse the contigency table s.t. we have exclusively the desired digits and digit places
 parse_contigency_table = function(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05){
   #drop the "x" and Digits column for table
-  contingency_table = contingency_table[ , !(colnames(contingency_table) %in% c("Digits", "X"))]
+  print('0')
+  contingency_table = contingency_table[!(colnames(contingency_table) %in% c("Digits", "X"))]
 
   if (length(omit_05) == 2){
     #drop both 0 and 5
@@ -268,30 +313,28 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, sk
     #otherwise, omit_05 is NA so do nothing
   }
 
-  #drop the extra digit places in precomputred table
-
   #####checkings
-  end = digitdata@max
-  if (skip_last_digit){
-    end = end - 1
-  }
-  contingency_table = contingency_table[ , 1:end]
+  # looks useless
+  # end = digitdata@max
+  # if (skip_last_digit){
+  #   end = end - 1
+  # }
+  # contingency_table = contingency_table[ , 1:end]
   #####more checkings
 
-  #find the digit places to use
+  print(contingency_table)
+  print(digit_places)
+  #find the digit places to use and drop the extra digit places in precomputred table
   contingency_table = contingency_table[digit_places]
-
   #####more checkings....
   if (skip_first_digit){
     contingency_table = contingency_table[!(colnames(contingency_table) %in% c('Digit Place 1'))]
   }
-
   #renormalize each column to sum to 1
   for (name in colnames(contingency_table)){
     #renormialize
     contingency_table[name] = contingency_table[name] / sum(contingency_table[name])
   }
-
   return(contingency_table)
 }
 

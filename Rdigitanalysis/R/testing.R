@@ -11,9 +11,9 @@ rm(list = ls())
 #free up R memory
 gc()
 #force numerical representation rather than scientific
-#options(scipen = 999)
-options(scipen = 1)
-options(digits = 2)
+# options(scipen = 999)
+# options(scipen = 1)
+# options(digits = 2)
 ##############################
 
 
@@ -63,78 +63,145 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 
 #test data input and benford table functions
 #load data input functions
-data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
-fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
+data_columns = c("ALEXP.Values")#,"BENTOT", "BENM", "BENF")
+fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL MinData.csv'
 
-test = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL 2.csv', stringsAsFactors=FALSE)
+test = read.csv('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL MinData.csv')
 
-omitting_index = which(is.na(test$ALEXP.Values))
+# omitting_index = which(is.na(test$ALEXP.Values))
 
 
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-omitting_index
 
-DigitData_match = DigitData
-DigitData_match@cleaned = DigitData_match@cleaned[-omitting_index, ]
-DigitData_match@numbers = DigitData_match@numbers[-omitting_index, ]
-DigitData_match@left_aligned = DigitData_match@left_aligned[-omitting_index, ]
-DigitData_match@right_aligned = DigitData_match@right_aligned[-omitting_index, ]
 
-a=test$ALEXP.Values
-length(which(!(is.na(a))))
-length(omitting_index)+length(which(!(is.na(a))))
-dim(DigitData_match@cleaned)
 
-# contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-# contingency_table = contingency_table[!colnames(contingency_table) %in% c('a', 'X')]
+#a[which(a$`ALEXP.Values 6th digit` ==6),]
+#b=a[which(a$`ALEXP.Values 5th digit` ==6),]
+
+# omitting_index
+#
+# DigitData_match = DigitData
+# DigitData_match@cleaned = DigitData_match@cleaned[-omitting_index, ]
+# DigitData_match@numbers = data.frame(DigitData_match@numbers[-omitting_index, ])
+# colnames(DigitData_match@numbers) = colnames(DigitData@numbers)
+#
+# DigitData_match@left_aligned = DigitData_match@left_aligned[-omitting_index, ]
+# DigitData_match@right_aligned = DigitData_match@right_aligned[-omitting_index, ]
+#
+# a=test$ALEXP.Values
+# length(which(!(is.na(a))))
+# length(omitting_index)+length(which(!(is.na(a))))
+# dim(DigitData_match@cleaned)
+
+contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
+# contingency_table = contingency_table[!colnames(contingency_table) %in% c('a', 'X', 'Digits')]
 # contingency_table
-# saveRDS(contingency_table, file = "benford_table.RData")
-readRDS(file = "benford_table.RData")
+# saveRDS(contingency_table, file = "data/benford_table.RData")
+# #contingency table is here
+# readRDS(file = "data/benford_table.RData")
 
 
 #test all digits test
-data_columns = 'ALEXP'
-digit_places =  'all'# c(1,2,3)
+data_columns = 'ALEXP.Values'
+digit_places =  c(2,3,4,5,6)#'all'# c(1,2,3)
 skip_first_digit=TRUE
 omit_05 = c(0,5)
-break_out='DIST'
+break_out="ï..DIST"#'DIST'
 # distribution='Benford'
 # plot=TRUE
 skip_last_digit=FALSE
 
 #match the data with Jetson's
-result = all_digits_test(digitdata = DigitData_match, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
+result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit)
 
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
 result[order]
 
 
+# if error must be in usable data
+
+# count = 0
+# for (i in 1:dim(result)[1]){
+#   for (j in 1:dim(result)[2]){
+#     ele = result[i,j]
+#     if (!is.na(ele)){
+#       if (ele != 0){
+#         if (ele != 5)
+#           count= count + 1
+#       }
+#     }
+#   }
+# }
+# count
+
+
+
+
 result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit)
 
 
+order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
+result[order]
+
+DigitData_match = DigitData
+
 c=DigitData_match@cleaned$DIST
 index=which(c=='Baringo')
-d=DigitData_match@cleaned$ALEXP
+d=DigitData_match@cleaned$'ALEXP.Values'
 length(d[index])
 baringo_numbers = d[index]
 # count num digits
-sum(floor(log10(baringo_numbers)) + 1)
+sum(floor(log10(baringo_numbers)) + 1, na.rm = T)
 baringo_digits = single_column_aligned(digitdata = DigitData_match, desired_col = 'ALEXP', align_diretion = 'left')[index,]
 length(baringo_digits[,1])
 
+table(DigitData@left_aligned[5])
+
+
+
+
 #skip first
 
+
+
+N = 0
+ddd = DigitData@left_aligned[2:7]
+for (col in ddd){
+  N = N + sum((table(col)[!names(table(col)) %in% c('5', '0')]))
+}
+N
+
+d = DigitData@numbers[[1]]
 num_digits = 0
 baringo_digits = strsplit(as.character(baringo_numbers), '')
-for (i in baringo_digits){
+all = strsplit(as.character(d), '')
+excel = strsplit(as.character(test$ALEXP.Values), '')
+#excel = strsplit(as.character(DigitData@numbers), '')
+
+for (i in all){
+  # # count first digit
+  # if (! i[1] %in% c('5', '0')){
+  # num_digits = num_digits + 1
+  # }
   # skip first
-  ii = i[-1]
-  iii = ii[!ii %in% c('5', '0')]
-  num_digits = num_digits + length(iii)
+  if (!(is.na(i))){
+    ii = i[-1]
+    iii = ii[!ii %in% c('5', '0')]
+    num_digits = num_digits + length(iii)
+    print(iii)
+  }
+
 }
 num_digits
+
+
+
+numbers = test$ALEXP.Values[which(!is.na(test$ALEXP.Values))]
+length(numbers)
+table(numbers == d)
+
 # baringo_digits = baringo_digits[-c(1)]
 # length(baringo_digits[baringo_digits != 5][baringo_digits != 0][!is.na(baringo_digits)])
 

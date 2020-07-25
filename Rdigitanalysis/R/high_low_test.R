@@ -85,6 +85,7 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
   #   }
   # }
 
+  ########################
   #get table for the theoratical high to low freqency in each digit place
   #if omit_05 in high, then should throw error...no way should it be omiited and counted as highh digit
   #drop X and Digits column of contingency table
@@ -101,6 +102,7 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
     #renormialize
     high_freq_theoratical[name] = high_freq_theoratical[name] / sum(high_freq_theoratical[name])
   }
+  ########################
 
   #get the frequency for high digits in each digit place
   high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.character(high), ])))

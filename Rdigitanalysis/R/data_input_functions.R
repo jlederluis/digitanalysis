@@ -27,16 +27,16 @@ DigitAnalysis = setClass('DigitAnalysis', slots = c(raw="data.frame", cleaned="d
 #library("readxl")
 #xlxs = read_excel('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.xlsx')
 
-#rounding function based on user preference
-round_data = function(data, method='round'){
-  if (method == 'round'){
-    return(round(data))
-  } else if (method == 'floor'){
-    return(floor(data))
-  } else if (method == 'ceiling'){
-    return(ceiling(data))
-  }
-}
+# #rounding function based on user preference
+# round_data = function(data, method='round'){
+#   if (method == 'round'){
+#     return(round(data))
+#   } else if (method == 'floor'){
+#     return(floor(data))
+#   } else if (method == 'ceiling'){
+#     return(ceiling(data))
+#   }
+# }
 
 #find the length of the largest number in a data column
 max_length = function(data){
@@ -63,7 +63,7 @@ max_length = function(data){
 # }
 
 #align the digits from the left/right of a data column and update it to the specified data frame
-align_digits = function(indata, outdata, naming_method, align_direction='left', colname='Unknown'){
+align_digits = function(indata, outdata, naming_method, colname, align_direction='left'){
 
   max = max_length(indata) #max length of largest number in indata
 
@@ -102,16 +102,16 @@ make_cleaned_data = function(raw_data, col_analyzing){
 
   #drop rows with NaNs or empty strings in any numeric data column
   # cleaned_data = drop_nan_empty(cleaned_data, col_analyzing)
-
   for (i in 1:length(col_analyzing)) {
     #name of current data column modifying
     col_name = col_analyzing[i]
 
     #turn into numbers
-    cleaned_data[[col_name]] = as.numeric(gsub(",","",cleaned_data[[col_name]], fixed=TRUE))
+    cleaned_data[[col_name]] = as.numeric(gsub(",","",as.character(cleaned_data[[col_name]]), fixed=TRUE))
 
     #rounding
-    cleaned_data[[col_analyzing[i]]] = round_data(cleaned_data[[col_name]])
+    cleaned_data[[col_name]] = as.integer(cleaned_data[[col_name]])
+    #cleaned_data[[col_name]] = round_data(cleaned_data[[col_name]])
   }
 
   return(cleaned_data)
@@ -148,13 +148,12 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
     #update by 'align_left' or 'align_right'
 
     indata = cleaned_data[[col_name]]
+
     #replace 0 by NA for digit analysis
     indata[indata == 0] = NA
 
-    aligned_data = align_digits(indata=indata, outdata=aligned_data, naming_method=naming_method, align_direction=align_direction, colname=col_name) ###NAs introduced by coercion
-
+    aligned_data = align_digits(indata=indata, outdata=aligned_data, naming_method=naming_method, colname=col_name, align_direction=align_direction) ###NAs introduced by coercion
   }
-
   return(aligned_data)
 }
 
@@ -172,6 +171,8 @@ make_class = function(filepath, col_analyzing, delim=',', filetype='csv'){
   #data format: row is observation; column is category; must be csv!!!
   #raw input data->'raw' of the class
   raw_data = NA
+
+  print('0')
   if (filetype == 'csv'){
     raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
   }
@@ -182,10 +183,10 @@ make_class = function(filepath, col_analyzing, delim=',', filetype='csv'){
   else {
     stop('input file must be either csv or excel (.xls or .xlsx) file')
   }
-
+  print('1')
   #remove all unnecessary blank columns
   raw_data = raw_data[colSums(!is.na(raw_data)) > 0]
-
+  print('2')
   ####################################
   ############important###############
   ####################################
@@ -200,7 +201,8 @@ make_class = function(filepath, col_analyzing, delim=',', filetype='csv'){
   ########################creation of all sub-objects########################
 
   cleaned_data = make_cleaned_data(raw_data, col_analyzing)
-
+  #cleaned_data = cleaned_data[which(complete.cases(cleaned_data['ALEXP.Values'])), ] #### for now
+  print('3')
   numeric_data = make_numeric_data(cleaned_data, col_analyzing)
 
   #the dataframe with the left aligned digits of each data column to be analyzed->'left_aligned' of the class

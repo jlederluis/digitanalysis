@@ -83,12 +83,14 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   digits_table = lst$digits_table
 
   #get only the wanted digit places
-  if (digit_places == 'all'){
+  if (digit_places[1] == 'all'){
     digit_places = seq(1, digitdata@max)
     if (skip_first_digit){
       digit_places = seq(2, digitdata@max)
     }
   }
+
+  print(digitdata@max)
 
   usable_data = parse_digit_places(digitdata, digits_table, digit_places)
 
@@ -101,10 +103,10 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   print("contingency_table")
   print(contingency_table)
 
-  print(sum(observation_table))
-
   print("observation_table")
   print(observation_table)
+  print(colSums(observation_table))
+
 
   #######################################################################
   #do chi square test
@@ -115,6 +117,9 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   print('degrees of freedom')
   print(df)
 
+  print('total N')
+  print(sum(observation_table))
+
   #all digit test
   p_values = data.frame(all=chi_square_gof(observation_table, contingency_table, df))
 
@@ -123,13 +128,24 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
     #get indexes for each category
     indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
 
+
     #breeak by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
-      obs_in_category = obtain_observation(digitdata, usable_data[indexes_of_category, ], digit_places, skip_first_digit, skip_last_digit, omit_05)
+      obs_in_category = NA
+      #single digit place: need to change the subsetted array into dataframe with colname
+      if (length(digit_places) == 1){
+        usable_in_category = data.frame(usable_data[indexes_of_category, ])
+        colnames(usable_in_category) = colnames(usable_data)
+        obs_in_category = obtain_observation(digitdata, usable_in_category, digit_places, skip_first_digit, skip_last_digit, omit_05)
+      }
+      else {
+        obs_in_category = obtain_observation(digitdata, usable_data[indexes_of_category, ], digit_places, skip_first_digit, skip_last_digit, omit_05)
+      }
       p_values[category_name] = chi_square_gof(obs_in_category, contingency_table, df)
 
       print(category_name)
+      #print(obs_in_category)
       print(sum(obs_in_category))
     }
   }
