@@ -298,7 +298,6 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
 #parse the contigency table s.t. we have exclusively the desired digits and digit places
 parse_contigency_table = function(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05){
   #drop the "x" and Digits column for table
-  print('0')
   contingency_table = contingency_table[!(colnames(contingency_table) %in% c("Digits", "X"))]
 
   if (length(omit_05) == 2){
@@ -322,8 +321,8 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, sk
   # contingency_table = contingency_table[ , 1:end]
   #####more checkings
 
-  print(contingency_table)
-  print(digit_places)
+  #print(contingency_table)
+  #print(digit_places)
   #find the digit places to use and drop the extra digit places in precomputred table
   contingency_table = contingency_table[digit_places]
   #####more checkings....
@@ -362,7 +361,7 @@ break_by_category = function(data, break_out){
     #what if there is NA? havent encountered yet...I guess ignore
 
     #get the rows for each broken-down category
-    rows = which(data[[break_out]] %in% category_name)
+    rows = which(data[[break_out]] == category_name)
 
     #add rows to the named element in list
     indexes_of_categories[[category_name]] = rows

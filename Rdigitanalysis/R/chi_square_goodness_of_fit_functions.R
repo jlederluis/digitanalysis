@@ -45,7 +45,7 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
       expected_table[, i] = expected_table[, i] *sum(observed_table[, i])
     }
   }
-  print(expected_table)
+  #print(expected_table)
 
   #if first digit is used, turn digit 0 freq to 1 for both tables,
   #to avoid NaN in computing test stats
@@ -56,11 +56,17 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
 
   test_stats = sum((observed_table - expected_table)^2/expected_table, na.rm = TRUE)
 
-  df = get_df(expected_table)
+  #print(test_stats)
 
-  p_value = pchisq(test_stats, df = df, lower.tail = FALSE) - dchisq(test_stats, df = df)
+  #print(df)
+
+  #print(pchisq(test_stats, df = , lower.tail = FALSE))
+
+
+  p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
 
   return(p_value)
 }
+
 
 #‘C:/Users/happy/OneDrive - California Institute of Technology/Documents/R/win-library/4.0’
