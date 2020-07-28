@@ -17,11 +17,11 @@ align_digits(
 
 \item{outdata}{The dataframe \code{indata} will be appended (cbind) to}
 
-\item{naming_method}{Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from DigitAnalysis class}
+\item{naming_method}{Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from \code{DigitAnalysis} class}
 
-\item{col_name}{Column name for indata}
+\item{col_name}{Column name for \code{indata}}
 
-\item{align_direction}{'left' or 'right': create left-aligned or right-aligned digits}
+\item{align_direction}{'left' or 'right': Create left-aligned or right-aligned digits}
 }
 \value{
 \code{outdata}: outdata appended with indata's aligned digits

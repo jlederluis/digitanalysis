@@ -2,9 +2,12 @@
 % Please edit documentation in R/unpack_round_numbers_test.R
 \name{get_round_unround_digitdata}
 \alias{get_round_unround_digitdata}
-\title{Helper function for unpack_round_numbers_test.
-Creates two two copies of digitdata:
-one with only round entries and the other with only unround entries in the specified numeric column}
+\title{Creates two two copies of digitdata:
+\itemize{
+  \item A copy with only round entries in the specified numeric column
+  \item A copy with only unround entries in the specified numeric column
+}
+Helper function for \code{unpack_round_numbers_test}.}
 \usage{
 get_round_unround_digitdata(digitdata, unpacking_rounding_column)
 }
@@ -17,7 +20,10 @@ get_round_unround_digitdata(digitdata, unpacking_rounding_column)
 A list with two DigitAnalysis objects: round_digitdata and unround_digitdata
 }
 \description{
-Helper function for unpack_round_numbers_test.
 Creates two two copies of digitdata:
-one with only round entries and the other with only unround entries in the specified numeric column
+\itemize{
+  \item A copy with only round entries in the specified numeric column
+  \item A copy with only unround entries in the specified numeric column
+}
+Helper function for \code{unpack_round_numbers_test}.
 }

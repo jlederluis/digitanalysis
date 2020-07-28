@@ -7,12 +7,12 @@
 make_numeric_data(cleaned_data, col_analyzing)
 }
 \arguments{
-\item{cleaned_data}{'cleaned' slot for DigitAnalysis}
+\item{cleaned_data}{'cleaned' slot for \code{DigitAnalysis}}
 
 \item{col_analyzing}{The numeric columns to be used}
 }
 \value{
-Numeric dataframe for DigitAnalysis slot 'numbers'
+Numeric dataframe for \code{DigitAnalysis} slot 'numbers'
 }
 \description{
 Create dataframe for only the numeric columns of the cleaned data

@@ -2,7 +2,7 @@
 % Please edit documentation in R/data_input_functions.R
 \name{make_class}
 \alias{make_class}
-\title{Create an object instance for DigitAnalysis. Parse and clean the data for digit analysis.}
+\title{Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.}
 \usage{
 make_class(
   col_analyzing,
@@ -32,10 +32,10 @@ make_class(
 An object in \code{DigitAnalysis}
 }
 \description{
-Create an object instance for DigitAnalysis. Parse and clean the data for digit analysis.
+Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.
 }
 \examples{
-make_class('col_name', filepath='~/file.csv')
-make_class('col_name', filepath='~/file.xlsx', filetype='excel', delim=',')
-make_class('col_name', raw_df=my_data_frame)
+make_class('col_name', filepath='~/filename.csv')
+make_class('col_name', filepath='~/filename.xlsx', filetype='excel', delim=',')
+make_class('col_name', raw_df=my_dataframe)
 }

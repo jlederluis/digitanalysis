@@ -6,13 +6,13 @@
 ############################################################
 
 
-############################################################
-#some helper functions
-############################################################
-
-
-#find the frequency of terminal digit pairs occuring in the data being analzyed
-#return a vector of [# pairs, # not pairs]
+#' Find the frequency of terminal digit pairs occuring in the data being analzyed
+#'
+#' @param indexes The indexes of the rows to be analyzed in the data. Used to faciliate \code{break_out} option.
+#' Default to NA, meaning using all rows.
+#' @inheritParams digit_pairs_test
+#'
+#' @return An array of [# pairs, # not pairs]
 counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes=NA){
   occurances = data.frame(matrix(nrow = 0, ncol = 2))
 
@@ -77,31 +77,35 @@ freq_true = function(omit_05){
   return(pairs/total)
 }
 
-
-################main function############
-#performs terminal digit pair binomial test vs uniform distribution (Benford’s Law)
-#digitdata is the class object;
-#data_columns are the names of numerical columns of data to be analyzed (defaulted as 'all' to the entire number table)
-#omit_05 has three options: omit both 0 and 5->c(0,5)/c(5,0); omit only 0->0 or c(0); and omit neither->NA (when no rounding test is performed)
-#if analysis by groups is desired, break_out should specify the deisred category to break upon
-#distribution can be 'Benford' or 'Uniform' or more ???
-
+################################################
+################main function###################
+################################################
 
 ####
 #need ADD distribution and plot parameter
 ####
 
+#' Performs terminal digit pair binomial test vs uniform distribution (Benford’s Law)
+#'
+#' @param min_length The minimum length of the numbers to be analyzed in digit pair test. Must be an integer >= 2. Default to 3.
+#' @inheritParams all_digits_test
+#'
+#' @return
+#' \itemize{
+#'   \item A table of p-values for termianl digit pair test on each category
+#'   \item Plots for each category if \code{plot = TRUE}
+#' }
+#' @export
+#'
+#' @examples
+#' digit_pairs_test(digitdata, data_columns='all')
+#' digit_pairs_test(digitdata, data_columns=c('col_name1', 'col_name2'))
+#' digit_pairs_test(digitdata, data_columns='all', omit_05=NA, min_length=5)
+#' digit_pairs_test(digitdata, data_columns='all', omit_05=0, break_out='col_name')
 digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, break_out=NA){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, omit_05=omit_05, break_out=break_out, min_length=min_length)
-
-  # if (length(omit_05) == 1){
-  #   ###check omit only 5, which is not allowed
-  #   if (!(is.na(omit_05)) && (omit_05 == 5)){
-  #     stop('cannot omit only 5 without also omitting 0 first')
-  #   }
-  # }
 
   #check min_length
   if (is.na(min_length)){
@@ -135,11 +139,9 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
       indexes_of_category = indexes_of_categories[[category_name]]
       counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, indexes_of_category)
       p_value_in_category = binom.test(counts_in_category, p)$p.value
-
       p_values[category_name] = p_value_in_category
     }
   }
   return(p_values)
 }
-
 

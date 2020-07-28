@@ -6,17 +6,15 @@
 ############################################################
 
 
-#find degree of freedom helper
-#' Compute the degrees of freedom
+#' Compute the degrees of freedom for the input chi square test table
 #'
-#'
-#' @param table
-#' @param standard
-#'
-#' @return
-#' @export
-#'
-#' @examples
+#' @param table Either the expected or the observation table for the chi square test
+#' @param standard TRUE or FALSE: Default to FALSE.
+#' \itemize{
+#'   \item TRUE: Compute degrees of freedom using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
+#'   \item FALSE: Compute degrees of freedom using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
+#' }
+#' @return Degrees of freedom
 get_df = function(table, standard=FALSE){
   #standard df = (r-1)(c-1)
   if (standard){
@@ -36,8 +34,16 @@ get_df = function(table, standard=FALSE){
   return(df)
 }
 
-#chi square test for goodness of fit
-#freq denotes whether the expected table is in decimal
+
+#' Perform chi square test for goodness of fit test
+#'
+#' @param observed_table Observation table for chi square test
+#' @param expected_table Expected table for chi square test
+#' @param df Degrees of freedom
+#' @param freq TRUE or FALSE: Whether the input expected table is in decimal.
+#'
+#' @return p-value for chi square goodness of fit test
+#' @export
 chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
   if (freq){
     #turn freq into numbers
@@ -45,23 +51,7 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
       expected_table[, i] = expected_table[, i] *sum(observed_table[, i])
     }
   }
-  #print(expected_table)
-
-  #if first digit is used, turn digit 0 freq to 1 for both tables,
-  #to avoid NaN in computing test stats
-  # if (grepl('1', colnames(expected_table)[1], fixed=TRUE)){
-  #   observed_table[1,1] = 1
-  #   expected_table[1,1] = 1
-  # }
-
   test_stats = sum((observed_table - expected_table)^2/expected_table, na.rm = TRUE)
-
-  #print(test_stats)
-
-  #print(df)
-
-  #print(pchisq(test_stats, df = , lower.tail = FALSE))
-
 
   p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
 
@@ -69,4 +59,3 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
 }
 
 
-#‘C:/Users/happy/OneDrive - California Institute of Technology/Documents/R/win-library/4.0’

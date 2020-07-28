@@ -15,7 +15,7 @@
 #digitdata is mandatory option, all other arguemnts are defaulted to NA, and checked iff it is relevant
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA, duplicate_matching_cols=NA,
-                       sector_column=NA, sector_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA) {
+                       sector_column=NA, sector_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA) {
   #############some logical stuff to check and throw errors on###########
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
@@ -223,7 +223,17 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
       stop("N must be an integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
     }
   }
+  if (TRUE %in% (!(is.na(standard_df)))){
+    if (length(standard_df) != 1){
+      stop("standard_df must be a boolean denoting whether to use standard method or digit analysis method for calculating degrees of freedom!")
+    }
+    else if (!(is.logical(standard_df))){
+      stop("standard_df must be a boolean denoting whether to use standard method or digit analysis method for calculating degrees of freedom!")
+    }
+  }
 }
+
+
 
 
 

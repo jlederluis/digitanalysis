@@ -25,6 +25,6 @@ The class object for RDigitAnalysis package
 
 \item{\code{right_aligned_column_names}}{The naming method for right-aligned digit places in \code{right_aligned}}
 
-\item{\code{max}}{The maximum length of the numbers being analyzed in \code{all_digit_test}. Default to 0, not relevant outside \code{all_digit_test}.}
+\item{\code{max}}{The maximum length of the numbers being analyzed in \code{all_digit_test}. Default to 0, not relevant outside of \code{all_digit_test}.}
 }}
 

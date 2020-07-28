@@ -16,12 +16,12 @@ make_aligned_data(
 
 \item{col_analyzing}{The numeric columns to be used}
 
-\item{naming_method}{Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from DigitAnalysis class}
+\item{naming_method}{Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from \code{DigitAnalysis} class}
 
-\item{align_direction}{'left' or 'right': create left-aligned or right-aligned dataframe}
+\item{align_direction}{'left' or 'right': Create left-aligned or right-aligned dataframe}
 }
 \value{
-The dataframe with the left/right aligned digits of each data column to be analyzed for DigitAnalysis slot 'left_aligned'/'right_aligned'
+The dataframe with the left/right aligned digits of each data column to be analyzed for \code{DigitAnalysis} slot 'left_aligned'/'right_aligned'
 }
 \description{
 Create the dataframe with the left/right aligned digits of each data column to be analyzed->'left_aligned'/'right_aligned' of the class

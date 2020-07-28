@@ -87,7 +87,7 @@ align_digits = function(indata, outdata, naming_method, col_name, align_directio
 #'
 #' @inheritParams make_class
 #'
-#' @return Raw dataframe for DigitAnalysis slot 'raw'
+#' @return Raw dataframe for \code{DigitAnalysis} slot 'raw'
 make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
   raw_data = NA
   #load with fp
@@ -126,7 +126,7 @@ make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
 #' @param raw_data 'raw' slot for \code{DigitAnalysis}
 #' @param col_analyzing The numeric columns to be cleaned
 #'
-#' @return Cleaned dataframe for DigitAnalysis slot 'cleaned'
+#' @return Cleaned dataframe for \code{DigitAnalysis} slot 'cleaned'
 make_cleaned_data = function(raw_data, col_analyzing){
   cleaned_data = data.frame(raw_data) #make copy without pointer issue
 
@@ -151,7 +151,7 @@ make_cleaned_data = function(raw_data, col_analyzing){
 #' @param cleaned_data 'cleaned' slot for \code{DigitAnalysis}
 #' @param col_analyzing The numeric columns to be used
 #'
-#' @return Numeric dataframe for DigitAnalysis slot 'numbers'
+#' @return Numeric dataframe for \code{DigitAnalysis} slot 'numbers'
 make_numeric_data = function(cleaned_data, col_analyzing){
   numeric_data = data.frame(matrix(ncol = 0, nrow = length(cleaned_data[,1])))
   numeric_data[col_analyzing] = cleaned_data[col_analyzing]
@@ -165,7 +165,7 @@ make_numeric_data = function(cleaned_data, col_analyzing){
 #' @param naming_method Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from \code{DigitAnalysis} class
 #' @param align_direction 'left' or 'right': Create left-aligned or right-aligned dataframe
 #'
-#' @return The dataframe with the left/right aligned digits of each data column to be analyzed for DigitAnalysis slot 'left_aligned'/'right_aligned'
+#' @return The dataframe with the left/right aligned digits of each data column to be analyzed for \code{DigitAnalysis} slot 'left_aligned'/'right_aligned'
 make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_direction='left'){
   #initialize
   aligned_data = data.frame(matrix(ncol = 0, nrow = length(cleaned_data[,1])))
@@ -189,7 +189,7 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
 #Data input main function
 ############################################################
 
-#' Create an object instance for DigitAnalysis. Parse and clean the data for digit analysis.
+#' Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.
 #'
 #' @param filepath Default to NA. If loading data using filepath, specify filepath as a string.
 #' @param col_analyzing All potential datra columns to be analyzed. Can be specified as any of

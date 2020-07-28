@@ -2,12 +2,18 @@
 % Please edit documentation in R/Benford_table_functions.R
 \name{Benford_table}
 \alias{Benford_table}
-\title{Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law)}
+\title{Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law).
+Columnn are digit place in increasing order, and rows are the digits (0 to 9) in increasing order}
 \usage{
 Benford_table(N, out_fp = NA, save = FALSE)
 }
 \arguments{
-\item{N}{Number of digits to generate}
+\item{N}{Number of digits to generate
+\itemize{
+  \item N <= 6 takes instant time
+  \item N = 7 takes 5 mins
+  \item N = 8 takes 30 mins
+}}
 
 \item{out_fp}{Filepath to save the table to. Default to NA.}
 
@@ -17,5 +23,10 @@ Benford_table(N, out_fp = NA, save = FALSE)
 Benford contingency table generated.
 }
 \description{
-Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law)
+Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law).
+Columnn are digit place in increasing order, and rows are the digits (0 to 9) in increasing order
+}
+\examples{
+Benford_table(N)
+Benford_table(N, out_fp='~/filepath', save=TRUE)
 }

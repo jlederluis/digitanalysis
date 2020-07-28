@@ -5,15 +5,17 @@
 #Summer 2020
 ############################################################
 
-
 ############################################################
-#helper function
+#helper functions
 ############################################################
 
-
-#find the percent of repeats in the given data based on given definition of a repeat (what columns need to match)
+#' Finds the percent of repeats in the given data based on given definition of a repeat (what columns need to match)
+#'
+#' @param dataThe The dataframe to compute percent repeat on
+#' @inheritParams repeat_test
+#'
+#' @return The percentage of repeated numbers in input data
 find_percent_repeats = function(data, duplicate_matching_cols){
-
   #find repeats based on specified definition of a repeat
   columns_for_repeat_check = data[duplicate_matching_cols]
   unique_numbers = dim(unique(columns_for_repeat_check))[1]
@@ -24,7 +26,12 @@ find_percent_repeats = function(data, duplicate_matching_cols){
   return(percent_repeats)
 }
 
-#returns a table of the percentage of repeated numbers for each sector
+#' Computes the percentage of repeated numbers for each sector
+#'
+#' @param data The dataframe to compute percent repeat on
+#' @inheritParams repeat_test
+#'
+#' @return A table of percentage of repeated numbers for each sector
 percent_repeats_by_sector = function(data, sector_column, sector_grouping){
 
   #intilaize an array for the category we are analyzing on (all, district name A, etc....)
@@ -51,22 +58,45 @@ percent_repeats_by_sector = function(data, sector_column, sector_grouping){
 }
 
 
-################main function############
-#performs repeat test / or sector effect test
-#digitdata is the class object;
-#duplicate_matching_cols are the names of columns of data needs to be matched exactly in order to be defined as a repeat
-#if analysis by groups is desired, break_out should specify the deisred category to break upon
-#sector_column is the column for splitting the data into sectors for separate analysis
-###if it is specified (not NA), then it will perform a sectorized test instead of a normal repeat test
-#sector_grouping is a list of arrays, where each element with its name in the list, represent the categories that belong to each sector in
+################################################
+################main function###################
+################################################
 
 ####
 #need to do failure factor
 #need ADD plot parameter
 ####
 
-#IF NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
 
+#' Performs repeat test or sector effect test
+#'
+#' @param duplicate_matching_cols The names of data columns two rows need to match exactly in order to be defined as a repeat
+#' @param sector_column The column for splitting the data into sectors for separate analysis. Default to NA.
+#' \itemize{
+#'   \item If it is specified (not NA), then a sectorized test will be performed instead of a normal repeat test
+#' }
+#' @param sector_grouping A list of arrays
+#' \itemize{
+#'   \item Each the names of the elements in the list is the sector name
+#'   \item Each array contains the categories belonging to that sector
+#' }
+#' @param failure_factor NEED TO EDIT LATER
+#' @inheritParams all_digits_test
+#'
+#' @return
+#' \itemize{
+#'   \item A table of p-values for repeat test on each category possibly also on sector
+#'   \item Plots for each category if \code{plot = TRUE}
+#'   \item If NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
+#' }
+#' @export
+#'
+#' @examples
+#' repeat_test(digitdata, data_columns='all', duplicate_matching_cols=c('col_name1, col_name2'))
+#' repeat_test(digitdata, data_columns='all', duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name')
+#' repeat_test(digitdata, data_columns=c('col_name1', 'col_name2'), duplicate_matching_cols=c('col_name3, col_name4'))
+#' repeat_test(digitdata, data_columns='all', duplicate_matching_cols=c('col_name3, col_name4'), break_out='col_name',
+#' sector_column='sector_name', sector_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')), failure_factor=3)
 repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols, break_out=NA, sector_column=NA, sector_grouping=NA, failure_factor=3){
 
   #check input
@@ -140,7 +170,6 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols, b
     #update returning table
     sector_repeats_table['all'] = sector_repeats_all
 
-
     #break out by category
     if (!(is.na(break_out))){
       #get indexes for each category
@@ -160,7 +189,6 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols, b
     }
 
     #need to implement failure factor
-
     return(sector_repeats_table)
   }
 }

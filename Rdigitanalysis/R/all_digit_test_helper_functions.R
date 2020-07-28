@@ -10,7 +10,12 @@
 #the following functions help parse data into desirable data forms ready for analysis
 ############################################################################################################
 
-#handle the data_columns = 'all' situation
+
+#' Grab all data column names when data_columns = 'all'
+#'
+#' @inheritParams all_digits_test
+#'
+#' @return \code{data_columns} as a numeric array
 get_data_columns = function(digitdata, data_columns){
   #if 'all', use all data columns in the numeric columns specified by user
   if (length(data_columns) == 1){
@@ -22,49 +27,58 @@ get_data_columns = function(digitdata, data_columns){
 }
 
 
-#gives the table for the left/right aligned table for a single numeric data column ############################
-#digitdata is an object of the class DigitAnalysis!                               ############################ Also user friendly, can let user use it to check their data
-#desired_col should be a string!
-single_column_aligned = function(digitdata, desired_col, align_diretion='left') {
+#' Fetches the left/right aligned table for a single numeric data column
+#'
+#' @param desired_col The desired numeric data column: must be a string
+#' @param align_diretion 'left' or 'right': specify whether left-aligned or right-aligned digits table to be returned
+#' @inheritParams all_digits_test
+#'
+#' @return The left-aligned or right-aligned digits table desired
+#' @export
+#'
+#' @examples
+#' single_column_aligned(digitdata, 'col_name1', align_diretion='left')
+#' single_column_aligned(digitdata, 'col_name2', align_diretion='right')
+single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
   if (is.na(match(desired_col, colnames(digitdata@numbers)))){
     #throw error
     stop("Specified desired_col is not a numerical data column in the specified DigitAnalysis class object")
   }
-  else {
-    #add a space at the end to avoid picking up alternative superstring column names
-    checking = paste(desired_col, '')
-    original_df = NA
 
-    if (align_diretion == 'left') {
-      original_df = digitdata@left_aligned
-    }
-    else if (align_diretion == 'right') {
-      original_df = digitdata@right_aligned
-    }
-    else {
-      stop("align_direction must be either 'left' or 'right'")
-    }
-
-    #create output table
-    single_align_df = data.frame(matrix(ncol = 0, nrow = length(original_df[,1])))
-    column_names = colnames(original_df)
-
-    for (i in 1:length(column_names)){
-      if (grepl(checking, column_names[i], fixed=TRUE)){
-        single_align_df[[column_names[i]]] = NA
-        single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
-      }
-    }
-
-    #remove all na columns
-    #happening cuz of testing
-    single_align_df = single_align_df[colSums(!is.na(single_align_df)) > 0]
-    return(single_align_df)
+  original_df = NA
+  if (align_diretion == 'left') {
+    original_df = digitdata@left_aligned
   }
+  else if (align_diretion == 'right') {
+    original_df = digitdata@right_aligned
+  }
+  else {
+    stop("align_direction must be either 'left' or 'right'")
+  }
+
+  #create output table
+  single_align_df = data.frame(matrix(ncol = 0, nrow = length(original_df[,1])))
+  column_names = colnames(original_df)
+  for (i in 1:length(column_names)){
+    #add a space at the end to avoid picking up alternative superstring column names
+    if (grepl(paste(desired_col, ''), column_names[i], fixed=TRUE)){
+      single_align_df[[column_names[i]]] = NA
+      single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
+    }
+  }
+  #remove all NA columns
+  #happening cuz of testing
+  single_align_df = single_align_df[colSums(!is.na(single_align_df)) > 0]
+  return(single_align_df)
 }
 
 
-#remove last digit if desired
+#' Remove last digit from a left-aligned/right-aligned digits table
+#'
+#' @param single_column_digits left-aligned/right-aligned digits table for a single numeric column
+#' @param align_diretion 'left' or 'right': specify whether left-aligned or right-aligned digits table \code{single_column_digits} is
+#'
+#' @return \code{single_column_digits} without last digits
 drop_last_digit_places = function(single_column_digits, align_direction='left'){
   #left aligned
   if (align_direction == 'left'){
@@ -98,15 +112,12 @@ drop_last_digit_places = function(single_column_digits, align_direction='left'){
   return(single_column_digits)
 }
 
-# i = 1
-# a = c(1,2,3,NA, NA)
-# while ((i<=10) && (!(is.na(a[i])))){
-#   print(i)
-#   i = i +1
-# }
-# i
 
-#remove first digit if desired
+#' Remove first digit from a left-aligned/right-aligned digits table
+#'
+#' @inheritParams drop_last_digit_places
+#'
+#' @return \code{single_column_digits} without first digits
 drop_first_digit_places = function(single_column_digits, align_direction='left'){
 
   #left aligned
@@ -139,8 +150,17 @@ drop_first_digit_places = function(single_column_digits, align_direction='left')
   return(single_column_digits)
 }
 
-#gets the desired data columns for analysis, can be left or right aligned
-#also in the mean time drop the first and last digit places if it is desired
+
+#' Fetches the left-aligned/right-aligned data columns for analysis, drop the first and last digit places if desired
+#'
+#' @inheritParams single_column_aligned
+#' @inheritParams all_digits_test
+#'
+#' @return A list with
+#' \itemize{
+#'   \item \code{digits_table} The left-aligned/right-aligned digits table for \code{data_columns}
+#'   \item \code{digitdata} The \code{DigitAnalysis} object with slot 'max' updated
+#' }
 grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digit=FALSE, skip_last_digit=FALSE, align_direction='left'){
 
   digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
@@ -149,62 +169,34 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digi
   data_columns = get_data_columns(digitdata, data_columns)
 
   digitdata@max = 0
-
   for (col_name in data_columns){
     single_column_digits = single_column_aligned(digitdata, col_name, align_direction)
 
     #update the max attribute of digitdata for use in other functions
     if (digitdata@max < as.numeric(length(single_column_digits))){
-      #print('sfdsff')
-      #print(head(single_column_digits))
-      #print(as.numeric(length(single_column_digits)))
-      #print(digitdata@max)
-      #print(single_column_digits)
-      #print(FALSE %in% is.na(single_column_digits[as.numeric(length(single_column_digits))]))
       digitdata@max = as.numeric(length(single_column_digits))
-      #print(digitdata@max)
     }
 
-    ###!!!!!!!!!!!!!!!!!!!!!!!
-    #remove last digit before remove first, to avoid problems like there are 1-digit numbers
+    #remove last digit before remove first, to avoid problems like there are 1-digit numbers!!!!!!!!
     if (skip_last_digit){
       single_column_digits = drop_last_digit_places(single_column_digits, align_direction)
     }
     if (skip_first_digit){
       single_column_digits = drop_first_digit_places(single_column_digits, align_direction)
     }
-    digits_table = cbind(digits_table, single_column_digits)
+    digits_table = cbind(digits_table, single_column_digits) ###### can turn this into a better function using the library cannoot recall now, use row bind
   }
   return(list('digits_table'=digits_table, 'digitdata'=digitdata))
 }
 
-#on desired aligned columns, extract only the desired digit places in a dropping column based way
-#only applies for left aligned digits data!!!!!!!!!!
-parse_digit_places = function(digitdata, digits_table, digit_places){
 
-  # #find the names of the digit places to use
-  # digit_places_names = digitdata@left_aligned_column_names[digit_places]
-  #
-  # print(digit_places)
-  # print(digit_places_names)
-  #
-  # #create a copy of the table to be returned
-  # usable_data = data.frame(digits_table)
-  # colnames(usable_data) = gsub("."," ",colnames(usable_data), fixed=TRUE)
-  #
-  # print(usable_data)
-  #
-  # #drop by scanning each column name
-  # if (!(is.na(digit_places_names[1]))){
-  #   for (position_name in digit_places_names){
-  #     for (i in 1:length(colnames(digits_table))){
-  #       if (grepl(position_name, colnames(digits_table)[i], fixed=TRUE) == FALSE){
-  #         #drop this column since it is the digit place unwanted
-  #         usable_data = usable_data[!(colnames(usable_data) %in% c(colnames(digits_table[i])))]
-  #       }
-  #     }
-  #   }
-  # }
+#' Obtain exclusively the desired digit places for left aligned digits table
+#'
+#' @param digits_table A left-aligned digits table
+#' @inheritParams all_digits_test
+#'
+#' @return Digits table with desired digit places, ready to count observation
+parse_digit_places = function(digitdata, digits_table, digit_places){
 
   #find the names of the digit places to drop
   digit_places_names = digitdata@left_aligned_column_names[-digit_places]
@@ -228,16 +220,16 @@ parse_digit_places = function(digitdata, digits_table, digit_places){
 }
 
 
-#parse usable_data to  obtain observation table s.t. we have exclusively the desired digits and digit places
+#' Parse cleaned digits table from \code{parse_digit_places} to obtain observation table for chi square test
+#'
+#' @param usable_data Digits table with desired digit places
+#' @inheritParams all_digits_test
+#'
+#' @return Observation table for chi square test
 obtain_observation = function(digitdata, usable_data, digit_places, skip_first_digit, skip_last_digit, omit_05){
+
   #create a table for collecting observations for n=max digit places, upper bound
   observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max))
-  # observation_table = NA
-  # if (skip_last_digit){
-  #   observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max-1)) #one less digit place
-  # } else {
-  #   observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max))
-  # }
 
   #fill up observation table from usable data columns
   digit_place_names = digitdata@left_aligned_column_names
@@ -245,27 +237,19 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
   colnames(observation_table) = digit_place_names[1:length(observation_table)]
   #name the rows
   rownames(observation_table) = 0:9
-  #print(usable_data)
+
   for (i in 1:length(usable_data)){
     #figure out the digit place it is in
     for (j in 1:length(observation_table)){
-      #print(usable_data)
-      #print(paste('',digit_place_names[j]))
-      #print(colnames(usable_data)[i])
-      #print(grepl(paste('',digit_place_names[j]), colnames(usable_data)[i], fixed=TRUE))
-
       if (grepl(paste('',digit_place_names[j]), colnames(usable_data)[i], fixed=TRUE)){
         #it is a column for digit place j
         #get the table for frequency count for column i
         occurances = table(usable_data[,i])
-        #print(digit_place_names[j])
-        #print(occurances)
         #update it to column j of observation table
         #this occurances can be a null table
         if (!(is.null(occurances))){
           for (name in names(occurances)){
             digit = as.integer(name)
-            #print(observation_table[digit+1, j] + occurances[name])
             #digit + 1 since index starts from 1 and digit starts from 0
             observation_table[digit+1, j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)    ######can simplify
           }
@@ -295,7 +279,11 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
   return(observation_table)
 }
 
-#parse the contigency table s.t. we have exclusively the desired digits and digit places
+#' Parse the contigency table to have exclusively the desired digits and digit places
+#'
+#' @inheritParams all_digits_test
+#'
+#' @return Contigency table with exclusively the desired digits and digit places
 parse_contigency_table = function(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05){
   #drop the "x" and Digits column for table
   contingency_table = contingency_table[!(colnames(contingency_table) %in% c("Digits", "X"))]
@@ -312,17 +300,6 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, sk
     #otherwise, omit_05 is NA so do nothing
   }
 
-  #####checkings
-  # looks useless
-  # end = digitdata@max
-  # if (skip_last_digit){
-  #   end = end - 1
-  # }
-  # contingency_table = contingency_table[ , 1:end]
-  #####more checkings
-
-  #print(contingency_table)
-  #print(digit_places)
   #find the digit places to use and drop the extra digit places in precomputred table
   contingency_table = contingency_table[digit_places]
   #####more checkings....
@@ -343,8 +320,12 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, sk
 ############################################################################################################
 
 
-#split on category and perform chi square test on data for each category
-#data is a data frame, usually the cleaned df or any parsed version of it from digitdata class object
+#' Breaks the data on specfied column
+#'
+#' @param data A dataframe, preferably 'cleaned' slot for \code{DigitAnalysis} object any parsed version of it
+#' @inheritParams all_digits_test
+#'
+#' @return A list of array of indexes in \code{data} that belongs to each category
 break_by_category = function(data, break_out){
 
   if (is.na(match(break_out, colnames(data)))) {
@@ -356,7 +337,6 @@ break_by_category = function(data, break_out){
   }
 
   indexes_of_categories = list()
-
   for (category_name in unique(data[, break_out])){
     #what if there is NA? havent encountered yet...I guess ignore
 
@@ -366,21 +346,6 @@ break_by_category = function(data, break_out){
     #add rows to the named element in list
     indexes_of_categories[[category_name]] = rows
   }
-
   return(indexes_of_categories)
-}
-
-#split round and unround numbers on specified column to perform unpacking round number test
-unpacking_round_number_split = function(digitdata, unpacking_rounding_column){
-  if (is.na(match(unpacking_rounding_column, colnames(digitdata@cleaned)))) {
-    stop('specified category is not a column in the data')
-  }
-  if (typeof(digitdata@cleaned[[unpacking_rounding_column]]) == "character"){
-    stop('the column for splitting unround and round numbers must be a column with numbers')
-  }
-
-  rounded_rows = which(digitdata@cleaned[[unpacking_rounding_column]] %% 10 == 0)
-
-  return(rounded_rows)
 }
 
