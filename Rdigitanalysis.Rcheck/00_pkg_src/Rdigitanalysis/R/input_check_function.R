@@ -5,23 +5,38 @@
 #Summer 2020
 ############################################################
 
-
-############################################################
-#input check function
-############################################################
-
-
-#assert the input to user accessible functions in this package are of correct type and form
-#digitdata is mandatory option, all other arguemnts are defaulted to NA, and checked iff it is relevant
+#' Asserts the input to user accessible functions in this package are of correct type and form.
+#'
+#' @param digitdata Mandatory option. Check if it is of class \code{DigitAnalysis}
+#' @param contingency_table Defaulted to NA. Pass in to check if it is a valid input.
+#' @param data_columns Defaulted to NA. Pass in to check if it is a valid input.
+#' @param digit_places Defaulted to NA. Pass in to check if it is a valid input.
+#' @param skip_first_digit Defaulted to NA. Pass in to check if it is a valid input.
+#' @param omit_05 Defaulted to NA. Pass in to check if it is a valid input.
+#' @param break_out Defaulted to NA. Pass in to check if it is a valid input.
+#' @param distribution Defaulted to NA. Pass in to check if it is a valid input.
+#' @param plot Defaulted to NA. Pass in to check if it is a valid input.
+#' @param skip_last_digit Defaulted to NA. Pass in to check if it is a valid input.
+#' @param unpacking_rounding_column Defaulted to NA. Pass in to check if it is a valid input.
+#' @param min_length Defaulted to NA. Pass in to check if it is a valid input.
+#' @param duplicate_matching_cols Defaulted to NA. Pass in to check if it is a valid input.
+#' @param sector_column Defaulted to NA. Pass in to check if it is a valid input.
+#' @param sector_grouping Defaulted to NA. Pass in to check if it is a valid input.
+#' @param high Defaulted to NA. Pass in to check if it is a valid input.
+#' @param max_length Defaulted to NA. Pass in to check if it is a valid input.
+#' @param num_digits Defaulted to NA. Pass in to check if it is a valid input.
+#' @param N Defaulted to NA. Pass in to check if it is a valid input.
+#' @param standard_df Defaulted to NA. Pass in to check if it is a valid input.
+#'
+#' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA, duplicate_matching_cols=NA,
-                       sector_column=NA, sector_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA) {
-  #############some logical stuff to check and throw errors on###########
+                       sector_column=NA, sector_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA) {
+
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
     stop("digitdata must be an object in the class DigitAnalysis! data need to be preprocessed into the DigitAnalysis format, use function make_class()!")
   }
-
 
   #contingency_table must be a dataframe
   if (TRUE %in% (!(is.na(contingency_table)))){
@@ -69,7 +84,6 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
       stop('skip_first_digit must be a boolean: TRUE or FALSE!')
     }
   }
-
 
   #omit_05 must be either NA, 0, c(0,5), or c(5,0)
   if (TRUE %in% (!(is.na(omit_05)))){
@@ -151,7 +165,7 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
 
   #duplicate_matching_cols must be a single column name or an array of column names to define a exact duplicate
   if (TRUE %in% (!(is.na(duplicate_matching_cols)))){
-    if (duplicate_matching_cols != 'all'){
+    if (duplicate_matching_cols[1] != 'all'){
       if (!(is.character(duplicate_matching_cols))){
         stop("duplicate_matching_cols must be a single column name or an array of column names to define a exact duplicate!")
       }
@@ -223,7 +237,17 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
       stop("N must be an integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
     }
   }
+  if (TRUE %in% (!(is.na(standard_df)))){
+    if (length(standard_df) != 1){
+      stop("standard_df must be a boolean denoting whether to use standard method or digit analysis method for calculating degrees of freedom!")
+    }
+    else if (!(is.logical(standard_df))){
+      stop("standard_df must be a boolean denoting whether to use standard method or digit analysis method for calculating degrees of freedom!")
+    }
+  }
 }
+
+
 
 
 

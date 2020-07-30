@@ -16,17 +16,18 @@
 #' }
 #' @return Degrees of freedom
 get_df = function(table, standard=FALSE){
+  df = NA
   #standard df = (r-1)(c-1)
   if (standard){
     df = (dim(table)[1]-1) * (dim(table)[2]-1)
     if (dim(table)[2] == 1){ #only 1 column: df = r-1
       df = dim(table)[1] - 1
     }
-    return(df)
   }
-
-  df = dim(table)[1] * dim(table)[2] - length(table)
-
+  else{
+    #df = r x (c-1)
+    df = dim(table)[1] * dim(table)[2] - length(table)
+  }
   #if it include first digit place, one less df due to 0 has freq 0
   if (grepl('1', colnames(table)[1], fixed=TRUE)){
     df = df - 1
@@ -52,6 +53,10 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
     }
   }
   test_stats = sum((observed_table - expected_table)^2/expected_table, na.rm = TRUE)
+  # print('df')
+  # print(df)
+  # print('test_stats')
+  # print(test_stats)
 
   p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
 

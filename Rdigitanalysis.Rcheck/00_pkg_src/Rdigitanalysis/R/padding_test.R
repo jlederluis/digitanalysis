@@ -12,10 +12,16 @@
 ############################################################
 
 
+#' Obtains Benford mean in each digit place after specifying omitting 0 and 5 or not
+#'
+#' @inheritParams padding_test
+#'
+#' @return A table for Benford mean in each digit place after removing 0 and/or 5 if desired
+#' @export
+get_benford_mean = function(contingency_table, omit_05=c(0,5)){
+  #check input
+  input_check(contingency_table=contingency_table, omit_05=omit_05)
 
-##################!!!!!!!!!!!!!!!!might also use else where
-#get Benford mean in each digit place after specifying omitting 0 and 5 or not
-get_benford_mean = function(contingency_table, omit_05){
   #create a table for the mean of benford distribution in each digit place
   names = colnames(contingency_table)[!(colnames(contingency_table) %in% c("X", "Digits"))]
   Benford_mean = data.frame(matrix(nrow = 1, ncol = length(names)))
@@ -29,7 +35,7 @@ get_benford_mean = function(contingency_table, omit_05){
   }
   #/ sum(contingency_table[name] to normailize if p does not sum to 1
   for (name in colnames(Benford_mean)){
-    #renormialize
+    #renormalize
     contingency_table[name] = contingency_table[name] / sum(contingency_table[name])
     #get mean
     Benford_mean[name] = sum(contingency_table[name] * contingency_table['Digits'])
@@ -37,10 +43,17 @@ get_benford_mean = function(contingency_table, omit_05){
   return(list(Benford_mean=Benford_mean, contingency_table=contingency_table))
 }
 
-##################!!!!!!!!!!!!!!!!might also use else where
-#return the merged rows of all data columns aligned-right digits
+
+#' Fetches the merged rows of all data columns aligned-right digits. MIGHT BE USEFUL IN ADT!
+#'
+#' @param indexes Defaulted to NA. If NA, uses all rows. If specified, only uses the specified rows.
+#' @inheritParams padding_test
+#'
+#' @return Combined data for \code{data_columns} by merging rows
+#' @export
 combine_by_columns = function(digitdata, data_columns, indexes=NA){
   data = single_column_aligned(digitdata, desired_col=data_columns[1], align_diretion='right')
+  #get subset of data if specified
   if (!(is.na(indexes[1]))){
     data = data[indexes, ]
   }
@@ -50,16 +63,31 @@ combine_by_columns = function(digitdata, data_columns, indexes=NA){
     for (i in 2:length(data_columns)){
       data2 = single_column_aligned(digitdata, desired_col=data_columns[i], align_diretion='right')
       colnames(data2) = rev(digitdata@right_aligned_column_names[1:length(data2)])
+      #get subset of data if specified
+      if (!(is.na(indexes[1]))){
+        data = data[indexes, ]
+      }
       data = dplyr::bind_rows(data, data2)
     }
   }
-
   #change columns in correct order
   data = data[rev(digitdata@right_aligned_column_names[1:length(data)])]
-
   return(data)
 }
 
+#' Obtains expected mean conforming to Benford's Law from input \code{data} based on the number of digits in each left-aligned digit place
+#'
+#' @param data A dataframe of right-aligned digits table, preferably from \code{combine_by_columns}
+#' @param Benford_mean A table for Benford mean in each digit place after removing 0 and/or 5 if desired, preferably from \code{get_benford_mean}
+#' @inheritParams padding_test
+#'
+#' @return A list of 4 items:
+#' \itemize{
+#'   \item \code{expected_mean}: A table of expected mean for the dataset \code{data}
+#'   \item \code{final_data}: Cleaned final data to be used for padding test after getting rid of numbers > max_length and numbers < num_digits
+#'   \item \code{freq}: The number digits of each length in \code{final_data}
+#'   \item \code{freq_table}: The number of left-aligned digit place numbers in each right-aligned digit position in \code{final_data}
+#' }
 get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digits){
   if (max_length < num_digits){
     stop('max_length must be as least as large as num_digits')
@@ -70,8 +98,7 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
     #to be removed
     indexes_over_max_length = which(complete.cases(data[(length(data)-max_length):length(data)]) == TRUE)
   }
-
-  #to use
+  #to use, including the ones passes max length
   indexes_qualified = which(complete.cases(data[(length(data)-num_digits+1):length(data)]) == TRUE)
 
   #final indexes to be used
@@ -83,7 +110,7 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
   #count the number digits of each length in this dataframe
   freq = table(rowSums(!(is.na(final_data))))
 
-  #initialize a table to store the number of digit place numbers in each right-aligned digit position
+  #initialize a table to store the number of left-aligned digit place numbers in each right-aligned digit position
   #row means the right alighed digit position
   #column means how many are from nth digit place
   freq_table = data.frame(matrix(0, ncol = num_digits, nrow = max_length))
@@ -99,7 +126,6 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
       row = row + 1
     }
   }
-
   #intialize table for expected mean
   expected_mean = data.frame(matrix(nrow = 1, ncol = num_digits))
   colnames(expected_mean) = rev(digitdata@right_aligned_column_names[1:num_digits])
@@ -108,11 +134,16 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
   for (i in 1:num_digits){
     expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
   }
-
   return(list(expected_mean=expected_mean, final_data=final_data, freq=freq, freq_table=freq_table))
 }
 
-#get the observed mean from data
+
+#' Obtains the observed mean from input \code{data}
+#'
+#' @inheritParams get_expected_mean
+#' @inheritParams padding_test
+#'
+#' @return A table of observed mean for the dataset \code{data}
 get_observed_mean = function(data, num_digits){
   if (num_digits > length(data)){
     stop('the number of digits desired to evaluate is greater than the max length number in the dataset')
@@ -134,8 +165,14 @@ get_observed_mean = function(data, num_digits){
 }
 
 
-#Stimulate N Benford distribution datasets with matchig digit places as the observed
-#return the mean of each of the N stimulated dataset
+#' Stimulatse N Benford distribution datasets with matching digit places as the observed dataset. SHOULD I EXPORT THIS???!!!
+#'
+#' @param freq_table \code{freq_table} item returned from \code{get_expected_mean}
+#' @param expected_mean \code{expected_mean} item returned from \code{get_expected_mean}
+#' @inheritParams padding_test
+#'
+#' @return A dataframe for the mean of each stimulated dataset in every digit place
+#' @export
 Benford_stimulation = function(N, freq_table, expected_mean, contingency_table){
 
   #sample each digit place from right according to frequency table of our observed dataset
@@ -168,7 +205,12 @@ Benford_stimulation = function(N, freq_table, expected_mean, contingency_table){
 }
 
 
-#get p_value for comparing with MC stimulated datasets
+#' Obtains p_values for comparing with Monte Carlo stimulated datasets
+#'
+#' @param observed_mean \code{observed_mean} returned from \code{get_observed_mean}
+#' @param stimulated_mean \code{stimulated_mean} returned from \code{Benford_stimulation}
+#'
+#' @return A table of p-values for each digit place
 get_p_value = function(observed_mean, stimulated_mean){
   p_values = data.frame(matrix(nrow=1, ncol=length(observed_mean)))
   colnames(p_values) = colnames(observed_mean)
@@ -181,40 +223,40 @@ get_p_value = function(observed_mean, stimulated_mean){
   return(p_values)
 }
 
-
-################main function############
-#performs padding test vs stimulations of Benford conforming datasets via percentile
-#digitdata is the class object;
-#contingency_table is the Benford table
-#data_columns are the names of numerical columns of data to be analyzed (defaulted as 'all' to the entire number table)
-#max length is the length of the longest numbers considered, default to 8, which is the length of the pre-computed Benford table
-#num_digits is the total number of digits aligned from the right to be analyzed, defaulted to 5, so ananlying 1s to 10ks digit place
-#N is the number of Benford conforming datasets to stimulate
-#omit_05 means if we count which of trailing 0 or 5 as rounded
-#omit_05 has three options: omit both 0 and 5->c(0,5)/c(5,0); omit only 0->0 or c(0); and omit neither->NA (when no rounding test is performed)
-#if analysis by groups is desired, break_out should specify the deisred category to break upon
-
-#return a list object, where
-#expected_mean is the expected mean by Benford's Law
-#observed_mean is the mean of the input data
-#diff_in_mean is the mean difference betweeen observed_mean and expected_mean
-#p_values is the percentile of the observed dataset among all stimulated datasets, in decreasing order
-
-
 ####
 #need ADD plot parameter
 ####
+
+#' Performs padding test vs stimulations of Benford conforming datasets via percentile
+#'
+#' @param max_length The length of the longest numbers considered. Defaulted to 8.
+#' @param num_digits The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.
+#' @param N The number of Benford conforming datasets to stimulate.
+#' @inheritParams all_digits_test
+#'
+#' @return
+#' \itemize{
+#'   \item A list with 4 elements
+#'   \itemize{
+#'     \item \code{expected_mean}: the expected mean by Benford's Law
+#'     \item \code{observed_mean}: the mean of the input data
+#'     \item \code{diff_in_mean}: the mean difference betweeen observed_mean and expected_mean
+#'     \item \code{p_values}: the percentile of the observed dataset among all stimulated datasets in decreasing order
+#'   }
+#'   \item Plots on \code{diff_in_mean} for each category if \code{plot = TRUE}
+#' }
+#' @export
+#'
+#' @examples
+#' padding_test(digitdata, contingency_table, data_columns='all')
+#' padding_test(digitdata, contingency_table, data_columns=c('col_name1', 'col_name2'), omit_05=NA)
+#' padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0)
+#' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name')
 padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
               break_out=break_out, max_length=max_length, num_digits=num_digits, N=N)
-  # if (length(omit_05) == 1){
-  #   ###check omit only 5, which is not allowed
-  #   if (!(is.na(omit_05)) && (omit_05 == 5)){
-  #     stop('cannot omit only 5 without also omitting 0 first')
-  #   }
-  # }
 
   #get benford mean in each digit place
   Benford = get_benford_mean(contingency_table, omit_05)
@@ -258,7 +300,6 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
     #break by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
-
 
       ######################################################
       #get combined by rows data for all data columns needed

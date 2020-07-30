@@ -25,8 +25,6 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
     }
 
     #remove all numbers that has length less than min_length
-
-    #only the last three digits
     digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-min_length+1):ncol(digit_pair_table)]
     ##remove incomplete rows (with nans/length < min_length)
     digit_pair_table = digit_pair_table[complete.cases(digit_pair_table), ]

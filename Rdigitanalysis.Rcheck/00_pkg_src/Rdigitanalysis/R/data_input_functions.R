@@ -10,9 +10,17 @@
 #Class function
 ############################################################
 
-
-#create our own class
-# Can extend and create with D(...) or new("D", ...)
+#' The class object for RDigitAnalysis package
+#'
+#' @slot raw The raw dataframe passed in with a filepath or a dataframe without without NA columns
+#' @slot cleaned The cleaned dataframe with numeric data columns truncated and turned into integers if it is previous characters
+#' @slot numbers The numeric columns analyzing
+#' @slot left_aligned The left-aligned digits of each data column to be analyzed in \code{numbers}. i.e. a column is 'X'; first digit will be at column '1st digit' + 'X'.
+#' @slot right_aligned The right-aligned digits of each data column to be analyzed in \code{numbers}. i.e. a column is 'X'; first digit will be at column '1s' + 'X'.
+#' @slot left_aligned_column_names The naming method for left-aligned digit places in \code{left_aligned}
+#' @slot right_aligned_column_names The naming method for right-aligned digit places in \code{right_aligned}
+#' @slot max The maximum length of the numbers being analyzed in \code{all_digit_test}. Default to 0, not relevant outside of \code{all_digit_test}.
+#'
 #' @export DigitAnalysis
 #' @exportClass DigitAnalysis
 DigitAnalysis = setClass('DigitAnalysis', slots = c(raw="data.frame", cleaned="data.frame",
@@ -25,54 +33,32 @@ DigitAnalysis = setClass('DigitAnalysis', slots = c(raw="data.frame", cleaned="d
 #basic helper functions for data input function
 ############################################################
 
-
-#this thing blow up my storage several times for some reason??????
-#library("readxl")
-#xlxs = read_excel('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.xlsx')
-
-# #rounding function based on user preference
-# round_data = function(data, method='round'){
-#   if (method == 'round'){
-#     return(round(data))
-#   } else if (method == 'floor'){
-#     return(floor(data))
-#   } else if (method == 'ceiling'){
-#     return(ceiling(data))
-#   }
-# }
-
-#find the length of the largest number in a data column
+#' Find the length of the largest number in a data column
+#'
+#' @param data Data column analyzed
+#'
+#' @return Maximum length of the largest number in the data column
 max_length = function(data){
   max = max(floor(log10(data[!(is.na(data))]))+1)
-  # max = 0
-  # for (i in 1:length(data)){
-  #   if (!(is.na(data[i]))) {
-  #     if (floor(log10(data[i]))+1 > max){
-  #       max = floor(log10(data[i]))+1
-  #     }
-  #   }
-  # }
   return(max)
 }
 
-#drop rows with NaNs or empty strings in any numeric data column
-# drop_nan_empty = function(df, col_conerned){
-#   output = data.frame(df)
-#   output = complete.cases(output[col_conerned]) #?? not sure if this work
-#   # for (i in 1:length(col_conerned)){
-#   #   output = output[!(is.na(output[[col_conerned[i]]]) | output[[col_conerned[i]]]==""), ]
-#   # }
-#   return(output)
-# }
 
-#align the digits from the left/right of a data column and update it to the specified data frame
-align_digits = function(indata, outdata, naming_method, colname, align_direction='left'){
-
+#' Align the digits from the left/right of a data column and update it to the specified data frame
+#'
+#' @param indata The data column to be turned into aligned digits dataframe
+#' @param outdata The dataframe \code{indata} will be appended (cbind) to
+#' @param naming_method Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from \code{DigitAnalysis} class
+#' @param col_name Column name for \code{indata}
+#' @param align_direction 'left' or 'right': Create left-aligned or right-aligned digits
+#'
+#' @return \code{outdata}: outdata appended with indata's aligned digits
+align_digits = function(indata, outdata, naming_method, col_name, align_direction='left'){
   max = max_length(indata) #max length of largest number in indata
 
   #intialize all digit places to NA
   for (i in 1:max){
-    outdata[[paste(colname, naming_method[i])]] = NA
+    outdata[[paste(col_name, naming_method[i])]] = NA
   }
 
   for (j in 1:length(indata)){
@@ -86,25 +72,65 @@ align_digits = function(indata, outdata, naming_method, colname, align_direction
       }
 
       for (k in 1:length(chars)){
-        outdata[[paste(colname, naming_method[k])]][j] = as.integer(chars[k])
+        outdata[[paste(col_name, naming_method[k])]][j] = as.integer(chars[k])
       }
     }
   }
   return(outdata)
 }
 
-
 ############################################################
 #intermediate helper functions for data input function
 ############################################################
 
+#' Load raw dataframe from file or from passed-in dataframe
+#'
+#' @inheritParams make_class
+#'
+#' @return Raw dataframe for \code{DigitAnalysis} slot 'raw'
+make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
+  raw_data = NA
+  #load with fp
+  #data format: row is observation; column is category; must be csv or excel!!!
+  if (!(is.na(filepath)) && is.na(raw_df)){
+    if (filetype == 'csv'){
+      raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
+    }
+    else if (filetype == 'excel'){
+      raw_data = readxl::read_excel(filepath) #really bad...takes 10 mins to load
+      raw_data = data.frame(raw_data) #turn to dataframe..before is some weird type called tibble
+    }
+    else {
+      stop('input file must be either csv or excel (.xls or .xlsx) file')
+    }
+  }
+  #pass in a dataframe
+  else if (!(is.na(raw_df)) && is.na(filepath)){
+    if (!(is.data.frame(raw_df))){
+      stop('"raw_df" must be a dataframe')
+    }
+    raw_data = raw_df
+  }
+  else {
+    stop('Can either use filepath to load raw data or pass in a dataframe as raw data. Cannot do both or neither!')
+  }
 
-#clean up the number columns with numeric data to be analyzed->'cleaned' of the class
+  #remove all unnecessary blank columns
+  raw_data = raw_data[colSums(!is.na(raw_data)) > 0]
+  return(raw_data)
+}
+
+
+#' Clean up the numeric columns of dataframe
+#'
+#' @param raw_data 'raw' slot for \code{DigitAnalysis}
+#' @param col_analyzing The numeric columns to be cleaned
+#'
+#' @return Cleaned dataframe for \code{DigitAnalysis} slot 'cleaned'
 make_cleaned_data = function(raw_data, col_analyzing){
   cleaned_data = data.frame(raw_data) #make copy without pointer issue
 
   #drop rows with NaNs or empty strings in any numeric data column
-  # cleaned_data = drop_nan_empty(cleaned_data, col_analyzing)
   for (i in 1:length(col_analyzing)) {
     #name of current data column modifying
     col_name = col_analyzing[i]
@@ -114,34 +140,34 @@ make_cleaned_data = function(raw_data, col_analyzing){
 
     #rounding
     cleaned_data[[col_name]] = as.integer(cleaned_data[[col_name]])
-    #cleaned_data[[col_name]] = round_data(cleaned_data[[col_name]])
   }
 
   return(cleaned_data)
 }
 
-#the dataframe with only the data being analyzed->'numeric' of the class
+
+#' Create dataframe for only the numeric columns of the cleaned data
+#'
+#' @param cleaned_data 'cleaned' slot for \code{DigitAnalysis}
+#' @param col_analyzing The numeric columns to be used
+#'
+#' @return Numeric dataframe for \code{DigitAnalysis} slot 'numbers'
 make_numeric_data = function(cleaned_data, col_analyzing){
-
-  #initialization
   numeric_data = data.frame(matrix(ncol = 0, nrow = length(cleaned_data[,1])))
-
-  for (i in 1:length(col_analyzing)) {
-    #name of current data column modifying
-    col_name = col_analyzing[i]
-
-    #update 'numeric' object
-    numeric_data[[col_name]] = NA
-    numeric_data[[col_name]] = cleaned_data[[col_name]]
-  }
-
+  numeric_data[col_analyzing] = cleaned_data[col_analyzing]
   return(numeric_data)
 }
 
-#the dataframe with the left/right aligned digits of each data column to be analyzed->'left_aligned'/'right_aligned' of the class
+#' Create the dataframe with the left/right aligned digits of each data column to be analyzed->'left_aligned'/'right_aligned' of the class
+#'
+#' @param cleaned_data 'cleaned' slot for DigitAnalysis
+#' @param col_analyzing The numeric columns to be used
+#' @param naming_method Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from \code{DigitAnalysis} class
+#' @param align_direction 'left' or 'right': Create left-aligned or right-aligned dataframe
+#'
+#' @return The dataframe with the left/right aligned digits of each data column to be analyzed for \code{DigitAnalysis} slot 'left_aligned'/'right_aligned'
 make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_direction='left'){
-
-  #initialization
+  #initialize
   aligned_data = data.frame(matrix(ncol = 0, nrow = length(cleaned_data[,1])))
 
   for (i in 1:length(col_analyzing)) {
@@ -149,71 +175,59 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
     col_name = col_analyzing[i]
 
     #update by 'align_left' or 'align_right'
-
     indata = cleaned_data[[col_name]]
 
     #replace 0 by NA for digit analysis
     indata[indata == 0] = NA
 
-    aligned_data = align_digits(indata=indata, outdata=aligned_data, naming_method=naming_method, colname=col_name, align_direction=align_direction) ###NAs introduced by coercion
+    aligned_data = align_digits(indata=indata, outdata=aligned_data, naming_method=naming_method, col_name=col_name, align_direction=align_direction) ###NAs introduced by coercion
   }
   return(aligned_data)
 }
-
-#make_aligned_data(DigitData@cleaned, 'ALEXP', DigitData@right_aligned_column_names, align_direction='right')
 
 ############################################################
 #Data input main function
 ############################################################
 
-###parse and clean the data for digit analysis
-###col_analyzing can be specified as any of numeric_data='sdfsfsf' or numeric_data=c('dsdfsfsf') or numeric_data=c('dsdfsfsf',...)
-###option to use delimeters with ',' as default
-#filetype can be csv or excel
-make_class = function(filepath, col_analyzing, delim=',', filetype='csv'){
-  #data format: row is observation; column is category; must be csv!!!
-  #raw input data->'raw' of the class
-  raw_data = NA
+#' Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.
+#'
+#' @param filepath Default to NA. If loading data using filepath, specify filepath as a string.
+#' @param col_analyzing All potential datra columns to be analyzed. Can be specified as any of
+#' \itemize{
+#'   \item \code{col_analyzing} = 'col_name'
+#'   \item \code{col_analyzing} = c('col_name')
+#'   \item \code{col_analyzing} = c('col_name1','col_name2', ...)
+#' }
+#' @param delim Defaulted to ','. Can specify other delimeters as well.
+#' @param filetype Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
+#' @param raw_df Default to NA. If loading data using a dataframe. Pass in the dataframe instance.
+#'
+#' @return An object in \code{DigitAnalysis}
+#' @export
+#'
+#' @examples
+#' make_class('col_name', filepath='~/filename.csv')
+#' make_class('col_name', filepath='~/filename.xlsx', filetype='excel', delim=',')
+#' make_class('col_name', raw_df=my_dataframe)
+make_class = function(col_analyzing, filepath=NA, filetype='csv', delim=',', raw_df=NA){
 
-  print('0')
-  if (filetype == 'csv'){
-    raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
-  }
-  else if (filetype == 'excel'){
-    raw_data = readxl::read_excel(filepath) #really bad...takes 10 mins to load
-    raw_data = data.frame(raw_data) #turn to dataframe..before is some weird type called tibble
-  }
-  else {
-    stop('input file must be either csv or excel (.xls or .xlsx) file')
-  }
-  print('1')
-  #remove all unnecessary blank columns
-  raw_data = raw_data[colSums(!is.na(raw_data)) > 0]
-  print('2')
-  ####################################
   ############important###############
-  ####################################
   #hard-coded way of naming the digit places, should be sufficient, if not can further add
   left_aligned_column_names = c('1st digit', '2nd digit', '3rd digit', '4th digit', '5th digit', '6th digit', '7th digit',
                                 '8th digit', '9th digit', '10th digit', '11th digit', '12th digit', '13th digit')
   right_aligned_column_names = c('1s', '10s', '100s', '1k', '10k', '100k', '1m', '10m', '100m', '1b', '10b', '100b', '1t')
-  ####################################
   ############important###############
-  ####################################
 
   ########################creation of all sub-objects########################
 
+  raw_data = make_raw_data(filepath, filetype, delim, raw_df)
+
   cleaned_data = make_cleaned_data(raw_data, col_analyzing)
-  #cleaned_data = cleaned_data[which(complete.cases(cleaned_data['ALEXP.Values'])), ] #### for now
-  print('3')
+
   numeric_data = make_numeric_data(cleaned_data, col_analyzing)
 
-  #the dataframe with the left aligned digits of each data column to be analyzed->'left_aligned' of the class
-  #i.e. a column is 'X'; first digit will be at column '1st digit' + 'X'
   left_aligned_data = make_aligned_data(cleaned_data, col_analyzing, naming_method=left_aligned_column_names, align_direction='left')
 
-  #the dataframe with the right aligned digits of each data column to be analyzed->'right_aligned' of the class
-  #i.e. a column is 'X'; first digit will be at column '1s' + 'X'
   right_aligned_data = make_aligned_data(cleaned_data, col_analyzing, naming_method=right_aligned_column_names, align_direction='right')
   #reverse the dataframe for better visual in normal form
   right_aligned_data = rev(right_aligned_data)
@@ -222,7 +236,6 @@ make_class = function(filepath, col_analyzing, delim=',', filetype='csv'){
 
   DigitData = DigitAnalysis(raw=raw_data, cleaned=cleaned_data, numbers=numeric_data, left_aligned=left_aligned_data, right_aligned=right_aligned_data,
                             left_aligned_column_names=left_aligned_column_names, right_aligned_column_names=right_aligned_column_names, max=0)
-
   return(DigitData)
 }
 

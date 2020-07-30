@@ -5,92 +5,35 @@
 #Summer 2020
 ############################################################
 
-############################################################
-#helper function
-############################################################
 
-#
-# #############prelim############
-# #clear workspace
-# rm(list = ls())
-# #free up R memory
-# gc()
-# #force numerical representation rather than scientific
-# #options(scipen = 999)
-# options(scipen = 1)
-# options(digits = 2)
-# ##############################
-#
-# #load data input functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data_input_functions.R')
-#
-# #load functions for computing Benford table
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\Benford_table_functions.R')
-#
-# #load helper functions for all digit test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_helper_functions.R')
-#
-# #load chi square test GOF functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\chi_square_goodness_of_fit_functions.R')
-#
-# #load main function for all digit test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_main_function.R')
-#
-# #load all functions for digit pair test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\digit_pair_test.R')
-#
-# #load all functions for rounding test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\rounding_test.R')
-#
-# #load all functions for repeat test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\repeat_test.R')
-#
-# #load all functions for high low test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\high_low_test.R')
-#
-# #load all functions for padding test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\padding_test.R')
-#
-#
-#
-#
-# #############################################################
-# #############try it with given data##########################
-# #############################################################
-#
-# #test data input and benford table functions
-# #load data input functions
-# data_columns = c("ALEXP","BENTOT", "BENM", "BENF")
-# fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
-#
-# DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-#
-# contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-# contingency_table
-#
-
-
-
-
-
-#plot 2d histogram
-#data style can be only 'row' or 'column'
-#row means the rows has the data
-#defaulted to row cuz this is how the tests returns data
-#if want to add a horizontal line, hline specifies the y-intercept value
-hist_2D = function(data, data_style='row', hline=NA){
+#' Plot 2d histogram given data. Either rownames or colnames will be x values, and the data will be y values.
+#'
+#' @param data The 1D dataframe to be plotted.
+#' @param data_style The style of input \code{data}. \code{ggplot} requires columns to be the arrays for x values, y values, etc.
+#' \itemize{
+#'   \item If \code{data} has a row for y values, pass in 'row'.
+#'   \item If \code{data} has a column for y values, pass in 'col'.
+#'   \item Defaulted to 'row'.
+#' }
+#'
+#' @param xlab x-axis label. Defaulted to 'digits'.
+#' @param ylab y-axis label. Defaulted to 'frequency'.
+#' @param title Plot title. Defaulted to '2D Histogram'.
+#' @param hline Specifies the y-intercept value if a horizontal line is desired. Defaulted to NA.
+#'
+#' @return A ggplot instance.
+hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', title='2D Histogram', hline=NA){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
   }
   plotting_data = data.frame(x=rownames(data), y=data)
-  colnames(plotting_data) = c('digit_places', 'p_values') #ensure col name are correct
-  print(plotting_data)
+  colnames(plotting_data) = c('x', 'y') #ensure col name are correct
 
   #2d plot
   library(ggplot2)
-  hist2d = ggplot(data=plotting_data, aes(x=digit_places, y=p_values)) +
-    geom_bar(stat="identity")
+  hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
+    geom_bar(stat="identity") + xlab(xlab) + ylab(ylab) + ggtitle(title)
   #+ geom_text(aes(label=values), vjust=-0.3, size=3.5, color='blue') #for label exact value
 
   if (!(is.na(hline))){
@@ -101,39 +44,96 @@ hist_2D = function(data, data_style='row', hline=NA){
 }
 
 
-#plot 2d histogram with multiple varibales as specified by the break_out param
-hist_2D_variables = function(data, data_style='row'){
+#' Plot 2d histogram with multiple varibales as specified by typically the \code{break_out} in digit tests.
+#' If \code{data} is row style, rownames would be the categories, and colnames would be x values.
+#'
+#' @param data The 2D dataframe to be plotted.
+#' @inheritParams hist_2D
+#'
+#' @return A ggplot instance.
+hist_2D_variables = function(data, data_style='row', xlab='digits', ylab='frequency', title='Multi-variable 2D Histogram'){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
   }
   #intialize a df for plotting, columns = x, y, category
   plotting_data = data.frame(matrix(nrow = 0, ncol = 3))
-  colnames(plotting_data) = c('digit_places', 'p_values', 'category')
+  colnames(plotting_data) = c('x', 'y', 'category')
 
   #fill up df
   for (name in colnames(data)){
-    single_category_data = data.frame(digit_places=rownames(data), p_values=data[[name]], category=rep(name, nrow(data)))
+    single_category_data = data.frame(x=rownames(data), y=data[[name]], category=rep(name, nrow(data)))
     plotting_data = rbind(plotting_data, single_category_data)
   }
-  print(plotting_data)
 
   #stacked 2d barplot with multiple groups
   #use position=position_dodge()
   library(ggplot2)
-  hist2d_multiple = ggplot(data=plotting_data, aes(x=digit_places, y=p_values, fill=category)) +
-    geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) #ensure order of digit places
+  hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
+    geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
+    xlab(xlab) + ylab(ylab) + ggtitle(title) #ensure order of digit places
   #+ theme(legend.position="bottom") #legend position
-
   return(hist2d_multiple)
 }
 
-
-#plot multiple plots on a single image
-#plot_list is a list of plots desire to show
+#' Plot multiple plots on a single image
+#'
+#' @param plot_list A list of ggplot instances
+#'
+#' @return A plot instance with all plots in one single figure
 plot_multiple_hist2d = function(plot_list){
   require(gridExtra)
-  plots = do.call("grid.arrange", c(plots, nrow = floor(sqrt(length(plots)))))
+  plots = do.call("grid.arrange", c(plot_list, nrow = floor(sqrt(length(plot_list)))))
   return(plots)
+}
+
+
+#' Plot 2D histogram on digits freqency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}
+#'
+#' @param digits_table The digits table for counts in each digits in each digit place
+#' @inheritParams hist_2D
+#'
+#' @return A figure with each data column's value plotted against rownames
+plot_all_digit_places = function(digits_table, name='', data_style='col'){
+  plot_list = list()
+  #turn into frequency decimal
+  for (i in 1:length(digits_table)){
+    digits_table[, i] = digits_table[, i] / sum(digits_table[, i], na.rm = TRUE)
+  }
+  for (i in 1:length(digits_table)){
+    curr_digit_place = colnames(digits_table)[i]
+    hist_digit_place_i = hist_2D(digits_table[i], data_style=data_style, xlab='digits', ylab='frequency', title=paste(curr_digit_place, name), hline=NA)
+    plot_list[[curr_digit_place]] = hist_digit_place_i
+  }
+  plots = plot_multiple_hist2d(plot_list)
+  return(plots)
+}
+
+
+
+#' Plot 3D histogram. The display follows that rows will be x-axis, and columns will be y-axis.
+#'
+#' @param data The 2D dataframe to be plotted.
+#' @param zlab z-axis label. Defaulted to 'frequency'.
+#' @param theta x-y (left-right) viewing angle. Defaulted to 55.
+#' @param phi xy-z (up-down) viewing angle. Defaulted to 20.
+#' @inheritParams hist_2D
+#' @inheritParams all_digits_test
+#'
+#' @return Nothing is retuned. Displays a \code{plot3D} 3d plot automatically.
+hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=20){
+  #assert digitdata is of correct class
+  input_check(digitdata=digitdata)
+
+  #turn into frequency decimal
+  for (i in 1:length(data)){
+    data[, i] = data[, i] / sum(data[, i], na.rm = TRUE)
+  }
+  x = as.numeric(rownames(data))
+  y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
+  z = as.matrix(data)
+  plot3D::hist3D(x, y, z, zlim=c(0,1), theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=10,
+                 ticktype="detailed", space=0.1, lighting=list('ambient'=0.5), main=title,
+                 xlab=xlab, ylab=ylab, zlab=zlab)
 }
 

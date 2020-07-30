@@ -45,19 +45,19 @@ get_round_unround_digitdata = function(digitdata, unpacking_rounding_column){
 
   #create a copy of digitdata with only round entries in the specified numeric column
   round_digitdata = digitdata
-  round_digitdata@raw = NA # save memory
-  round_digitdata@cleaned = round_digitdata@cleaned[round_numbers_indexes, ]
-  round_digitdata@numbers = round_digitdata@numbers[round_numbers_indexes, ]
-  round_digitdata@left_aligned = round_digitdata@left_aligned[round_numbers_indexes, ]
-  round_digitdata@right_aligned = round_digitdata@right_aligned[round_numbers_indexes, ]
+  round_digitdata@raw = data.frame() # save memory
+  round_digitdata@cleaned = data.frame(round_digitdata@cleaned[round_numbers_indexes, ])
+  round_digitdata@numbers = data.frame(round_digitdata@numbers[round_numbers_indexes, ])
+  round_digitdata@left_aligned = data.frame(round_digitdata@left_aligned[round_numbers_indexes, ])
+  round_digitdata@right_aligned = data.frame(round_digitdata@right_aligned[round_numbers_indexes, ])
 
   #create a copy of digitdata with only unround entries in the specified numeric column
   unround_digitdata = digitdata
-  unround_digitdata@raw = NA # save memory
-  unround_digitdata@cleaned = unround_digitdata@cleaned[-round_numbers_indexes, ]
-  unround_digitdata@numbers = unround_digitdata@numbers[-round_numbers_indexes, ]
-  unround_digitdata@left_aligned = unround_digitdata@left_aligned[-round_numbers_indexes, ]
-  unround_digitdata@right_aligned = unround_digitdata@right_aligned[-round_numbers_indexes, ]
+  unround_digitdata@raw = data.frame() # save memory
+  unround_digitdata@cleaned = data.frame(unround_digitdata@cleaned[-round_numbers_indexes, ])
+  unround_digitdata@numbers = data.frame(unround_digitdata@numbers[-round_numbers_indexes, ])
+  unround_digitdata@left_aligned = data.frame(unround_digitdata@left_aligned[-round_numbers_indexes, ])
+  unround_digitdata@right_aligned = data.frame(unround_digitdata@right_aligned[-round_numbers_indexes, ])
 
   return(list(round_digitdata=round_digitdata, unround_digitdata=unround_digitdata))
 }

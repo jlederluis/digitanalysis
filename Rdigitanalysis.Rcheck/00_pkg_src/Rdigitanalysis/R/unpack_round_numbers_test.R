@@ -10,79 +10,79 @@
 #unpack round numbers test
 ############################################################
 
+#' Get the indexes of round and unround entries in the specified column in \code{digitdata}
+#'
+#' @inheritParams unpack_round_numbers_test
+#'
+#' @return Indexes of rounded entries in the specified column
+unpacking_round_number_split = function(digitdata, unpacking_rounding_column){
+  if (is.na(match(unpacking_rounding_column, colnames(digitdata@cleaned)))) {
+    stop('specified category is not a column in the data')
+  }
+  if (typeof(digitdata@cleaned[[unpacking_rounding_column]]) == "character"){
+    stop('the column for splitting unround and round numbers must be a column with numbers')
+  }
 
-#create two copies of digitdata:
-#one with only round entries in the specified numeric column
-#the other with only unround entries in the specified numeric column
+  rounded_rows = which(digitdata@cleaned[[unpacking_rounding_column]] %% 10 == 0)
+
+  return(rounded_rows)
+}
+
+
+#' Creates two two copies of digitdata:
+#' \itemize{
+#'   \item A copy with only round entries in the specified numeric column
+#'   \item A copy with only unround entries in the specified numeric column
+#' }
+#' Helper function for \code{unpack_round_numbers_test}.
+#'
+#' @inheritParams unpack_round_numbers_test
+#'
+#' @return A list with two DigitAnalysis objects: round_digitdata and unround_digitdata
 get_round_unround_digitdata = function(digitdata, unpacking_rounding_column){
   #get the round indexes
   round_numbers_indexes = unpacking_round_number_split(digitdata, unpacking_rounding_column)
 
   #create a copy of digitdata with only round entries in the specified numeric column
   round_digitdata = digitdata
-  round_digitdata@cleaned = round_digitdata@cleaned[round_numbers_indexes, ]
-  round_digitdata@numbers = round_digitdata@numbers[round_numbers_indexes, ]
-  round_digitdata@left_aligned = round_digitdata@left_aligned[round_numbers_indexes, ]
-  round_digitdata@right_aligned = round_digitdata@right_aligned[round_numbers_indexes, ]
+  round_digitdata@raw = data.frame() # save memory
+  round_digitdata@cleaned = data.frame(round_digitdata@cleaned[round_numbers_indexes, ])
+  round_digitdata@numbers = data.frame(round_digitdata@numbers[round_numbers_indexes, ])
+  round_digitdata@left_aligned = data.frame(round_digitdata@left_aligned[round_numbers_indexes, ])
+  round_digitdata@right_aligned = data.frame(round_digitdata@right_aligned[round_numbers_indexes, ])
 
   #create a copy of digitdata with only unround entries in the specified numeric column
   unround_digitdata = digitdata
-  unround_digitdata@cleaned = unround_digitdata@cleaned[-round_numbers_indexes, ]
-  unround_digitdata@numbers = unround_digitdata@numbers[-round_numbers_indexes, ]
-  unround_digitdata@left_aligned = unround_digitdata@left_aligned[-round_numbers_indexes, ]
-  unround_digitdata@right_aligned = unround_digitdata@right_aligned[-round_numbers_indexes, ]
+  unround_digitdata@raw = data.frame() # save memory
+  unround_digitdata@cleaned = data.frame(unround_digitdata@cleaned[-round_numbers_indexes, ])
+  unround_digitdata@numbers = data.frame(unround_digitdata@numbers[-round_numbers_indexes, ])
+  unround_digitdata@left_aligned = data.frame(unround_digitdata@left_aligned[-round_numbers_indexes, ])
+  unround_digitdata@right_aligned = data.frame(unround_digitdata@right_aligned[-round_numbers_indexes, ])
 
   return(list(round_digitdata=round_digitdata, unround_digitdata=unround_digitdata))
 }
 
 
-
-
-
-
-
-################main function############
-###A WRAPPER FUNCTION FOR ALL DIGIT TEST
-#performs unpacking unround number test by performing all-digit place two-way chi square test vs Benford’s Law
-#digitdata is the class object;
-#unpacking_rounding_column specifies the data column (has to be numeric!) to split upon rounded
-#and unrounded numbers to perform unpacking rounding test
-#data_columns are the names of numerical columns of data to be analyzed (defaulted as 'all' to the entire number table)
-#digit_places are the indexes of digit places desired to look at
-###can be single digit for single digit test, or an array of digits for multiple digit test
-###-1 can only appear alone as for last digit test
-###e.g. digit_places = 'all', 5, -1, c(1,2,3), etc.
-#omit_05 has three options: omit both 0 and 5->c(0,5); omit only 0->0 or c(0); and omit neither->NA (when no rounding test is performed)
-#if analysis by groups is desired, break_out should specify the deisred category to break upon
-#distribution can be 'Benford' or 'Uniform' or more ???
-#if skip_last_digit is true, will omit last digit before analysis, since we don't want tests to overlap
-
 #' Performs unpacking unround number test by performing all-digit place two-way chi square test vs Benford’s Law.
 #' A wrapper function for \code{all_digit_test}.
 #'
-#' @param digitdata A object of class \code{DigitAnalysis}.
 #' @param unpacking_rounding_column The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.
-#' @param data_columns The names of numeric columns of data to be analyzed.
-#' Inputs can be:
-#' \itemize{
-#'   \item 'all', where using all data columns in \code{numbers} df in \code{digitdata}
-#'   \item an array of column names, as characters
-#'   \item a single column name, as character
-#' }
-#' @param digit_places The indexes of left-aligned digit places to analyze
+#' @inheritParams all_digits_test
 #'
-#' @return The sum of \code{x} and \code{y}.
+#' @return A dataframe of p values on rounded and unrounded digits (also by category if break_out is specified)
+#' @export
+#'
 #' @examples
-#' add(1, 1)
-#' add(10, 1)
-
+#' unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places='all')
+#' unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places=-1)
+#' unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places=c(1,2,3), omit_05=NA)
 unpack_round_numbers_test = function(digitdata, contingency_table, unpacking_rounding_column, data_columns='all', digit_places='all',
-                                      skip_first_figit=FALSE, omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE,
-                                      skip_last_digit=FALSE){
+                                      skip_first_digit=FALSE, omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE,
+                                      skip_last_digit=FALSE, standard_df=FALSE){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
               skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, distribution=distribution, plot=plot,
-              skip_last_digit=skip_last_digit, unpacking_rounding_column=unpacking_rounding_column)
+              skip_last_digit=skip_last_digit, unpacking_rounding_column=unpacking_rounding_column, standard_df=standard_df)
 
   #unpack by round numbers indexes in the specified column
   lst = get_round_unround_digitdata(digitdata, unpacking_rounding_column)
@@ -90,11 +90,11 @@ unpack_round_numbers_test = function(digitdata, contingency_table, unpacking_rou
   unround_digitdata = lst$unround_digitdata
 
   #perform all digit tests for each digitdata object
-  round_p_values = all_digits_test(round_digitdata, contingency_table, data_columns, digit_places, skip_first_figit,
-                                   omit_05, break_out, distribution, plot, skip_last_digit)
+  round_p_values = all_digits_test(round_digitdata, contingency_table, data_columns, digit_places, skip_first_digit,
+                                   omit_05, break_out, distribution, plot, skip_last_digit, standard_df)
 
-  unround_p_values = all_digits_test(unround_digitdata, contingency_table, data_columns, digit_places, skip_first_figit,
-                                     omit_05, break_out, distribution, plot, skip_last_digit)
+  unround_p_values = all_digits_test(unround_digitdata, contingency_table, data_columns, digit_places, skip_first_digit,
+                                     omit_05, break_out, distribution, plot, skip_last_digit, standard_df)
 
   #merge the results
   p_values = rbind(round_p_values, unround_p_values)
@@ -103,5 +103,3 @@ unpack_round_numbers_test = function(digitdata, contingency_table, unpacking_rou
   print(p_values)
   return(p_values)
 }
-
-devtools::document()
