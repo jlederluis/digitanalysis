@@ -35,7 +35,6 @@ get_df = function(table, standard=FALSE){
   return(df)
 }
 
-
 #' Perform chi square test for goodness of fit test
 #'
 #' @param observed_table Observation table for chi square test
@@ -53,13 +52,7 @@ chi_square_gof = function(observed_table, expected_table, df, freq=TRUE){
     }
   }
   test_stats = sum((observed_table - expected_table)^2/expected_table, na.rm = TRUE)
-  # print('df')
-  # print(df)
-  # print('test_stats')
-  # print(test_stats)
-
   p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
-
   return(p_value)
 }
 

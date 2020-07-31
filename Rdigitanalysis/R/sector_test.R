@@ -8,11 +8,11 @@
 #' Performs sector test to analyze uneven distribution of percent repeats across sectors (supposed to be uniform).
 #' A wrapper function for \code{repeat_test}.
 #'
-#' @param sector_column The column for splitting the data into sectors for separate analysis.
-#' @param sector_grouping A list of arrays
+#' @param category_column The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.
+#' @param category_grouping A list of arrays
 #' \itemize{
-#'   \item Each the names of the elements in the list is the sector name
-#'   \item Each array contains the categories belonging to that sector
+#'   \item Each the names of the elements in the list is the category name
+#'   \item Each array contains the values belonging to that category
 #' }
 #' @param failure_factor NEED TO EDIT LATER
 #' @inheritParams repeat_test
@@ -20,7 +20,7 @@
 #' @return
 #' \itemize{
 #'   \item A table of p-values for repeat test by sector on each category
-#'   \item Plots for each category with variables as sectors if \code{plot = TRUE}
+#'   \item Plots for each break out element with variables as categories specified by \code{category_grouping} if \code{plot = TRUE}
 #'   \item If NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
 #' }
 #' @export

@@ -75,7 +75,6 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA){
   if (duplicate_matching_cols[1] == 'all'){
     duplicate_matching_cols = colnames(digitdata@cleaned)
   }
-
   #the columns we want to analyze
   data = digitdata@cleaned[duplicate_matching_cols]
 
@@ -99,7 +98,6 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA){
       percent_repeats_table[category_name] = percent_repeats_in_category #a value
     }
   }
-
   #get the mean of all the values computed
   mean_percent_repeated = rowMeans(percent_repeats_table)
   percent_repeats_table['mean'] = mean_percent_repeated

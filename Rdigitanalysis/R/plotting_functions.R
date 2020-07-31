@@ -110,18 +110,17 @@ plot_all_digit_places = function(digits_table, name='', data_style='col'){
 }
 
 
-
 #' Plot 3D histogram. The display follows that rows will be x-axis, and columns will be y-axis.
 #'
 #' @param data The 2D dataframe to be plotted.
 #' @param zlab z-axis label. Defaulted to 'frequency'.
 #' @param theta x-y (left-right) viewing angle. Defaulted to 55.
-#' @param phi xy-z (up-down) viewing angle. Defaulted to 20.
+#' @param phi xy-z (up-down) viewing angle. Defaulted to 16.
 #' @inheritParams hist_2D
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is retuned. Displays a \code{plot3D} 3d plot automatically.
-hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=20){
+hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=16){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
 
@@ -132,8 +131,8 @@ hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='fr
   x = as.numeric(rownames(data))
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
-  plot3D::hist3D(x, y, z, zlim=c(0,1), theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=10,
-                 ticktype="detailed", space=0.1, lighting=list('ambient'=0.5), main=title,
-                 xlab=xlab, ylab=ylab, zlab=zlab)
+  plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
+                 ticktype="detailed", space=0, expand=0.6, d=2, col='grey', colvar=NA, border='black', shade=0,
+                 lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
 }
 

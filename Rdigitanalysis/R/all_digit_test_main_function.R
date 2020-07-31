@@ -24,7 +24,12 @@
 #' }
 #' @param skip_first_digit TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.
 #' @param omit_05 Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).
-#' @param break_out The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character. Default to NA.
+#' @param break_out
+#' \itemize{
+#'   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+#'   \item The first division (usually x-axis) shown in plots.
+#'   \item Default to NA.
+#' }
 #' @param distribution 'Benford' or 'Uniform'. Specifies the distribution the chi square test is testing against. Default to 'Benford'.
 #' @param plot TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.
 #' @param skip_last_digit TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
@@ -82,12 +87,9 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   #get observation table from usable data
   observation_table = obtain_observation(digitdata, usable_data, digit_places, skip_first_digit, skip_last_digit, omit_05)
   #plot
-  hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='%', title=paste('All Digit Test', ' for All')) #3D histogram
+  hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste('All Digit Test', ' for All')) #3D histogram
   plot_all_digit_places(observation_table, name='All', data_style='col') #2D histograms
 
-  # print(observation_table)
-  # print(sum(observation_table))
-  # print(contingency_table)
   #######################################################################
   #do chi square test
   #######################################################################
@@ -105,22 +107,26 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
       obs_in_category = NA
-      #single digit place: need to change the subsetted array into dataframe with colname   #############can delete
-      if (length(digit_places) == 1){
-        usable_in_category = data.frame(usable_data[indexes_of_category, ])
-        colnames(usable_in_category) = colnames(usable_data)
-        obs_in_category = obtain_observation(digitdata, usable_in_category, digit_places, skip_first_digit, skip_last_digit, omit_05)
-        print(category_name)
-        print(sum(obs_in_category))
+
+      #single digit place: need to change the subsetted array into dataframe with colname
+      usable_in_category = data.frame(usable_data[indexes_of_category, ])
+      colnames(usable_in_category) = colnames(usable_data)
+      obs_in_category = obtain_observation(digitdata, usable_in_category, digit_places, skip_first_digit, skip_last_digit, omit_05)
+
+      #for subsets on break_out, there might be columns that are all zeros in sub-observation table
+      zero_columns = which(colSums(obs_in_category != 0) == 0)
+
+      if (length(zero_columns) > 0){
+        #remove zero columns and recompute df if necessary when getting the p values
+        p_values[category_name] = chi_square_gof(obs_in_category[-zero_columns], contingency_table[-zero_columns],
+                                                 df=get_df(contingency_table[-zero_columns], standard=standard_df))
+      } else {
+        #do it normally
+        p_values[category_name] = chi_square_gof(obs_in_category, contingency_table, df)
       }
-      #multiple digit places is fine
-      else {
-        obs_in_category = obtain_observation(digitdata, usable_data[indexes_of_category, ], digit_places, skip_first_digit, skip_last_digit, omit_05)
-      }
-      p_values[category_name] = chi_square_gof(obs_in_category, contingency_table, df)
       #plot
-      hist_3d(obs_in_category, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste('All Digit Test', category_name))#3D histogram
-      plot_all_digit_places(obs_in_category, name=category_name, data_style='col') #2D histograms
+      # hist_3d(obs_in_category, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste('All Digit Test', category_name))#3D histogram
+      # plot_all_digit_places(obs_in_category, name=category_name, data_style='col') #2D histograms
     }
   }
   # print('all digit test')

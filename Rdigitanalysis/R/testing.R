@@ -179,7 +179,7 @@
 # data_columns = c("ALEXP")#,"BENTOT", "BENM", "BENF")
 # max_length = 7
 # num_digits = 5
-# N = 10
+# # N = 10
 # omit_05 = c(0,5)
 #
 # test=padding_test(DigitData, contingency_table, data_columns, max_length, num_digits, N, omit_05, break_out=NA)$diff_in_mean
