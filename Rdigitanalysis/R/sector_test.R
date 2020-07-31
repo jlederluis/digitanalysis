@@ -26,22 +26,22 @@
 #' @export
 #'
 #' @examples
-#' sector_test(digitdata, sector_column='sector_name', sector_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
-#' sector_test(digitdata, sector_column='sector_name', sector_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
+#' sector_test(digitdata, category_column='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
+#' sector_test(digitdata, category_column='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 #' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
-sector_test = function(digitdata, sector_column, sector_grouping, duplicate_matching_cols='all', break_out=NA, failure_factor=3){
+sector_test = function(digitdata, category_column, category_grouping, duplicate_matching_cols='all', break_out=NA, failure_factor=3){
 
   #check input
-  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, sector_column=sector_column, sector_grouping=sector_grouping)
+  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, category_column=category_column, category_grouping=category_grouping)
 
   #check if the sector columns are valid
-  if (!(is.na(sector_column))){
-    if (is.na(match(sector_column, colnames(digitdata@cleaned)))){
+  if (!(is.na(category_column))){
+    if (is.na(match(category_column, colnames(digitdata@cleaned)))){
       stop('specified column to analyze sector effect is not a column in the data')
     }
     else{
-      for (sector_name in names(sector_grouping)){
-        if (NA %in% match(sector_grouping[[sector_name]], unique(digitdata@cleaned[[sector_column]]))){
+      for (sector_name in names(category_grouping)){
+        if (NA %in% match(category_grouping[[sector_name]], unique(digitdata@cleaned[[category_column]]))){
           print(sector_name)
           stop('specified category is not a category in the column specified to analyze sector effect')
         }
@@ -57,11 +57,11 @@ sector_test = function(digitdata, sector_column, sector_grouping, duplicate_matc
   rownames(sector_repeats_table) = c('all', 'mean', category_names) #ensure each row is fixed for a category when append
 
   #get indexes for each category in the specified sector column
-  sector_column_indexes = break_by_category(digitdata@cleaned, sector_column) #this is a list since unequal number of entries for each category
+  sector_column_indexes = break_by_category(digitdata@cleaned, category_column) #this is a list since unequal number of entries for each category
 
-  for (sector_name in names(sector_grouping)){
+  for (sector_name in names(category_grouping)){
     #get the index of sector by accessing the names of the categories in the data column that belong to this sector
-    indexes_of_sector = sector_column_indexes[sector_grouping[[sector_name]]]
+    indexes_of_sector = sector_column_indexes[category_grouping[[sector_name]]]
     indexes_of_sector = unlist(indexes_of_sector) #turn into an array
 
     #create new digitdata object for each sector

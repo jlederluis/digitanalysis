@@ -20,8 +20,8 @@
 #' @param unpacking_rounding_column Defaulted to NA. Pass in to check if it is a valid input.
 #' @param min_length Defaulted to NA. Pass in to check if it is a valid input.
 #' @param duplicate_matching_cols Defaulted to NA. Pass in to check if it is a valid input.
-#' @param sector_column Defaulted to NA. Pass in to check if it is a valid input.
-#' @param sector_grouping Defaulted to NA. Pass in to check if it is a valid input.
+#' @param category_column Defaulted to NA. Pass in to check if it is a valid input.
+#' @param category_grouping Defaulted to NA. Pass in to check if it is a valid input.
 #' @param high Defaulted to NA. Pass in to check if it is a valid input.
 #' @param max_length Defaulted to NA. Pass in to check if it is a valid input.
 #' @param num_digits Defaulted to NA. Pass in to check if it is a valid input.
@@ -31,7 +31,7 @@
 #' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA, duplicate_matching_cols=NA,
-                       sector_column=NA, sector_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA) {
+                       category_column=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA) {
 
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
@@ -172,17 +172,17 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
   }
 
-  #sector_column must be a string specifying a column name in the data
-  if (TRUE %in% (!(is.na(sector_column)))){
-    if (!(is.character(sector_column))){
-      stop('sector_column must be a string specifying a column name in the data!')
+  #category_column must be a string specifying a column name in the data
+  if (TRUE %in% (!(is.na(category_column)))){
+    if (!(is.character(category_column))){
+      stop('category_column must be a string specifying a column name in the data!')
     }
   }
 
-  #sector_grouping must be a list specifying the columns in each sector intended to split upo
-  if (TRUE %in% (!(is.na(sector_grouping)))){
-    if (!(is.list(sector_grouping))){
-      stop('sector_grouping must be a list specifying the columns in each sector intended to split upon!')
+  #category_grouping must be a list specifying the columns in each sector intended to split upo
+  if (TRUE %in% (!(is.na(category_grouping)))){
+    if (!(is.list(category_grouping))){
+      stop('category_grouping must be a list specifying the columns in each sector intended to split upon!')
     }
   }
 
@@ -246,10 +246,6 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
   }
 }
-
-
-
-
 
 # tryCatch(2+'2',
 #          error = function(e){
