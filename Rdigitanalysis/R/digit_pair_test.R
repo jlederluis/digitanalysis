@@ -20,7 +20,7 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
     digit_pair_table = single_column_aligned(digitdata, desired_col, align_diretion='right')
 
     #for break out, we separate into categories by indexing
-    if (!(is.na(indexes[1]))){ ####might have bug here...did [1] to get rid of warnings
+    if (!(is.na(indexes[1]))){
       digit_pair_table = digit_pair_table[indexes, ]
     }
 
@@ -38,30 +38,30 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
   }
 
   #paste the last tywo digits together as numbers
-  occurances = as.numeric(paste(occurances[,1], occurances[,2], sep=''))
+  occurances = as.character(paste(occurances[,1], occurances[,2], sep=''))
 
   pairs = c('00', '11', '22', '33', '44', '55', '66', '77', '88', '99')
   if (!(is.na(omit_05[1]))){
     #we omit 00 as part of digit pair
     pairs = pairs[-1]
+    occurances = occurances[occurances != '00']
+    if (length(omit_05) == 2){
+      #remove 50 from occurances as well
+      occurances = occurances[occurances != '50']
+    }
   }
-
-  #find the counts for all digit pairs
+  #find the counts for all valid digit pairs
   counts = table(occurances)
   counts = sum(counts[pairs[pairs %in% names(counts)]])
-
-  # #derive the frequency
-  # freq_pairs = counts / sum(occurances)
-
-  return(c(counts, sum(occurances) - counts))
+  return(c(counts, length(occurances) - counts))
 }
 
 #get the theoratical frequency of terminal digit pair frequency
 freq_true = function(omit_05){
   total = 100 #100 combinations possible
   pairs = 10 #10 pairs possible
-  if (length(omit_05) == 1){
-    if (!(is.na(omit_05))){
+  if (!(is.na(omit_05[1]))){
+    if (length(omit_05) == 1){
       #omitting 0, so omit 00 pair as option
       total = total - 1
       pairs = pairs - 1
@@ -115,18 +115,25 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
 
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution
   p = freq_true(omit_05)
+  print(p)
 
   #handle the data_columns = 'all' situation
   data_columns = get_data_columns(digitdata, data_columns)
 
-  #get the observed counts for number of terminal digit pairs
+  #get the observed counts = [success, failrue] for number of terminal digit pairs
   counts = counts_observed(digitdata, data_columns, omit_05, min_length)
 
   #get p_value from binomial test
-  p_value = binom.test(counts, p = p)$p.value #has to specify p = p !!!!!!
+  p_value = binom.test(x=counts, p = p, alternative = 't', conf.level = 0.95)$p.value #has to specify p = p !!!!!!
+  print(p_value)
+  print(binom.test(x=counts, p = p, alternative = 't', conf.level = 0.95))
 
-  #a dataframe of p values to return
+  #dataframe of p values to return
   p_values = data.frame(all=p_value)
+
+  #freq of digit pairs for plotting
+  freq_digit_pairs = data.frame(all=counts[1]/sum(counts))
+
 
   if (!(is.na(break_out))){
     #get indexes for each category
@@ -137,8 +144,15 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
       indexes_of_category = indexes_of_categories[[category_name]]
       counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, indexes_of_category)
       p_value_in_category = binom.test(counts_in_category, p)$p.value
-      p_values[category_name] = p_value_in_category
+      p_values[category_name] = p_value_in_category #p-value
+
+      freq_digit_pairs[category_name] = counts_in_category[1]/sum(counts_in_category) #for plotting
     }
+  }
+  #plot only if we break_out == have > 1 column
+  if (!(is.na(break_out))){
+    print(hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='percent digit pairs', title='Digit Pairs Test',
+                  hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution')) #-1 since we want uniform distribution without 'all'
   }
   return(p_values)
 }

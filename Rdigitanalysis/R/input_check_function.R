@@ -31,7 +31,7 @@
 #' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA, duplicate_matching_cols=NA,
-                       category_column=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA) {
+                       category_column=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA, rounding_patterns=NA) {
 
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
@@ -243,6 +243,11 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
     else if (!(is.logical(standard_df))){
       stop("standard_df must be a boolean denoting whether to use standard method or digit analysis method for calculating degrees of freedom!")
+    }
+  }
+  if (TRUE %in% (!(is.na(rounding_patterns)))){
+    if (!(is.character(rounding_patterns))){
+      stop("rounding_patterns must be an array of characters denoting the endstring patterns that should be considered as rounding!")
     }
   }
 }

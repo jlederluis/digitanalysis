@@ -1,14 +1,10 @@
 ############################################################
 #Functions for digit analysis R package
-###all digit test main function in this file
+###all digits test main function in this file
 #Wenjun Chang
 #Summer 2020
 ############################################################
 
-
-############################################################
-#all digits test
-############################################################
 
 #' Performs all-digit-place two-way chi square test vs Benford’s Law
 #'
@@ -77,7 +73,6 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
       digit_places = seq(2, digitdata@max)
     }
   }
-
   #get usable data
   usable_data = parse_digit_places(digitdata, digits_table, digit_places)
 
@@ -86,17 +81,20 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
 
   #get observation table from usable data
   observation_table = obtain_observation(digitdata, usable_data, digit_places, skip_first_digit, skip_last_digit, omit_05)
-  #plot
-  hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste('All Digit Test', ' for All')) #3D histogram
-  plot_all_digit_places(observation_table, name='All', data_style='col') #2D histograms
 
   #######################################################################
   #do chi square test
   #######################################################################
-  df = get_df(contingency_table, standard = standard_df)
-
+  #drop columns if cell has expected value < 5
+  table_lst = drop_disqualified_columns(observation_table, contingency_table, freq=TRUE)
+  observation_table = table_lst$observed_table
+  expected_table = table_lst$expected_table
+  print(observation_table)
   #all digit test
-  p_values = data.frame(all=chi_square_gof(observation_table, contingency_table, df))
+  p_values = data.frame(all=chi_square_gof(observation_table, expected_table, standard=standard_df))
+
+  #plot
+  plot_all_digit_test(digitdata, observation_table, digit_places, title='All')
 
   #break on category if specified
   if (!(is.na(break_out))){
@@ -113,20 +111,29 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
       colnames(usable_in_category) = colnames(usable_data)
       obs_in_category = obtain_observation(digitdata, usable_in_category, digit_places, skip_first_digit, skip_last_digit, omit_05)
 
-      #for subsets on break_out, there might be columns that are all zeros in sub-observation table
-      zero_columns = which(colSums(obs_in_category != 0) == 0)
+      #drop columns if cell has expected value < 5
+      table_lst_category = drop_disqualified_columns(obs_in_category, contingency_table, freq=TRUE)
+      obs_in_category = table_lst_category$observed_table
+      expected_in_category = table_lst_category$expected_table
+      print(obs_in_category)
+      #chi square test
+      p_values[category_name] = chi_square_gof(obs_in_category, expected_in_category, standard=standard_df)
 
-      if (length(zero_columns) > 0){
-        #remove zero columns and recompute df if necessary when getting the p values
-        p_values[category_name] = chi_square_gof(obs_in_category[-zero_columns], contingency_table[-zero_columns],
-                                                 df=get_df(contingency_table[-zero_columns], standard=standard_df))
-      } else {
-        #do it normally
-        p_values[category_name] = chi_square_gof(obs_in_category, contingency_table, df)
-      }
+
+      # #for subsets on break_out, there might be columns that are all zeros in sub-observation table
+      # zero_columns = which(colSums(obs_in_category != 0) == 0)
+      #
+      # if (length(zero_columns) > 0){
+      #   #remove zero columns and recompute df if necessary when getting the p values
+      #   p_values[category_name] = chi_square_gof(obs_in_category[-zero_columns], contingency_table[-zero_columns],
+      #                                            df=get_df(contingency_table[-zero_columns], standard=standard_df))
+      # } else {
+      #   #do it normally
+      #   p_values[category_name] = chi_square_gof(obs_in_category, contingency_table, df)
+      # }
+
       #plot
-      # hist_3d(obs_in_category, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste('All Digit Test', category_name))#3D histogram
-      # plot_all_digit_places(obs_in_category, name=category_name, data_style='col') #2D histograms
+      plot_all_digit_test(digitdata, obs_in_category, digit_places, title=category_name)
     }
   }
   # print('all digit test')

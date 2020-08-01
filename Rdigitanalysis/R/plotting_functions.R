@@ -5,6 +5,12 @@
 #Summer 2020
 ############################################################
 
+#' Stackoverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}
+#'
+#' @param n Number of ticks desired
+#'
+#' @return Nothing is returned.
+number_ticks <- function(n) {function(limits) pretty(limits, n)}
 
 #' Plot 2d histogram given data. Either rownames or colnames will be x values, and the data will be y values.
 #'
@@ -22,7 +28,7 @@
 #' @param hline Specifies the y-intercept value if a horizontal line is desired. Defaulted to NA.
 #'
 #' @return A ggplot instance.
-hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', title='2D Histogram', hline=NA){
+hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', title='2D Histogram', hline=NA, hline_name=''){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
@@ -33,12 +39,13 @@ hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', titl
   #2d plot
   library(ggplot2)
   hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
-    geom_bar(stat="identity") + xlab(xlab) + ylab(ylab) + ggtitle(title)
+    geom_bar(stat="identity") + xlab(xlab) + ylab(ylab) + ggtitle(title) +
+    scale_y_continuous(breaks=number_ticks(10)) + theme(legend.position="top")
   #+ geom_text(aes(label=values), vjust=-0.3, size=3.5, color='blue') #for label exact value
 
+  #add the horizontal line desired
   if (!(is.na(hline))){
-    #add the horizontal line desired
-    hist2d = hist2d + geom_hline(yintercept=hline, color='red')
+    hist2d = hist2d + geom_hline(aes(yintercept=hline, linetype=hline_name), color='red', lwd=1)
   }
   return(hist2d)
 }
@@ -94,7 +101,7 @@ plot_multiple_hist2d = function(plot_list){
 #' @inheritParams hist_2D
 #'
 #' @return A figure with each data column's value plotted against rownames
-plot_all_digit_places = function(digits_table, name='', data_style='col'){
+plot_table_by_columns = function(digits_table, name='', data_style='col'){
   plot_list = list()
   #turn into frequency decimal
   for (i in 1:length(digits_table)){
@@ -102,7 +109,7 @@ plot_all_digit_places = function(digits_table, name='', data_style='col'){
   }
   for (i in 1:length(digits_table)){
     curr_digit_place = colnames(digits_table)[i]
-    hist_digit_place_i = hist_2D(digits_table[i], data_style=data_style, xlab='digits', ylab='frequency', title=paste(curr_digit_place, name), hline=NA)
+    hist_digit_place_i = hist_2D(digits_table[i], data_style=data_style, xlab='digits', ylab='frequency', title=paste(name, curr_digit_place), hline=NA)
     plot_list[[curr_digit_place]] = hist_digit_place_i
   }
   plots = plot_multiple_hist2d(plot_list)
@@ -119,7 +126,7 @@ plot_all_digit_places = function(digits_table, name='', data_style='col'){
 #' @inheritParams hist_2D
 #' @inheritParams all_digits_test
 #'
-#' @return Nothing is retuned. Displays a \code{plot3D} 3d plot automatically.
+#' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
 hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=16){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
@@ -131,8 +138,43 @@ hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='fr
   x = as.numeric(rownames(data))
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
-  plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
-                 ticktype="detailed", space=0, expand=0.6, d=2, col='grey', colvar=NA, border='black', shade=0,
+  plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-2,
+                 ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
+  # text3D(x = 1:length(x) + 0.7, y = rep(1, length(x)), z = rep(0, length(x)),
+  #        labels = x, add = TRUE, adj = 0) cex.axis = 1e-100
 }
+
+
+#' Plots the relevant plots for obseravtion table in \code{all_digits_test}.
+#'
+#' @param observation_table Observation table for chi square test
+#' @param title The title for the plot after automatically generating the name for the test: either single digit test or all digit test.
+#' @inheritParams all_digits_test
+#'
+#' @return Nothing is returned. Displays plots automatically.
+plot_all_digit_test = function(digitdata, observation_table, digit_places, title=''){
+  test_type = NA
+  if (length(digit_places) == 1){
+    test_type = 'Single Digit Test'
+    plot_table_by_columns(observation_table, name=paste(title, ':', test_type), data_style='col') #multiple 2D histograms
+  }
+  else {
+    test_type = 'All Digit Test'
+    hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, ':', test_type)) #3D histogram
+    #plot_table_by_columns(observation_table, name=paste(title, ':', test_type), data_style='col') #multiple 2D histograms
+  }
+  return()
+}
+
+
+# result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
+#                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit, standard_df=TRUE)
+#
+
+
+# library("plot3Drgl")
+# plotrgl()
+
+
 

@@ -40,7 +40,7 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 
 #test with data
 #load data input functions
-data_columns = c("ALEXP.Values", "BENTOT")#, "BENM", "BENF")
+data_columns = "BENTOT.Values"#c("ALEXP.Values")#, "BENM", "BENF")
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
@@ -48,12 +48,21 @@ contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California 
 
 
 #test all digits test
-data_columns = "BENTOT"#'ALEXP.Values'
+data_columns = "BENTOT.Values"#'ALEXP.Values'
 digit_places =  'all'
 skip_first_digit=TRUE
 omit_05 = c(0,5)
 break_out='DIST'
 skip_last_digit=FALSE
+
+# indexes_to_omit = which(is.na(DigitData@raw$ALEXP.Values))
+#
+# DigitData@raw = DigitData@raw[-indexes_to_omit, ]
+# DigitData@cleaned = DigitData@cleaned[-indexes_to_omit, ]
+# DigitData@numbers = data.frame(DigitData@numbers[-indexes_to_omit, ])
+# colnames(DigitData@numbers) = data_columns
+# DigitData@left_aligned = DigitData@left_aligned[-indexes_to_omit, ]
+# DigitData@right_aligned = DigitData@right_aligned[-indexes_to_omit, ]
 
 #match the data with Jetson's
 result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
