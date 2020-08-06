@@ -1,16 +1,8 @@
 ############################################################
-#Testing for digit pair test
+#Testing for repeat test
 #Wenjun Chang
 #Summer 2020
 ############################################################
-
-
-############################################################
-#Testing; run the functions
-#Wenjun Chang
-#Summer 2020
-############################################################
-
 
 #############prelim############
 #clear workspace
@@ -31,14 +23,16 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load input check function
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\input_check_function.R')
 
+############################
+#testing
 #load helper functions for all digit test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_helper_functions.R')
 
-############################
-#testing
-#load all functions for rounding test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\rounding_test.R')
+#load all functions for repeat test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\repeat_test.R')
 
+
+#test with data
 #load data input functions
 data_columns = c("ALEXP.Values")
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
@@ -47,12 +41,13 @@ DigitData = make_class(filepath = fp, col_analyzing = data_columns)
 contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
 
-#test rounding test
-rounding_patterns = c('0','00','000','0000', '00000', '000000', '5', '50', '500')
-data_columns = c("ALEXP.Values")
+#test repeat test
+duplicate_matching_cols = c("ALEXP.Values", "YEAR", "DIST", "SECTOR")
 break_out = 'DIST'
-result=rounding_test(DigitData, data_columns=data_columns, rounding_patterns=rounding_patterns, break_out=break_out)
+
+result = repeat_test(DigitData, duplicate_matching_cols, break_out=break_out)
 
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
 result[order, ]
+
 

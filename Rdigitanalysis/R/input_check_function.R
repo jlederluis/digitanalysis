@@ -27,11 +27,13 @@
 #' @param num_digits Defaulted to NA. Pass in to check if it is a valid input.
 #' @param N Defaulted to NA. Pass in to check if it is a valid input.
 #' @param standard_df Defaulted to NA. Pass in to check if it is a valid input.
+#' @param suppress_low_N Defaulted to NA. Pass in to check if it is a valid input.
 #'
 #' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA, duplicate_matching_cols=NA,
-                       category_column=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA, rounding_patterns=NA) {
+                       category_column=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA, rounding_patterns=NA,
+                       suppress_low_N=NA) {
 
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
@@ -250,7 +252,13 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
       stop("rounding_patterns must be an array of characters denoting the endstring patterns that should be considered as rounding!")
     }
   }
+  if (TRUE %in% (!(is.na(suppress_low_N)))){
+    if (!(is.logical(suppress_low_N))){
+      stop("suppress_low_N must be a boolean denoting whether to suppress columns with entries < 5 in expected table for chi square test in all digit test!")
+    }
+  }
 }
+
 
 # tryCatch(2+'2',
 #          error = function(e){

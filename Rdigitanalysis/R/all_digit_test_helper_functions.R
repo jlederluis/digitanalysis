@@ -60,8 +60,8 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
   single_align_df = data.frame(matrix(ncol = 0, nrow = length(original_df[,1])))
   column_names = colnames(original_df)
   for (i in 1:length(column_names)){
-    #add a space at the end to avoid picking up alternative superstring column names
-    if (grepl(paste(desired_col, ''), column_names[i], fixed=TRUE)){
+    #add a space at the end to avoid picking up alternative superstring column names or can be a '.' to separate the name
+    if (grepl(paste(desired_col, ''), column_names[i], fixed=TRUE) || grepl(paste(desired_col, '.', sep=''), column_names[i], fixed=TRUE)){
       single_align_df[[column_names[i]]] = NA
       single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
     }
@@ -348,4 +348,24 @@ break_by_category = function(data, break_out){
   }
   return(indexes_of_categories)
 }
+
+
+#' Create a sub-object of the \code{digitdata} object given the indexes of the rows that belong to the sub-object.
+#'
+#' @param indexes The indexes of the rows that belong to the sub-object.
+#' @inheritParams all_digits_test
+#'
+#' @return A sub-object of input \code{digitdata}.
+#' @export
+make_sub_digitdata = function(digitdata, indexes){
+  sub_digitdata = digitdata
+  sub_digitdata@raw = data.frame() # save memory
+  sub_digitdata@cleaned = data.frame(sub_digitdata@cleaned[indexes, ])
+  sub_digitdata@numbers = data.frame(sub_digitdata@numbers[indexes, ])
+  colnames(sub_digitdata@numbers) = colnames(digitdata@numbers) #in case numbers is a single column
+  sub_digitdata@left_aligned = data.frame(sub_digitdata@left_aligned[indexes, ])
+  sub_digitdata@right_aligned = data.frame(sub_digitdata@right_aligned[indexes, ])
+  return(sub_digitdata)
+}
+
 

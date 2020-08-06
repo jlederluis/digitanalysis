@@ -5,10 +5,6 @@
 #Summer 2020
 ############################################################
 
-############################################################
-#helper function
-############################################################
-
 #' Finds the percent of repeats in the given data based on given definition of a repeat (what columns need to match)
 #'
 #' @param dataThe The dataframe to compute percent repeat on
@@ -21,20 +17,14 @@ find_percent_repeats = function(data){
   total_numbers = dim(data)[1]
   num_repeats = total_numbers - unique_numbers
   percent_repeats = num_repeats / total_numbers
-
   return(percent_repeats)
 }
 
-################################################
-################main function###################
-################################################
-
 ####
 #need to do failure factor
-#need ADD plot parameter
 ####
 
-#' Performs repeat test or sector effect test
+#' Performs repeat test across \code{break_out} category.
 #'
 #' @param duplicate_matching_cols An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
 #' Default to 'all', meaning matching all columns in 'clean' slot of \code{digitdata}
@@ -52,31 +42,19 @@ find_percent_repeats = function(data){
 #' repeat_test(digitdata)
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'))
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name')
-repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA){
+repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols)
+  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, plot=plot)
 
-  #check if the sector columns are valid
-  if (!(is.na(sector_column))){
-    if (is.na(match(sector_column, colnames(digitdata@cleaned)))){
-      stop('specified column to analyze sector effect is not a column in the data')
-    }
-    else{
-      for (sector_name in names(sector_grouping)){
-        if (NA %in% match(sector_grouping[[sector_name]], unique(digitdata@cleaned[[sector_column]]))){
-          print(sector_name)
-          stop('specified category is not a category in the column specified to analyze sector effect')
-        }
-      }
-    }
-  }
   #handles the duplicate_matching_cols = 'all' situation
   if (duplicate_matching_cols[1] == 'all'){
     duplicate_matching_cols = colnames(digitdata@cleaned)
   }
   #the columns we want to analyze
   data = digitdata@cleaned[duplicate_matching_cols]
+  ################for now
+  #data = data[!(is.na(data$ALEXP.Values)), ]
 
   #percent repeats for all
   percent_repeats_all = find_percent_repeats(data)
@@ -93,19 +71,26 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA){
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
       data_of_category = data.frame(data[indexes_of_category, ])
-      percent_repeats_in_category = find_percent_repeats(data_of_category)
 
+      percent_repeats_in_category = find_percent_repeats(data_of_category)
       percent_repeats_table[category_name] = percent_repeats_in_category #a value
     }
   }
   #get the mean of all the values computed
   mean_percent_repeated = rowMeans(percent_repeats_table)
-  percent_repeats_table['mean'] = mean_percent_repeated
 
   #create a rowname
   rownames(percent_repeats_table) = 'percent repeated numbers'
   #sort by decreasing rounded percentage
   percent_repeats_table = t(sort(percent_repeats_table, decreasing = TRUE))
+
+  #plot only if we break_out == have > 1 column
+  if (plot){
+    if (!(is.na(break_out))){
+      print(hist_2D(percent_repeats_table, data_style='col', xlab=break_out, ylab='percent repeats', title='Repeats Test',
+                    hline=mean_percent_repeated, hline_name='Mean Percentage Repeats'))
+    }
+  }
   return(percent_repeats_table)
 }
 

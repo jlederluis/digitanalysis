@@ -78,8 +78,8 @@ hist_2D_variables = function(data, data_style='row', xlab='digits', ylab='freque
   library(ggplot2)
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
-    xlab(xlab) + ylab(ylab) + ggtitle(title) #ensure order of digit places
-  #+ theme(legend.position="bottom") #legend position
+    scale_fill_grey(start=0.7, end=0.3) + xlab(xlab) + ylab(ylab) + ggtitle(title) #ensure order of digit places
+    #+ theme(legend.position="bottom") #legend position
   return(hist2d_multiple)
 }
 
@@ -101,18 +101,19 @@ plot_multiple_hist2d = function(plot_list){
 #' @inheritParams hist_2D
 #'
 #' @return A figure with each data column's value plotted against rownames
-plot_table_by_columns = function(digits_table, name='', data_style='col'){
+plot_table_by_columns = function(digits_table, name='', data_style='col', save=FALSE){
   plot_list = list()
-  #turn into frequency decimal
-  for (i in 1:length(digits_table)){
-    digits_table[, i] = digits_table[, i] / sum(digits_table[, i], na.rm = TRUE)
-  }
   for (i in 1:length(digits_table)){
     curr_digit_place = colnames(digits_table)[i]
     hist_digit_place_i = hist_2D(digits_table[i], data_style=data_style, xlab='digits', ylab='frequency', title=paste(name, curr_digit_place), hline=NA)
     plot_list[[curr_digit_place]] = hist_digit_place_i
   }
   plots = plot_multiple_hist2d(plot_list)
+  # if (save){
+  #   filename = paste(name, '_2D_histograms.pdf', sep='')
+  #   print(filename)
+  #   ggsave(plots, file=paste(name, '_2D_histograms.pdf', sep=''))
+  # }
   return(plots)
 }
 
@@ -127,22 +128,29 @@ plot_table_by_columns = function(digits_table, name='', data_style='col'){
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
-hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=16){
+hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=16, save=FALSE){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
 
-  #turn into frequency decimal
-  for (i in 1:length(data)){
-    data[, i] = data[, i] / sum(data[, i], na.rm = TRUE)
-  }
   x = as.numeric(rownames(data))
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
-  plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-2,
+
+  plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
-  # text3D(x = 1:length(x) + 0.7, y = rep(1, length(x)), z = rep(0, length(x)),
-  #        labels = x, add = TRUE, adj = 0) cex.axis = 1e-100
+  # if (save){
+  #   filename = paste(title, ".pdf", sep='')
+  #   print(filename)
+  #   pdf(file = filename)
+  #   plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
+  #                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
+  #                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
+  #   # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
+  #   # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
+  #   dev.off()
+  # }
+  return()
 }
 
 
@@ -155,24 +163,40 @@ hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='fr
 #' @return Nothing is returned. Displays plots automatically.
 plot_all_digit_test = function(digitdata, observation_table, digit_places, title=''){
   test_type = NA
+
+  #turn observation table from counts into frequency
+  for (i in 1:length(observation_table)){
+    observation_table[, i] = observation_table[, i] / sum(observation_table[, i], na.rm = TRUE)
+  }
+
   if (length(digit_places) == 1){
     test_type = 'Single Digit Test'
-    plot_table_by_columns(observation_table, name=paste(title, ':', test_type), data_style='col') #multiple 2D histograms
+    plot_table_by_columns(observation_table, name=paste(title, test_type, sep='_'), data_style='col') #multiple 2D histograms
+  }
+  else if (!(FALSE %in% (dim(digitdata@raw) == c(0,0)))){
+    test_type = 'Unpack Rounded Numbers Test'
+    #round numbers
+    if (digitdata@numbers[[1]][1] %% 10 == 0){
+      hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, '(Round Numbers)', test_type, sep='_')) #3D histogram
+      #plot_table_by_columns(observation_table, name=paste(title, '(Round Numbers)', test_type, sep='_'), data_style='col') #multiple 2D histograms
+    }
+    else {
+      hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, '(Unround Numbers)', test_type, sep='_')) #3D histogram
+      #plot_table_by_columns(observation_table, name=paste(title, '(Unround Numbers)', test_type, sep='_'), data_style='col') #multiple 2D histograms
+    }
   }
   else {
     test_type = 'All Digit Test'
-    hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, ':', test_type)) #3D histogram
-    #plot_table_by_columns(observation_table, name=paste(title, ':', test_type), data_style='col') #multiple 2D histograms
+    hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, test_type, sep='_')) #3D histogram
+    plot_table_by_columns(observation_table, name=paste(title, test_type, sep='_'), data_style='col') #multiple 2D histograms
   }
   return()
 }
 
-
-# result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
-#                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit, standard_df=TRUE)
 #
-
-
+# result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
+#                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit, standard_df=TRUE)
+#
 # library("plot3Drgl")
 # plotrgl()
 

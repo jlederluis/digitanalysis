@@ -17,7 +17,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
   #intialize a table for storing total high and low digits counts for each digit place
   high_and_low_total_counts = data.frame(matrix(0, nrow = 2, ncol = digitdata@max))
   #name col and row for debug purpose
-  rownames(high_and_low_total_counts) = c('high digit counts', 'low digits counts')
+  rownames(high_and_low_total_counts) = c('high digits counts', 'low digits counts')
   colnames(high_and_low_total_counts) = digitdata@left_aligned_column_names[1:length(high_and_low_total_counts)]
 
   #count high low digits in each column
@@ -25,7 +25,6 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
     for (i in 1:length(digitdata@left_aligned_column_names)){
       if (grepl(digitdata@left_aligned_column_names[i], name, fixed = TRUE)){
         #i is the digit place of this column
-
         #get frequency of each digit in each digit place
         counts_obs = table(digits_table[name])
         if (!(is.na(omit_05[1]))){
@@ -45,7 +44,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
 
   #get p_value from binomial test
   for (i in 1:length(high_and_low_total_counts)){
-    p_value = binom.test(high_and_low_total_counts[[i]], p = high_freq_theoratical[i])$p.value
+    p_value = binom.test(high_and_low_total_counts[[i]], p = high_freq_theoratical[i], alternative = 'l')$p.value
     p_values[[colnames(high_and_low_total_counts)[i]]] = p_value
   }
   #drop 1st digit place if this is true
@@ -56,32 +55,12 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
   return(p_values)
 }
 
-####
-#need ADD plot parameter
-####
-
-#' Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test
+#' Perform a single high low test. Helper function for \code{high_low_test}.
 #'
-#' @param high An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9)
-#' @inheritParams all_digits_test
+#' @inheritParams high_low_test
 #'
-#' @return
-#' \itemize{
-#'   \item A table of p-values for high low tests on each category
-#'   \item Plots for each category if \code{plot = TRUE}
-#' }
-#' @export
-#'
-#' @examples
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9))
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE)
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, break_out=NA)
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name')
-high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA){
-
-  #check input
-  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
-              omit_05=omit_05, break_out=break_out, skip_last_digit=skip_last_digit, high=high)
+#' @return p_values table of high low test for input data from \code{digitdata}.
+single_high_low_test = function(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category){
 
   #if omit_05 in high, then should throw error
   for (digit in omit_05){
@@ -111,6 +90,8 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
   high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.character(high), ])))
   rownames(high_freq_theoratical) = 'high digits freq'
 
+  print(high_freq_theoratical)
+
   #############################################################
   #handle the data_columns = 'all' situation
   data_columns = get_data_columns(digitdata, data_columns)
@@ -126,9 +107,9 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
   colnames(p_values) = 'all'
 
   #perform a 'year effect' high low test break by category
-  if (!(is.na(break_out))){
+  if (!(is.na(category))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=category) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
@@ -139,12 +120,66 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
 
       #get p_values for this category ('year')
       p_values_of_category = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, skip_first_digit, omit_05)
-
       #update returning list
       p_values[category_name] = NA
       p_values[category_name][colnames(p_values_of_category), ] = t(p_values_of_category)
     }
   }
-  return(p_values)
+  return(t(p_values))
+}
+
+
+####
+#need ADD plot parameter
+####
+
+#' Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test
+#'
+#' @param high An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).
+#' @param category The second division to break the data on.
+#' @inheritParams all_digits_test
+#'
+#' @return
+#' \itemize{
+#'   \item A table of p-values for high low tests on each category
+#'   \item Plots for each category if \code{plot = TRUE}
+#' }
+#' @export
+#'
+#' @examples
+#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9))
+#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE, break_out='col_name')
+#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
+#' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
+high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, category=NA){
+
+  #check input
+  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
+              omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, category_column=category)
+
+  #list of p value tables for each break out categories
+  p_values_table = list()
+
+  #perform high low test on all data
+  p_values_table[['all']] = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)
+
+  #perform high low test on all break out categories
+  if (!(is.na(break_out))){
+    #get indexes for each category
+    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=break_out) #this is a list since unequal number of entries for each category
+
+    #break by category for all
+    for (category_name in names(indexes_of_categories)){
+      indexes_of_category = indexes_of_categories[[category_name]]
+
+      #create a digitdata class for this category
+      digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)
+
+      #perform high low test on this category
+      p_values_table[[category_name]] = single_high_low_test(digitdata_of_category, contingency_table, data_columns, high,
+                                                             omit_05, skip_first_digit, skip_last_digit, category)
+    }
+  }
+  return(p_values_table)
 }
 

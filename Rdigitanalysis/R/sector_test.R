@@ -5,6 +5,8 @@
 #Summer 2020
 ############################################################
 
+####failure factor
+
 #' Performs sector test to analyze uneven distribution of percent repeats across sectors (supposed to be uniform).
 #' A wrapper function for \code{repeat_test}.
 #'
@@ -29,10 +31,10 @@
 #' sector_test(digitdata, category_column='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
 #' sector_test(digitdata, category_column='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 #' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
-sector_test = function(digitdata, category_column, category_grouping, duplicate_matching_cols='all', break_out=NA, failure_factor=3){
+sector_test = function(digitdata, category_column, category_grouping, duplicate_matching_cols='all', break_out=NA, failure_factor=3, plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, category_column=category_column, category_grouping=category_grouping)
+  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, category_column=category_column, category_grouping=category_grouping, plot=plot)
 
   #check if the sector columns are valid
   if (!(is.na(category_column))){
@@ -53,8 +55,8 @@ sector_test = function(digitdata, category_column, category_grouping, duplicate_
   if (!(is.na(break_out))){
     category_names = names(break_by_category(digitdata@cleaned, break_out))
   }
-  sector_repeats_table = data.frame(matrix(nrow = length(category_names)+2, ncol = 0)) # +2 (all and mean)
-  rownames(sector_repeats_table) = c('all', 'mean', category_names) #ensure each row is fixed for a category when append
+  sector_repeats_table = data.frame(matrix(nrow = length(category_names)+1, ncol = 0)) # +1 (all)
+  rownames(sector_repeats_table) = c('all', category_names) #ensure each row is fixed for a category when append
 
   #get indexes for each category in the specified sector column
   sector_column_indexes = break_by_category(digitdata@cleaned, category_column) #this is a list since unequal number of entries for each category
@@ -65,18 +67,17 @@ sector_test = function(digitdata, category_column, category_grouping, duplicate_
     indexes_of_sector = unlist(indexes_of_sector) #turn into an array
 
     #create new digitdata object for each sector
-    digitdata_of_sector = digitdata
-    digitdata_of_sector@raw = data.frame() # save memory
-    digitdata_of_sector@cleaned = data.frame(digitdata_of_sector@cleaned[indexes_of_sector, ])
-    digitdata_of_sector@numbers = data.frame(digitdata_of_sector@numbers[indexes_of_sector, ])
-    digitdata_of_sector@left_aligned = data.frame(digitdata_of_sector@left_aligned[indexes_of_sector, ])
-    digitdata_of_sector@right_aligned = data.frame(digitdata_of_sector@right_aligned[indexes_of_sector, ])
+    digitdata_of_sector = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_sector)
 
     #repeats test
     repeats_table = repeat_test(digitdata_of_sector, duplicate_matching_cols=duplicate_matching_cols, break_out=break_out)
-
     #update table
     sector_repeats_table[[sector_name]][rownames(repeats_table)] = repeats_table #match the rownames by using rownames
+  }
+
+  #plot
+  if (plot){
+    print(hist_2D_variables(data.frame(sector_repeats_table), data_style='col', xlab='districts', ylab='percent repeats', title='Sector Effect Test'))
   }
   return(t(sector_repeats_table)) #transpose it to look better
 }

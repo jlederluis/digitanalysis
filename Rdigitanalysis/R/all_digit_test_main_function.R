@@ -35,6 +35,8 @@
 #'   \item TRUE: Computes degrees of freedom for chi square test using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
 #'   \item FALSE: Computes degrees of freedom for chi square test using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
 #' }
+#' @param suppress_low_N TRUE or FALSE: If TRUE, suppress columns in expected table
+#' if at least one cell in that column has expected value < 5. Default to TRUE.
 #'
 #' @return
 #' \itemize{
@@ -48,12 +50,12 @@
 #' all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
 all_digits_test = function(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=FALSE,
-                           omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE){
+                           omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
               skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, distribution=distribution, plot=plot,
-              skip_last_digit=skip_last_digit, standard_df=standard_df)
+              skip_last_digit=skip_last_digit, standard_df=standard_df, suppress_low_N=suppress_low_N)
 
   #######################################################################
   #parse the data
@@ -85,16 +87,15 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   #######################################################################
   #do chi square test
   #######################################################################
-  #drop columns if cell has expected value < 5
-  table_lst = drop_disqualified_columns(observation_table, contingency_table, freq=TRUE)
-  observation_table = table_lst$observed_table
-  expected_table = table_lst$expected_table
-  print(observation_table)
+
   #all digit test
-  p_values = data.frame(all=chi_square_gof(observation_table, expected_table, standard=standard_df))
+  result = chi_square_gof(observation_table, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N, standard=standard_df)
+  p_values = data.frame(all=result$p_value)
 
   #plot
-  plot_all_digit_test(digitdata, observation_table, digit_places, title='All')
+  if (plot){
+    plot_all_digit_test(digitdata, result$observed_table, digit_places, title='All')
+  }
 
   #break on category if specified
   if (!(is.na(break_out))){
@@ -111,29 +112,21 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
       colnames(usable_in_category) = colnames(usable_data)
       obs_in_category = obtain_observation(digitdata, usable_in_category, digit_places, skip_first_digit, skip_last_digit, omit_05)
 
-      #drop columns if cell has expected value < 5
-      table_lst_category = drop_disqualified_columns(obs_in_category, contingency_table, freq=TRUE)
-      obs_in_category = table_lst_category$observed_table
-      expected_in_category = table_lst_category$expected_table
-      print(obs_in_category)
       #chi square test
-      p_values[category_name] = chi_square_gof(obs_in_category, expected_in_category, standard=standard_df)
+      result_in_category = chi_square_gof(obs_in_category, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N, standard=standard_df)
+      p_values[category_name] = result_in_category$p_value
 
-
-      # #for subsets on break_out, there might be columns that are all zeros in sub-observation table
-      # zero_columns = which(colSums(obs_in_category != 0) == 0)
-      #
-      # if (length(zero_columns) > 0){
-      #   #remove zero columns and recompute df if necessary when getting the p values
-      #   p_values[category_name] = chi_square_gof(obs_in_category[-zero_columns], contingency_table[-zero_columns],
-      #                                            df=get_df(contingency_table[-zero_columns], standard=standard_df))
-      # } else {
-      #   #do it normally
-      #   p_values[category_name] = chi_square_gof(obs_in_category, contingency_table, df)
-      # }
+      #debug
+      if (category_name == 'Ijara'){
+        print('Ijara')
+        print(result_in_category$observed_table)
+        print(result_in_category$expected_table)
+      }
 
       #plot
-      plot_all_digit_test(digitdata, obs_in_category, digit_places, title=category_name)
+      if (plot){
+        plot_all_digit_test(digitdata, result_in_category$observed_table, digit_places, title=category_name)
+      }
     }
   }
   # print('all digit test')

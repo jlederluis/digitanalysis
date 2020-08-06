@@ -65,13 +65,9 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
       rounded_digits = rounded_digits + length(matched_indexes) * nchar(pattern) #number of matched instances x length of the pattern
     }
   }
+  print(total_digits)
   return(rounded_digits/total_digits)
 }
-
-
-####
-#need ADD distribution and plot parameter
-####
 
 #' Performs rounding test vs uniform distribution across categories in a specified data column
 #'
@@ -95,10 +91,10 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
 #' rounding_test(digitdata, omit_05=0)
 #' rounding_test(digitdata, omit_05=NA, break_out='col_name')
 #' rounding_test(digitdata, data_columns=c('col_name1', 'col_name2'))
-rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0','00','000','0000', '00000', '000000', '5', '50', '500'), break_out=NA){
+rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0','00','000','0000', '00000', '000000', '5', '50', '500'), break_out=NA, plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, contingency_table=NA, data_columns=data_columns, rounding_patterns=rounding_patterns, break_out=break_out)
+  input_check(digitdata=digitdata, contingency_table=NA, data_columns=data_columns, rounding_patterns=rounding_patterns, break_out=break_out, plot=plot)
 
   #handle the data_columns = 'all' situation
   data_columns = get_data_columns(digitdata, data_columns)
@@ -127,7 +123,6 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   }
   #get the mean of all the values computed
   mean_percent_rounded = rowMeans(percent_rounded_table)
-  percent_rounded_table['mean'] = mean_percent_rounded
 
   #create a rowname
   rownames(percent_rounded_table) = 'percent rounded digits'
@@ -135,9 +130,11 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   percent_rounded_table = t(sort(percent_rounded_table, decreasing = TRUE))
 
   #plot only if we break_out == have > 1 column
-  if (!(is.na(break_out))){
-    print(hist_2D(percent_rounded_table, data_style='col', xlab=break_out, ylab='percent rounding', title='Rounding Test',
-                  hline=mean_percent_rounded, hline_name='Mean Percentage Rounding'))
+  if (plot){
+    if (!(is.na(break_out))){
+      print(hist_2D(percent_rounded_table, data_style='col', xlab=break_out, ylab='percent rounding', title='Rounding Test',
+                    hline=mean_percent_rounded, hline_name='Mean Percentage Rounding'))
+    }
   }
   return(percent_rounded_table)
 }

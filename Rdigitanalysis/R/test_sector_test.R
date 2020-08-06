@@ -1,16 +1,8 @@
 ############################################################
-#Testing for digit pair test
+#Testing for sector test
 #Wenjun Chang
 #Summer 2020
 ############################################################
-
-
-############################################################
-#Testing; run the functions
-#Wenjun Chang
-#Summer 2020
-############################################################
-
 
 #############prelim############
 #clear workspace
@@ -31,14 +23,19 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load input check function
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\input_check_function.R')
 
+############################
+#testing
 #load helper functions for all digit test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_helper_functions.R')
 
-############################
-#testing
-#load all functions for rounding test
-source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\rounding_test.R')
+#load all functions for repeat test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\repeat_test.R')
 
+#load all functions for sector test
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\sector_test.R')
+
+
+#test with data
 #load data input functions
 data_columns = c("ALEXP.Values")
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
@@ -47,12 +44,14 @@ DigitData = make_class(filepath = fp, col_analyzing = data_columns)
 contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
 
-#test rounding test
-rounding_patterns = c('0','00','000','0000', '00000', '000000', '5', '50', '500')
-data_columns = c("ALEXP.Values")
-break_out = 'DIST'
-result=rounding_test(DigitData, data_columns=data_columns, rounding_patterns=rounding_patterns, break_out=break_out)
+#test sector test
+break_out ='DIST'
+sector_column = 'SECTOR'
+duplicate_matching_cols = c("ALEXP.Values", "YEAR", "DIST", "SECTOR")
+sector_grouping = list(Train_Transport=c("MICRO", "TRN", "TRAVEL", "VEHICLES"), Civil=c("CW"), Goods_Equip=c("GE"))
+result = sector_test(DigitData, sector_column, sector_grouping, duplicate_matching_cols, break_out, failure_factor=3)
 
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
-result[order, ]
+result[, order]
+
 

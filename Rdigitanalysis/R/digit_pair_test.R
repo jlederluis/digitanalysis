@@ -40,6 +40,7 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
   #paste the last tywo digits together as numbers
   occurances = as.character(paste(occurances[,1], occurances[,2], sep=''))
 
+
   pairs = c('00', '11', '22', '33', '44', '55', '66', '77', '88', '99')
   if (!(is.na(omit_05[1]))){
     #we omit 00 as part of digit pair
@@ -75,14 +76,6 @@ freq_true = function(omit_05){
   return(pairs/total)
 }
 
-################################################
-################main function###################
-################################################
-
-####
-#need ADD distribution and plot parameter
-####
-
 #' Performs terminal digit pair binomial test vs uniform distribution (Benford’s Law)
 #'
 #' @param min_length The minimum length of the numbers to be analyzed in digit pair test. Must be an integer >= 2. Default to 3.
@@ -100,10 +93,10 @@ freq_true = function(omit_05){
 #' digit_pairs_test(digitdata, data_columns=c('col_name1', 'col_name2'))
 #' digit_pairs_test(digitdata, data_columns='all', omit_05=NA, min_length=5)
 #' digit_pairs_test(digitdata, data_columns='all', omit_05=0, break_out='col_name')
-digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, break_out=NA){
+digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, break_out=NA, plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, data_columns=data_columns, omit_05=omit_05, break_out=break_out, min_length=min_length)
+  input_check(digitdata=digitdata, data_columns=data_columns, omit_05=omit_05, break_out=break_out, min_length=min_length, plot=plot)
 
   #check min_length
   if (is.na(min_length)){
@@ -115,7 +108,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
 
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution
   p = freq_true(omit_05)
-  print(p)
+  # print(p)
 
   #handle the data_columns = 'all' situation
   data_columns = get_data_columns(digitdata, data_columns)
@@ -124,16 +117,15 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
   counts = counts_observed(digitdata, data_columns, omit_05, min_length)
 
   #get p_value from binomial test
-  p_value = binom.test(x=counts, p = p, alternative = 't', conf.level = 0.95)$p.value #has to specify p = p !!!!!!
-  print(p_value)
-  print(binom.test(x=counts, p = p, alternative = 't', conf.level = 0.95))
+  p_value = binom.test(x=counts, p = p, alternative = 't')$p.value #has to specify p = p !!!!!!
+  #p_value = pbinom(counts[1], size=sum(counts), prob=p)
+  #print(p_value)
 
   #dataframe of p values to return
   p_values = data.frame(all=p_value)
 
   #freq of digit pairs for plotting
   freq_digit_pairs = data.frame(all=counts[1]/sum(counts))
-
 
   if (!(is.na(break_out))){
     #get indexes for each category
@@ -143,16 +135,24 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
       counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, indexes_of_category)
-      p_value_in_category = binom.test(counts_in_category, p)$p.value
+
+      # print(category_name)
+      # print(counts_in_category[1])
+      # print(sum())
+
+      #p_value_in_category = pbinom(counts_in_category[1], size=sum(counts_in_category), prob=p)
+      p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = 't')$p.value
       p_values[category_name] = p_value_in_category #p-value
 
       freq_digit_pairs[category_name] = counts_in_category[1]/sum(counts_in_category) #for plotting
     }
   }
   #plot only if we break_out == have > 1 column
-  if (!(is.na(break_out))){
-    print(hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='percent digit pairs', title='Digit Pairs Test',
-                  hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution')) #-1 since we want uniform distribution without 'all'
+  if (plot){
+    if (!(is.na(break_out))){
+      print(hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='percent digit pairs', title='Digit Pairs Test',
+                    hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution')) #-1 since we want uniform distribution without 'all'
+    }
   }
   return(p_values)
 }

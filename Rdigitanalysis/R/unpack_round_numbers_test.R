@@ -22,9 +22,7 @@ unpacking_round_number_split = function(digitdata, unpacking_rounding_column){
   if (typeof(digitdata@cleaned[[unpacking_rounding_column]]) == "character"){
     stop('the column for splitting unround and round numbers must be a column with numbers')
   }
-
   rounded_rows = which(digitdata@cleaned[[unpacking_rounding_column]] %% 10 == 0)
-
   return(rounded_rows)
 }
 
@@ -44,20 +42,11 @@ get_round_unround_digitdata = function(digitdata, unpacking_rounding_column){
   round_numbers_indexes = unpacking_round_number_split(digitdata, unpacking_rounding_column)
 
   #create a copy of digitdata with only round entries in the specified numeric column
-  round_digitdata = digitdata
-  round_digitdata@raw = data.frame() # save memory
-  round_digitdata@cleaned = data.frame(round_digitdata@cleaned[round_numbers_indexes, ])
-  round_digitdata@numbers = data.frame(round_digitdata@numbers[round_numbers_indexes, ])
-  round_digitdata@left_aligned = data.frame(round_digitdata@left_aligned[round_numbers_indexes, ])
-  round_digitdata@right_aligned = data.frame(round_digitdata@right_aligned[round_numbers_indexes, ])
+  round_digitdata = make_sub_digitdata(digitdata=digitdata, indexes=round_numbers_indexes)
 
   #create a copy of digitdata with only unround entries in the specified numeric column
-  unround_digitdata = digitdata
-  unround_digitdata@raw = data.frame() # save memory
-  unround_digitdata@cleaned = data.frame(unround_digitdata@cleaned[-round_numbers_indexes, ])
-  unround_digitdata@numbers = data.frame(unround_digitdata@numbers[-round_numbers_indexes, ])
-  unround_digitdata@left_aligned = data.frame(unround_digitdata@left_aligned[-round_numbers_indexes, ])
-  unround_digitdata@right_aligned = data.frame(unround_digitdata@right_aligned[-round_numbers_indexes, ])
+  unround_numbers_indexes = setdiff(1:nrow(digitdata@cleaned), round_numbers_indexes)
+  unround_digitdata = make_sub_digitdata(digitdata=digitdata, indexes=unround_numbers_indexes)
 
   return(list(round_digitdata=round_digitdata, unround_digitdata=unround_digitdata))
 }
@@ -78,11 +67,11 @@ get_round_unround_digitdata = function(digitdata, unpacking_rounding_column){
 #' unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places=c(1,2,3), omit_05=NA)
 unpack_round_numbers_test = function(digitdata, contingency_table, unpacking_rounding_column, data_columns='all', digit_places='all',
                                       skip_first_digit=FALSE, omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE,
-                                      skip_last_digit=FALSE, standard_df=FALSE){
+                                      skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
               skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, distribution=distribution, plot=plot,
-              skip_last_digit=skip_last_digit, unpacking_rounding_column=unpacking_rounding_column, standard_df=standard_df)
+              skip_last_digit=skip_last_digit, unpacking_rounding_column=unpacking_rounding_column, standard_df=standard_df, suppress_low_N=suppress_low_N)
 
   #unpack by round numbers indexes in the specified column
   lst = get_round_unround_digitdata(digitdata, unpacking_rounding_column)
@@ -91,10 +80,10 @@ unpack_round_numbers_test = function(digitdata, contingency_table, unpacking_rou
 
   #perform all digit tests for each digitdata object
   round_p_values = all_digits_test(round_digitdata, contingency_table, data_columns, digit_places, skip_first_digit,
-                                   omit_05, break_out, distribution, plot, skip_last_digit, standard_df)
+                                   omit_05, break_out, distribution, plot, skip_last_digit, standard_df, suppress_low_N)
 
   unround_p_values = all_digits_test(unround_digitdata, contingency_table, data_columns, digit_places, skip_first_digit,
-                                     omit_05, break_out, distribution, plot, skip_last_digit, standard_df)
+                                     omit_05, break_out, distribution, plot, skip_last_digit, standard_df, suppress_low_N)
 
   #merge the results
   p_values = rbind(round_p_values, unround_p_values)

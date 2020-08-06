@@ -19,8 +19,8 @@
 #' @return A table for Benford mean in each digit place after removing 0 and/or 5 if desired
 #' @export
 get_benford_mean = function(contingency_table, omit_05=c(0,5)){
-  #check input
-  input_check(contingency_table=contingency_table, omit_05=omit_05)
+  # #check input
+  # input_check(contingency_table=contingency_table, omit_05=omit_05)
 
   #create a table for the mean of benford distribution in each digit place
   names = colnames(contingency_table)[!(colnames(contingency_table) %in% c("X", "Digits"))]

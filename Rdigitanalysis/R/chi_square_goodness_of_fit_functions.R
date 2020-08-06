@@ -9,7 +9,6 @@
 #' Drops disqualified columns in both expected and observed table if in expected table at least one cell
 #' in that column has expected value < 5, conforming to the principles of chi square test.
 #'
-#' @param freq TRUE or FALSE: Whether the input expected table is in decimal.
 #' @inheritParams chi_square_gof
 #'
 #' @return A list with mofidied \code{observed_table} and \code{expected_table}
@@ -68,25 +67,52 @@ get_df = function(table, standard=FALSE){
 }
 
 
-#' Performs chi square test for goodness of fit test.
+#' Performs chi square test for goodness of fit test. Plots \code{expected_table} with 2D and/or 3D histograms accordingly if specified.
 #'
 #' @param observed_table Observation table for chi square test
 #' @param expected_table Expected table for chi square test
+#' @param freq TRUE or FALSE: Whether the input expected table is in decimal.
 #' @param standard TRUE or FALSE: Default to FALSE.
 #' \itemize{
 #'   \item TRUE: Compute degrees of freedom using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
 #'   \item FALSE: Compute degrees of freedom using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
 #' }
+#' @inheritParams all_digits_test
 #'
 #' @return p-value for chi square goodness of fit test
 #' @export
-chi_square_gof = function(observed_table, expected_table, standard=FALSE){
+chi_square_gof = function(observed_table, expected_table, freq=TRUE, suppress_low_N=TRUE, standard=FALSE, plot=TRUE){
+
+  #for subsets on break_out, there might be columns that are all zeros in sub-observation table
+  #that needs to be removed
+  zero_columns = which(colSums(observed_table) == 0)
+  if (length(zero_columns) > 0){
+    #remove zero columns and recompute df if necessary when getting the p values
+    observed_table = observed_table[-zero_columns]
+    expected_table = expected_table[-zero_columns]
+  }
+
+  #suppress columns in expected table if at least one cell in that column has expected value < 5
+  if (suppress_low_N){
+    tables_lst = drop_disqualified_columns(observed_table, expected_table, freq=freq)
+    observed_table = tables_lst$observed_table
+    expected_table = tables_lst$expected_table
+  }
+  else {
+    #turn expected table into counts instead of frequency
+    if (freq){
+      #turn freq into numbers
+      for (i in 1:length(expected_table)){
+        expected_table[, i] = expected_table[, i] *sum(observed_table[, i])
+      }
+    }
+  }
   #compute df
   df = get_df(observed_table, standard=standard)
 
   #chi square test
   test_stats = sum((observed_table - expected_table)^2/expected_table, na.rm = TRUE)
   p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
-  return(p_value)
+  return(list(p_value=p_value, expected_table=expected_table, observed_table=observed_table))
 }
 
