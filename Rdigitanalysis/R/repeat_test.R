@@ -17,6 +17,12 @@ find_percent_repeats = function(data){
   total_numbers = dim(data)[1]
   num_repeats = total_numbers - unique_numbers
   percent_repeats = num_repeats / total_numbers
+
+  print('unique')
+  print(unique_numbers)
+  print('total')
+  print(total_numbers)
+
   return(percent_repeats)
 }
 
@@ -53,14 +59,14 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, p
   }
   #the columns we want to analyze
   data = digitdata@cleaned[duplicate_matching_cols]
-  ################for now
-  #data = data[!(is.na(data$ALEXP.Values)), ]
+
+  print('all')
 
   #percent repeats for all
   percent_repeats_all = find_percent_repeats(data)
 
   #df to store stats
-  percent_repeats_table = data.frame(all=percent_repeats_all)
+  percent_repeats_table = data.frame(All=percent_repeats_all)
 
   #break out by category
   if (!(is.na(break_out))){
@@ -69,6 +75,10 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, p
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
+
+      print(category_name)
+
+
       indexes_of_category = indexes_of_categories[[category_name]]
       data_of_category = data.frame(data[indexes_of_category, ])
 

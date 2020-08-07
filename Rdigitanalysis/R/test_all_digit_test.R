@@ -37,7 +37,7 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 
 #test with data
 #load data input functions
-data_columns = c("ALEXP.Values")#c("BENM", "BENF")#
+data_columns = c("BENM", "BENF")#c("ALEXP.Values")#
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
@@ -45,7 +45,7 @@ contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California 
 
 
 #test all digits test
-data_columns = 'ALEXP.Values'#'all'#
+data_columns = 'all'#'ALEXP.Values'#
 digit_places =  'all'
 skip_first_digit=TRUE
 omit_05 = c(0,5)

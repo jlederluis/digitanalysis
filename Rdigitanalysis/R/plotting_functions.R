@@ -39,7 +39,7 @@ hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', titl
   #2d plot
   library(ggplot2)
   hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
-    geom_bar(stat="identity") + xlab(xlab) + ylab(ylab) + ggtitle(title) +
+    geom_bar(stat="identity") + xlab(xlab) + ylab(ylab) + ggtitle(title) + scale_x_discrete(limits=rownames(data)) +
     scale_y_continuous(breaks=number_ticks(10)) + theme(legend.position="top")
   #+ geom_text(aes(label=values), vjust=-0.3, size=3.5, color='blue') #for label exact value
 
@@ -78,7 +78,8 @@ hist_2D_variables = function(data, data_style='row', xlab='digits', ylab='freque
   library(ggplot2)
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
-    scale_fill_grey(start=0.7, end=0.3) + xlab(xlab) + ylab(ylab) + ggtitle(title) #ensure order of digit places
+    scale_fill_grey(start=0.7, end=0.3) + scale_y_continuous(breaks=number_ticks(10)) +
+    xlab(xlab) + ylab(ylab) + ggtitle(title) #ensure order of digit places
     #+ theme(legend.position="bottom") #legend position
   return(hist2d_multiple)
 }

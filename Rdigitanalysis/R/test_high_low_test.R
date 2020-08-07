@@ -40,6 +40,9 @@ fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
 contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
+#DigitData has to drop all columns with NA in ALEXP.Values
+indexes_with_valid_alexp_values = which(!(is.na(DigitData@cleaned$ALEXP.Values)))
+DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 
 #test high low test
 data_columns = 'all'
@@ -51,18 +54,23 @@ break_out = 'DIST'
 category = 'YEAR'
 
 #match the data with Jetson's
+# result = single_high_low_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, high=high, omit_05=omit_05,
+#                        skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, category=category)
+#
+
 result = high_low_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, high=high, omit_05=omit_05,
-                       skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, break_out=break_out, category=category)
+                       skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, break_out=break_out, category=category, plot=T)
 
 result
 
-#weird columns
-result = result[!(rownames(result) %in% c('all', 'Turkana')), ]
-result
-rowMeans(result)
-# order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
-# result[order]
 
+# #weird columns
+# result = result[!(rownames(result) %in% c('all', 'Turkana')), ]
+# result
+# rowMeans(result)
+# # order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
+# # result[order]
+#
 hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=16, save=FALSE){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
@@ -87,5 +95,5 @@ hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='fr
     dev.off()
   }
 }
-
-hist_3d(data=result, digitdata=DigitData, xlab=break_out, ylab='digit places', zlab='p value', title='High Low Test', theta=55, phi=16)
+#
+# hist_3d(data=result, digitdata=DigitData, xlab=break_out, ylab='digit places', zlab='p value', title='High Low Test', theta=55, phi=16)

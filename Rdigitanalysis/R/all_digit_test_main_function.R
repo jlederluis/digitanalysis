@@ -116,12 +116,13 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
       result_in_category = chi_square_gof(obs_in_category, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N, standard=standard_df)
       p_values[category_name] = result_in_category$p_value
 
-      #debug
-      if (category_name == 'Ijara'){
-        print('Ijara')
-        print(result_in_category$observed_table)
-        print(result_in_category$expected_table)
-      }
+      # #debug
+      # if (category_name == 'Ijara'){
+      #   print('Ijara')
+      #   print(result_in_category$observed_table)
+      #   print(result_in_category$expected_table)
+      #   print(sum(result_in_category$observed_table))
+      # }
 
       #plot
       if (plot){

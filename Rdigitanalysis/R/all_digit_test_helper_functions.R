@@ -361,10 +361,13 @@ make_sub_digitdata = function(digitdata, indexes){
   sub_digitdata = digitdata
   sub_digitdata@raw = data.frame() # save memory
   sub_digitdata@cleaned = data.frame(sub_digitdata@cleaned[indexes, ])
+  colnames(sub_digitdata@cleaned) = colnames(digitdata@cleaned)
   sub_digitdata@numbers = data.frame(sub_digitdata@numbers[indexes, ])
   colnames(sub_digitdata@numbers) = colnames(digitdata@numbers) #in case numbers is a single column
   sub_digitdata@left_aligned = data.frame(sub_digitdata@left_aligned[indexes, ])
+  colnames(sub_digitdata@left_aligned) = colnames(digitdata@left_aligned)
   sub_digitdata@right_aligned = data.frame(sub_digitdata@right_aligned[indexes, ])
+  colnames(sub_digitdata@right_aligned) = colnames(digitdata@right_aligned)
   return(sub_digitdata)
 }
 

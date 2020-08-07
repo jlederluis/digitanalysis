@@ -41,13 +41,18 @@ DigitData = make_class(filepath = fp, col_analyzing = data_columns)
 contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
 
+#DigitData has to drop all columns with NA in ALEXP.Values
+indexes_with_valid_alexp_values = which(!(is.na(DigitData@cleaned$ALEXP.Values)))
+DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
+
 #test repeat test
 duplicate_matching_cols = c("ALEXP.Values", "YEAR", "DIST", "SECTOR")
 break_out = 'DIST'
 
 result = repeat_test(DigitData, duplicate_matching_cols, break_out=break_out)
+result
 
-order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
-result[order, ]
+# order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
+# result[order, ]
 
 

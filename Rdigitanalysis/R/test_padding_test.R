@@ -45,13 +45,13 @@ contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California 
 data_columns = c("ALEXP.Values")#c("ALEXP")#,"BENTOT", "BENM", "BENF")
 max_length = 7
 num_digits = 5
-N = 100000 #120k datasets took 15 mins
+N = 10 #120k datasets took 15 mins
 omit_05 = c(0,5)
 break_out = NA#'DIST'
 
 #match the data with Jetson's
 result = padding_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, max_length=max_length,
-                      num_digits=num_digits, N=N, omit_05=omit_05, break_out=break_out)
+                      num_digits=num_digits, N=N, omit_05=omit_05, break_out=break_out, plot=TRUE)
+
 result
-# order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
-# result[order]
+

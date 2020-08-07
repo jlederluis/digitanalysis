@@ -215,10 +215,12 @@ get_p_value = function(observed_mean, stimulated_mean){
   p_values = data.frame(matrix(nrow=1, ncol=length(observed_mean)))
   colnames(p_values) = colnames(observed_mean)
 
+  combined_mean_data = rbind(observed_mean, stimulated_mean)
+
   for (i in 1:length(observed_mean)){
     #combine observed and stimulated and find rank of observed
     #first row is observation --> first index
-    p_values[i] = rank(-rbind(observed_mean, stimulated_mean)[[i]])[1] / (length(stimulated_mean[,i]) + 1) ####not sure N+1?
+    p_values[i] = rank(-combined_mean_data[[i]])[1] / length(combined_mean_data[,i])
   }
   return(p_values)
 }
@@ -252,7 +254,7 @@ get_p_value = function(observed_mean, stimulated_mean){
 #' padding_test(digitdata, contingency_table, data_columns=c('col_name1', 'col_name2'), omit_05=NA)
 #' padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0)
 #' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name')
-padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA){
+padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
@@ -275,21 +277,21 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
   freq_table=lst$freq_table
 
   expected_mean = lst$expected_mean
-  rownames(expected_mean) = 'all'
+  rownames(expected_mean) = 'All'
 
   observed_mean = get_observed_mean(lst$final_data, num_digits)
-  rownames(observed_mean) = 'all'
+  rownames(observed_mean) = 'All'
 
   #get the difference in expected and observed mean in each digit position
   diff_in_mean = observed_mean - expected_mean
-  rownames(diff_in_mean) = 'all'
+  rownames(diff_in_mean) = 'All'
 
   #Monte Carlo Stimulation of N datasets and get mean
   stimulated_mean = Benford_stimulation(N, freq_table, expected_mean, contingency_table)
 
   #get p values by comparing with stimulation
   p_values = get_p_value(observed_mean, stimulated_mean)
-  rownames(p_values) = 'all'
+  rownames(p_values) = 'All'
   ######################################################
 
   #break out by category
@@ -322,6 +324,17 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
       #get p values by comparing with stimulation
       p_values[category_name, ] = get_p_value(observed_mean[category_name, ], stimulated_mean)
       ######################################################
+    }
+  }
+
+  if (plot){
+    #2D histogram
+    if (is.na(break_out)){
+      print(hist_2D(diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title='Padding Test: Deviation from Mean', hline=NA, hline_name=''))
+    }
+    #Multi-variable 2D histogram
+    else {
+      print(hist_2D_variables(diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title='Padding Test: Deviation from Mean'))
     }
   }
   return(list(diff_in_mean=diff_in_mean, p_values=p_values, expected_mean=expected_mean, observed_mean=observed_mean))

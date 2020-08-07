@@ -56,12 +56,14 @@ sector_test = function(digitdata, category_column, category_grouping, duplicate_
     category_names = names(break_by_category(digitdata@cleaned, break_out))
   }
   sector_repeats_table = data.frame(matrix(nrow = length(category_names)+1, ncol = 0)) # +1 (all)
-  rownames(sector_repeats_table) = c('all', category_names) #ensure each row is fixed for a category when append
+  rownames(sector_repeats_table) = c('All', category_names) #ensure each row is fixed for a category when append
 
   #get indexes for each category in the specified sector column
   sector_column_indexes = break_by_category(digitdata@cleaned, category_column) #this is a list since unequal number of entries for each category
 
   for (sector_name in names(category_grouping)){
+    print(sector_name)
+
     #get the index of sector by accessing the names of the categories in the data column that belong to this sector
     indexes_of_sector = sector_column_indexes[category_grouping[[sector_name]]]
     indexes_of_sector = unlist(indexes_of_sector) #turn into an array
@@ -72,13 +74,19 @@ sector_test = function(digitdata, category_column, category_grouping, duplicate_
     #repeats test
     repeats_table = repeat_test(digitdata_of_sector, duplicate_matching_cols=duplicate_matching_cols, break_out=break_out)
     #update table
-    sector_repeats_table[[sector_name]][rownames(repeats_table)] = repeats_table #match the rownames by using rownames
+    print(repeats_table)
+
+    sector_repeats_table[sector_name] = NA
+    sector_repeats_table[sector_name][rownames(repeats_table), ] = repeats_table #match the rownames by using rownames
+    # return(list(a=sector_repeats_table, b=repeats_table))
+
+    print(sector_repeats_table)
   }
 
   #plot
   if (plot){
     print(hist_2D_variables(data.frame(sector_repeats_table), data_style='col', xlab='districts', ylab='percent repeats', title='Sector Effect Test'))
   }
-  return(t(sector_repeats_table)) #transpose it to look better
+  return(sector_repeats_table)
 }
 

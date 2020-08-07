@@ -5,6 +5,24 @@
 #Summer 2020
 ############################################################
 
+#' Computes weighted average probability of high digits across all digit places.
+#' Helper function for \code{high_low_by_digit_place}.
+#'
+#' @inheritParams high_low_by_digit_place
+#'
+#' @return Weighted average probability of high digits across all digit places.
+calculate_weighted_p = function(high_and_low_total_counts, high_freq_theoratical){
+  #ensure same dimension
+  if (length(high_and_low_total_counts) != length(high_freq_theoratical)){
+    stop('high_and_low_total_counts and high_freq_theoratical must have same number of columns!')
+  }
+  #get weighted average probability of high digits
+  digit_place_weights = colSums(high_and_low_total_counts) / sum(high_and_low_total_counts)
+  weighted_p = sum(digit_place_weights * high_freq_theoratical, na.rm=TRUE)
+  return(weighted_p)
+}
+
+
 #' Computes the high low digit binomial test by digit place for desired data columns.
 #' Helper function for \code{high_low_test}
 #'
@@ -13,7 +31,7 @@
 #' @inheritParams high_low_test
 #'
 #' @return A table of p_values for input \code{data} by digit place
-high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theoratical, skip_first_digit, omit_05){
+high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theoratical, omit_05, skip_first_digit){
   #intialize a table for storing total high and low digits counts for each digit place
   high_and_low_total_counts = data.frame(matrix(0, nrow = 2, ncol = digitdata@max))
   #name col and row for debug purpose
@@ -33,26 +51,22 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
         #get total occurances of high digit places
         high_counts_obs = sum(counts_obs[as.character(high)], na.rm = TRUE)
         low_counts_obs = sum(counts_obs) - high_counts_obs
-
         #update counts table
         high_and_low_total_counts[i] = high_and_low_total_counts[i] + c(high_counts_obs, low_counts_obs)
       }
     }
   }
-  #intilaize p value table
-  p_values = data.frame(matrix(nrow = 1, ncol = 0))
+  #get weighted values across all digit places
+  weighted_p = calculate_weighted_p(high_and_low_total_counts, high_freq_theoratical[1:length(high_and_low_total_counts)])
+  total_high_low_count = c(rowSums(high_and_low_total_counts)[1], rowSums(high_and_low_total_counts)[2])
+  #binomial test
+  p_value = binom.test(total_high_low_count, p = weighted_p, alternative = 'l')$p.value
 
-  #get p_value from binomial test
-  for (i in 1:length(high_and_low_total_counts)){
-    p_value = binom.test(high_and_low_total_counts[[i]], p = high_freq_theoratical[i], alternative = 'l')$p.value
-    p_values[[colnames(high_and_low_total_counts)[i]]] = p_value
-  }
-  #drop 1st digit place if this is true
   if (skip_first_digit){
-    p_values = p_values[-1]
+    high_and_low_total_counts = high_and_low_total_counts[-1]
   }
-  rownames(p_values) = 'p value'
-  return(p_values)
+  observed_high_digits_freq = data.frame(t(high_and_low_total_counts[1, ] / colSums(high_and_low_total_counts)))
+  return(list(p_value=p_value, observed_high_digits_freq=observed_high_digits_freq))
 }
 
 #' Perform a single high low test. Helper function for \code{high_low_test}.
@@ -85,12 +99,9 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
       high_freq_theoratical[name] = high_freq_theoratical[name] / sum(high_freq_theoratical[name])
     }
   }
-
   #get the frequency for high digits in each digit place
   high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.character(high), ])))
   rownames(high_freq_theoratical) = 'high digits freq'
-
-  print(high_freq_theoratical)
 
   #############################################################
   #handle the data_columns = 'all' situation
@@ -103,8 +114,16 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 
   #############################################################
   #perform high low test
-  p_values = data.frame(t(high_low_by_digit_place(digitdata, digits_table, high, high_freq_theoratical, skip_first_digit, omit_05)))
-  colnames(p_values) = 'all'
+  result = high_low_by_digit_place(digitdata, digits_table, high, high_freq_theoratical, omit_05, skip_first_digit)
+  p_value = result$p_value
+  observed_high_digits_freq = result$observed_high_digits_freq
+
+  #create and update tables
+  p_values = data.frame(All = p_value)
+
+  high_digits_freq_table = data.frame(matrix(nrow = nrow(observed_high_digits_freq), ncol = 0))
+  rownames(high_digits_freq_table) = rownames(observed_high_digits_freq)
+  high_digits_freq_table['All'] = observed_high_digits_freq[[1]]
 
   #perform a 'year effect' high low test break by category
   if (!(is.na(category))){
@@ -119,13 +138,14 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
       colnames(data_of_category) = gsub("."," ",colnames(data_of_category), fixed=TRUE)
 
       #get p_values for this category ('year')
-      p_values_of_category = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, skip_first_digit, omit_05)
-      #update returning list
-      p_values[category_name] = NA
-      p_values[category_name][colnames(p_values_of_category), ] = t(p_values_of_category)
+      result_of_category = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, omit_05, skip_first_digit)
+
+      #update returning tables
+      p_values[category_name] = result_of_category$p_value
+      high_digits_freq_table[category_name] = result_of_category$observed_high_digits_freq
     }
   }
-  return(t(p_values))
+  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table)))
 }
 
 
@@ -151,17 +171,25 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE, break_out='col_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
-high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, category=NA){
+high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, category=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
               omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, category_column=category)
 
   #list of p value tables for each break out categories
-  p_values_table = list()
+
 
   #perform high low test on all data
-  p_values_table[['all']] = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)
+  result = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)
+  p_values_table = data.frame(matrix(nrow = 0, ncol = ncol(result$p_values)))
+  colnames(p_values_table) = colnames(result$p_values)
+  p_values_table['All', ] = result$p_values
+
+  if (plot){
+    hist_3d(result$high_digits_freq_table, digitdata, xlab=category, ylab='digit places', zlab='high digits frequency',
+            title=paste('High Low Test', 'All', sep='_'), theta=55, phi=16, save=FALSE)
+  }
 
   #perform high low test on all break out categories
   if (!(is.na(break_out))){
@@ -176,8 +204,13 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
       digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)
 
       #perform high low test on this category
-      p_values_table[[category_name]] = single_high_low_test(digitdata_of_category, contingency_table, data_columns, high,
-                                                             omit_05, skip_first_digit, skip_last_digit, category)
+      result_of_category = single_high_low_test(digitdata_of_category, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)
+      p_values_table[category_name, ] = result_of_category$p_values
+
+      if (plot){
+        hist_3d(result_of_category$high_digits_freq_table, digitdata, xlab=category, ylab='digit places', zlab='high digits frequency',
+                title=paste('High Low Test', category_name, sep='_'), theta=55, phi=16, save=FALSE)
+      }
     }
   }
   return(p_values_table)
