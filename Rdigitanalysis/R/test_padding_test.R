@@ -40,18 +40,23 @@ fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\
 DigitData = make_class(filepath = fp, col_analyzing = data_columns)
 contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
 
+#DigitData has to drop all columns with NA in ALEXP.Values
+indexes_with_valid_alexp_values = which(!(is.na(DigitData@cleaned$ALEXP.Values)))
+DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 
 #test padding test
 data_columns = c("ALEXP.Values")#c("ALEXP")#,"BENTOT", "BENM", "BENF")
 max_length = 7
 num_digits = 5
-N = 10 #120k datasets took 15 mins
+N = 100000 #120k datasets took 15 mins
 omit_05 = c(0,5)
-break_out = NA#'DIST'
+break_out = 'DIST'
+category= NA#'SECTOR'
+category_grouping = list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
 
 #match the data with Jetson's
 result = padding_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, max_length=max_length,
-                      num_digits=num_digits, N=N, omit_05=omit_05, break_out=break_out, plot=TRUE)
+                      num_digits=num_digits, N=N, omit_05=omit_05, break_out=break_out, category=category, category_grouping=category_grouping, plot=TRUE)
 
 result
 

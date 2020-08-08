@@ -372,3 +372,22 @@ make_sub_digitdata = function(digitdata, indexes){
 }
 
 
+#' Updates \code{grouping} to default if it is NA.
+#'
+#' @param grouping The grouping in \code{column}.
+#' @param column The column to break data on
+#' @inheritParams all_digits_test
+#'
+#' @return \code{grouping} that is not NA.
+get_grouping = function(grouping, column, digitdata){
+  if (is.na(grouping)){
+    unique_items = unique(digitdata@cleaned[column])[[1]]
+    grouping = list()
+    for (item in unique_items){
+      grouping[[item]] = item
+    }
+  }
+  return(grouping)
+}
+
+

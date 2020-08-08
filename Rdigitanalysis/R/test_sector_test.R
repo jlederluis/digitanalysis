@@ -49,12 +49,13 @@ DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 
 #test sector test
 break_out ='DIST'
-sector_column = 'SECTOR'
+category = 'SECTOR'
 duplicate_matching_cols = c("ALEXP.Values", "YEAR", "DIST", "SECTOR")
-sector_grouping = list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
-result = sector_test(DigitData, sector_column, sector_grouping, duplicate_matching_cols, break_out, failure_factor=3)
+category_grouping = list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
+result = sector_test(DigitData, category, category_grouping, duplicate_matching_cols, break_out, failure_factor=3)
 
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'All')
 result[order, ]
 
 
+result

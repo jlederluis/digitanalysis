@@ -46,25 +46,44 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
         #get frequency of each digit in each digit place
         counts_obs = table(digits_table[name])
         if (!(is.na(omit_05[1]))){
-          counts_obs = counts_obs[-omit_05]
+          counts_obs = counts_obs[!names(counts_obs) %in% as.character(omit_05)]
         }
+
+
         #get total occurances of high digit places
         high_counts_obs = sum(counts_obs[as.character(high)], na.rm = TRUE)
-        low_counts_obs = sum(counts_obs) - high_counts_obs
+        low_counts_obs = sum(counts_obs, na.rm = TRUE) - high_counts_obs
         #update counts table
+        # if (name == "ALEXP Values 7th digit"){
+        #   print(name)
+        #   print(counts_obs)
+        #   print(high_counts_obs)
+        #   print(low_counts_obs)
+        #   print(c(high_counts_obs, low_counts_obs))
+        #   print(high_and_low_total_counts[i] + c(high_counts_obs, low_counts_obs))
+        # }
         high_and_low_total_counts[i] = high_and_low_total_counts[i] + c(high_counts_obs, low_counts_obs)
       }
     }
   }
-  #get weighted values across all digit places
-  weighted_p = calculate_weighted_p(high_and_low_total_counts, high_freq_theoratical[1:length(high_and_low_total_counts)])
-  total_high_low_count = c(rowSums(high_and_low_total_counts)[1], rowSums(high_and_low_total_counts)[2])
-  #binomial test
-  p_value = binom.test(total_high_low_count, p = weighted_p, alternative = 'l')$p.value
-
+  #omit first digit place column if desired
   if (skip_first_digit){
     high_and_low_total_counts = high_and_low_total_counts[-1]
   }
+
+  #get weighted values across all digit places
+  weighted_p = calculate_weighted_p(high_and_low_total_counts, high_freq_theoratical[1:length(high_and_low_total_counts)])
+  total_high_low_count = c(rowSums(high_and_low_total_counts)[1], rowSums(high_and_low_total_counts)[2])
+
+  print(weighted_p)
+  print(total_high_low_count)
+  print(high_and_low_total_counts)
+
+
+  #binomial test
+  p_value = binom.test(total_high_low_count, p = weighted_p, alternative = 'g')$p.value
+
+
   observed_high_digits_freq = data.frame(t(high_and_low_total_counts[1, ] / colSums(high_and_low_total_counts)))
   return(list(p_value=p_value, observed_high_digits_freq=observed_high_digits_freq))
 }
@@ -123,7 +142,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 
   high_digits_freq_table = data.frame(matrix(nrow = nrow(observed_high_digits_freq), ncol = 0))
   rownames(high_digits_freq_table) = rownames(observed_high_digits_freq)
-  high_digits_freq_table['All'] = observed_high_digits_freq[[1]]
+  high_digits_freq_table['All'] = observed_high_digits_freq
 
   #perform a 'year effect' high low test break by category
   if (!(is.na(category))){
@@ -132,6 +151,9 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
+
+      print(category_name)
+
       indexes_of_category = indexes_of_categories[[category_name]]
       data_of_category = data.frame(digits_table[indexes_of_category, ])
       #when do data.frame.... col names changes from A BC to A.BC
@@ -156,8 +178,8 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test
 #'
 #' @param high An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).
-#' @param category The second division to break the data on.
 #' @inheritParams all_digits_test
+#' @inheritParams sector_test
 #'
 #' @return
 #' \itemize{
@@ -175,10 +197,7 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
-              omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, category_column=category)
-
-  #list of p value tables for each break out categories
-
+              omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, category=category)
 
   #perform high low test on all data
   result = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)
@@ -199,6 +218,8 @@ high_low_test = function(digitdata, contingency_table, data_columns='all', high=
     #break by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
+
+      print(category_name)
 
       #create a digitdata class for this category
       digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)

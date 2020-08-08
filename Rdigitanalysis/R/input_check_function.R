@@ -20,7 +20,7 @@
 #' @param unpacking_rounding_column Defaulted to NA. Pass in to check if it is a valid input.
 #' @param min_length Defaulted to NA. Pass in to check if it is a valid input.
 #' @param duplicate_matching_cols Defaulted to NA. Pass in to check if it is a valid input.
-#' @param category_column Defaulted to NA. Pass in to check if it is a valid input.
+#' @param category Defaulted to NA. Pass in to check if it is a valid input.
 #' @param category_grouping Defaulted to NA. Pass in to check if it is a valid input.
 #' @param high Defaulted to NA. Pass in to check if it is a valid input.
 #' @param max_length Defaulted to NA. Pass in to check if it is a valid input.
@@ -32,7 +32,7 @@
 #' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA, duplicate_matching_cols=NA,
-                       category_column=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA, rounding_patterns=NA,
+                       category=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA, rounding_patterns=NA,
                        suppress_low_N=NA) {
 
   #digitdata must be of class DigitAnalysis
@@ -174,10 +174,10 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
   }
 
-  #category_column must be a string specifying a column name in the data
-  if (TRUE %in% (!(is.na(category_column)))){
-    if (!(is.character(category_column))){
-      stop('category_column must be a string specifying a column name in the data!')
+  #category must be a string specifying a column name in the data
+  if (TRUE %in% (!(is.na(category)))){
+    if (!(is.character(category))){
+      stop('category must be a string specifying a column name in the data!')
     }
   }
 

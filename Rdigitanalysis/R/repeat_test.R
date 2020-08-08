@@ -76,31 +76,31 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, p
     #break by category for all
     for (category_name in names(indexes_of_categories)){
 
-      print(category_name)
-
-
       indexes_of_category = indexes_of_categories[[category_name]]
       data_of_category = data.frame(data[indexes_of_category, ])
 
       percent_repeats_in_category = find_percent_repeats(data_of_category)
       percent_repeats_table[category_name] = percent_repeats_in_category #a value
+
+      print(category_name)
+      print(T %in% is.na(data_of_category[1]))
     }
   }
   #get the mean of all the values computed
   mean_percent_repeated = rowMeans(percent_repeats_table)
 
+  #plot only if we break_out == have > 1 column
+  if (plot){
+    if (!(is.na(break_out))){
+      print(hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='percent repeats', title='Repeats Test',
+                    hline=mean_percent_repeated, hline_name='Mean Percentage Repeats'))
+    }
+  }
   #create a rowname
   rownames(percent_repeats_table) = 'percent repeated numbers'
   #sort by decreasing rounded percentage
   percent_repeats_table = t(sort(percent_repeats_table, decreasing = TRUE))
 
-  #plot only if we break_out == have > 1 column
-  if (plot){
-    if (!(is.na(break_out))){
-      print(hist_2D(percent_repeats_table, data_style='col', xlab=break_out, ylab='percent repeats', title='Repeats Test',
-                    hline=mean_percent_repeated, hline_name='Mean Percentage Repeats'))
-    }
-  }
   return(percent_repeats_table)
 }
 

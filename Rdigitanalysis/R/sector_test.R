@@ -10,11 +10,13 @@
 #' Performs sector test to analyze uneven distribution of percent repeats across sectors (supposed to be uniform).
 #' A wrapper function for \code{repeat_test}.
 #'
-#' @param category_column The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.
-#' @param category_grouping A list of arrays
+#' @param category The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.
+#' @param category_grouping A list of arrays, or defaulted to NA.
 #' \itemize{
 #'   \item Each the names of the elements in the list is the category name
 #'   \item Each array contains the values belonging to that category
+#'   \item If it is remain as NA as default, while \{category} is not NA, then \code{category_grouping} will default to every individual item in
+#'   \code{category} will be in a separate group.
 #' }
 #' @param failure_factor NEED TO EDIT LATER
 #' @inheritParams repeat_test
@@ -28,28 +30,31 @@
 #' @export
 #'
 #' @examples
-#' sector_test(digitdata, category_column='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
-#' sector_test(digitdata, category_column='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
+#' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
+#' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 #' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
-sector_test = function(digitdata, category_column, category_grouping, duplicate_matching_cols='all', break_out=NA, failure_factor=3, plot=TRUE){
+sector_test = function(digitdata, category, category_grouping=NA, duplicate_matching_cols='all', break_out=NA, failure_factor=3, plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, category_column=category_column, category_grouping=category_grouping, plot=plot)
+  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, category=category, category_grouping=category_grouping, plot=plot)
 
   #check if the sector columns are valid
-  if (!(is.na(category_column))){
-    if (is.na(match(category_column, colnames(digitdata@cleaned)))){
-      stop('specified column to analyze sector effect is not a column in the data')
-    }
-    else{
-      for (sector_name in names(category_grouping)){
-        if (NA %in% match(category_grouping[[sector_name]], unique(digitdata@cleaned[[category_column]]))){
-          print(sector_name)
-          stop('specified category is not a category in the column specified to analyze sector effect')
+  if (is.na(match(category, colnames(digitdata@cleaned)))){
+    stop('specified column to break on second division is not a column in the data!')
+  }
+  else{
+    if (!(is.na(category_grouping))){
+      for (category_name in names(category_grouping)){
+        if (NA %in% match(category_grouping[[category_name]], unique(digitdata@cleaned[[category]]))){
+          print(category_name)
+          stop('specified category is not a category in the column break on second division!')
         }
       }
     }
   }
+  #handles if grouping is NA, while group is not
+  category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
+
   #initialize table to be returned
   category_names = c()
   if (!(is.na(break_out))){
@@ -59,7 +64,7 @@ sector_test = function(digitdata, category_column, category_grouping, duplicate_
   rownames(sector_repeats_table) = c('All', category_names) #ensure each row is fixed for a category when append
 
   #get indexes for each category in the specified sector column
-  sector_column_indexes = break_by_category(digitdata@cleaned, category_column) #this is a list since unequal number of entries for each category
+  sector_column_indexes = break_by_category(digitdata@cleaned, category) #this is a list since unequal number of entries for each category
 
   for (sector_name in names(category_grouping)){
     print(sector_name)

@@ -225,40 +225,12 @@ get_p_value = function(observed_mean, stimulated_mean){
   return(p_values)
 }
 
-####
-#need ADD plot parameter
-####
-
-#' Performs padding test vs stimulations of Benford conforming datasets via percentile
+#' Perform a single padding test. Helper function for \code{padding_test}.
 #'
-#' @param max_length The length of the longest numbers considered. Defaulted to 8.
-#' @param num_digits The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.
-#' @param N The number of Benford conforming datasets to stimulate.
-#' @inheritParams all_digits_test
+#' @inheritParams padding_test
 #'
-#' @return
-#' \itemize{
-#'   \item A list with 4 elements
-#'   \itemize{
-#'     \item \code{expected_mean}: the expected mean by Benford's Law
-#'     \item \code{observed_mean}: the mean of the input data
-#'     \item \code{diff_in_mean}: the mean difference betweeen observed_mean and expected_mean
-#'     \item \code{p_values}: the percentile of the observed dataset among all stimulated datasets in decreasing order
-#'   }
-#'   \item Plots on \code{diff_in_mean} for each category if \code{plot = TRUE}
-#' }
-#' @export
-#'
-#' @examples
-#' padding_test(digitdata, contingency_table, data_columns='all')
-#' padding_test(digitdata, contingency_table, data_columns=c('col_name1', 'col_name2'), omit_05=NA)
-#' padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0)
-#' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name')
-padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA, plot=TRUE){
-
-  #check input
-  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
-              break_out=break_out, max_length=max_length, num_digits=num_digits, N=N)
+#' @return A list of padding test results for input data from \code{digitdata}.
+single_padding_test = function(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping){
 
   #get benford mean in each digit place
   Benford = get_benford_mean(contingency_table, omit_05)
@@ -295,13 +267,17 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
   ######################################################
 
   #break out by category
-  if (!(is.na(break_out))){
+  if (!(is.na(category))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, category) #this is a list since unequal number of entries for each category
 
     #break by category for all
-    for (category_name in names(indexes_of_categories)){
-      indexes_of_category = indexes_of_categories[[category_name]]
+    for (category_name in names(category_grouping)){
+
+      #get the index of category containing multiple groups
+      #by accessing the names of the categories in the data column that belong to this category
+      indexes_of_category = indexes_of_categories[category_grouping[[category_name]]]
+      indexes_of_category = unlist(indexes_of_category) #turn into an array
 
       ######################################################
       #get combined by rows data for all data columns needed
@@ -326,17 +302,90 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
       ######################################################
     }
   }
+  return(list(diff_in_mean=diff_in_mean, p_values=p_values))#, expected_mean=expected_mean, observed_mean=observed_mean))
+}
+
+
+#' Performs padding test vs stimulations of Benford conforming datasets via percentile
+#'
+#' @param max_length The length of the longest numbers considered. Defaulted to 8.
+#' @param num_digits The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.
+#' @param N The number of Benford conforming datasets to stimulate.
+#' @inheritParams all_digits_test
+#' @inheritParams sector_test
+#'
+#' @return
+#' \itemize{
+#'   \item A list with 4 elements
+#'   \itemize{
+#'     \item \code{expected_mean}: the expected mean by Benford's Law
+#'     \item \code{observed_mean}: the mean of the input data
+#'     \item \code{diff_in_mean}: the mean difference betweeen observed_mean and expected_mean
+#'     \item \code{p_values}: the percentile of the observed dataset among all stimulated datasets in decreasing order
+#'   }
+#'   \item Plots on \code{diff_in_mean} for each category if \code{plot = TRUE}
+#' }
+#' @export
+#'
+#' @examples
+#' padding_test(digitdata, contingency_table, data_columns='all', break_out='col_name')
+#' padding_test(digitdata, contingency_table, data_columns=c('col_name1', 'col_name2'), omit_05=NA)
+#' padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0, category='category_name', category_grouping=list(...))
+#' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name', category='category_name', category_grouping=list(...))
+padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA, category=NA, category_grouping=NA, plot=TRUE){
+  #check input
+  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
+              break_out=break_out, max_length=max_length, num_digits=num_digits, N=N, category=category)
+
+  #handles if grouping is NA, while group is not
+  category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
+
+  #list of results from all break out category to be returned
+  padding_test_results = list()
+
+  #perform padding test on all data
+  result = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping)
+  padding_test_results[['All']] = result
 
   if (plot){
     #2D histogram
-    if (is.na(break_out)){
-      print(hist_2D(diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title='Padding Test: Deviation from Mean', hline=NA, hline_name=''))
+    if (is.na(category)){
+      print(hist_2D(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', 'All', sep='_'), hline=NA, hline_name=''))
     }
     #Multi-variable 2D histogram
     else {
-      print(hist_2D_variables(diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title='Padding Test: Deviation from Mean'))
+      print(hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', 'All', sep='_')))
     }
   }
-  return(list(diff_in_mean=diff_in_mean, p_values=p_values, expected_mean=expected_mean, observed_mean=observed_mean))
+
+  #perform padding test on all break out categories
+  if (!(is.na(break_out))){
+    #get indexes for each category
+    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=break_out) #this is a list since unequal number of entries for each category
+
+    #break by category for all
+    for (category_name in names(indexes_of_categories)){
+      indexes_of_category = indexes_of_categories[[category_name]]
+
+      #create a digitdata class for this category
+      digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)
+
+      #perform padding test on this category
+      result_of_category = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping)
+      padding_test_results[[category_name]] = result_of_category
+
+      if (plot){
+        #2D histogram
+        if (is.na(category)){
+          print(hist_2D(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_'), hline=NA, hline_name=''))
+        }
+        #Multi-variable 2D histogram
+        else {
+          print(hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_')))
+        }
+      }
+    }
+  }
+  return(padding_test_results)
 }
 
