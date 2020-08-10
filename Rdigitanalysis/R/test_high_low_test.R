@@ -50,7 +50,7 @@ high = c(6,7,8,9)
 omit_05 = c(0,5)
 skip_first_digit = TRUE
 skip_last_digit = FALSE
-break_out = 'DIST'
+break_out = NA#'DIST'
 category = 'YEAR'
 
 #match the data with Jetson's
@@ -65,7 +65,10 @@ result
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'All')
 t(result[order, ]['2007'])
 
-a# #weird columns
+
+
+
+# #weird columns
 # result = result[!(rownames(result) %in% c('all', 'Turkana')), ]
 # result
 # rowMeans(result)

@@ -81,7 +81,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
 
 
   #binomial test
-  p_value = binom.test(total_high_low_count, p = weighted_p, alternative = 'g')$p.value
+  p_value = binom.test(total_high_low_count, p = weighted_p, alternative = 'g')$p.value #################
 
 
   observed_high_digits_freq = data.frame(t(high_and_low_total_counts[1, ] / colSums(high_and_low_total_counts)))

@@ -107,6 +107,8 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
   #final data to be used
   final_data = data[indexes_to_use, ]
 
+  print(final_data)
+
   #count the number digits of each length in this dataframe
   freq = table(rowSums(!(is.na(final_data))))
 
@@ -134,6 +136,8 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
   for (i in 1:num_digits){
     expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
   }
+  print(freq)
+  print(freq_table)
   return(list(expected_mean=expected_mean, final_data=final_data, freq=freq, freq_table=freq_table))
 }
 

@@ -5,7 +5,6 @@
 # #Summer 2020
 # ############################################################
 
-
 #' Gives an array of strings of zeros from length 1 to n.
 #' Helper function for users inputing \code{rounding_patterns} for \code{rounding_test}.
 #'
@@ -23,7 +22,6 @@ n_zeros_pattern = function(n){
   }
   return(zeros)
 }
-
 
 #' Compute the percent of rounded digits in a given dataframe.
 #' Removes all 0 entries before begin.
@@ -124,18 +122,18 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   #get the mean of all the values computed
   mean_percent_rounded = rowMeans(percent_rounded_table)
 
+  #plot only if we break_out == have > 1 column
+  if (plot){
+    if (!(is.na(break_out))){
+      print(hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='percent rounding', title='Rounding Test',
+                    hline=mean_percent_rounded, hline_name='Mean Percentage Rounding'))
+    }
+  }
   #create a rowname
   rownames(percent_rounded_table) = 'percent rounded digits'
   #sort by decreasing rounded percentage
   percent_rounded_table = t(sort(percent_rounded_table, decreasing = TRUE))
 
-  #plot only if we break_out == have > 1 column
-  if (plot){
-    if (!(is.na(break_out))){
-      print(hist_2D(percent_rounded_table, data_style='col', xlab=break_out, ylab='percent rounding', title='Rounding Test',
-                    hline=mean_percent_rounded, hline_name='Mean Percentage Rounding'))
-    }
-  }
   return(percent_rounded_table)
 }
 

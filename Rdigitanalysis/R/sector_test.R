@@ -77,7 +77,7 @@ sector_test = function(digitdata, category, category_grouping=NA, duplicate_matc
     digitdata_of_sector = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_sector)
 
     #repeats test
-    repeats_table = repeat_test(digitdata_of_sector, duplicate_matching_cols=duplicate_matching_cols, break_out=break_out)
+    repeats_table = repeat_test(digitdata_of_sector, duplicate_matching_cols=duplicate_matching_cols, break_out=break_out, plot=FALSE)
     #update table
     print(repeats_table)
 

@@ -48,9 +48,9 @@ DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 data_columns = c("ALEXP.Values")#c("ALEXP")#,"BENTOT", "BENM", "BENF")
 max_length = 7
 num_digits = 5
-N = 100000 #120k datasets took 15 mins
+N = 1 #120k datasets took 15 mins
 omit_05 = c(0,5)
-break_out = 'DIST'
+break_out = NA#'DIST'
 category= NA#'SECTOR'
 category_grouping = list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
 

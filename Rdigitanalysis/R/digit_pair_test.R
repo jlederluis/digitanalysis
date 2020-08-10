@@ -5,7 +5,6 @@
 #Summer 2020
 ############################################################
 
-
 #' Find the frequency of terminal digit pairs occuring in the data being analzyed
 #'
 #' @param indexes The indexes of the rows to be analyzed in the data. Used to faciliate \code{break_out} option.
@@ -39,7 +38,6 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
 
   #paste the last tywo digits together as numbers
   occurances = as.character(paste(occurances[,1], occurances[,2], sep=''))
-
 
   pairs = c('00', '11', '22', '33', '44', '55', '66', '77', '88', '99')
   if (!(is.na(omit_05[1]))){
