@@ -38,7 +38,7 @@ get_benford_mean = function(contingency_table, omit_05=c(0,5)){
     #renormalize
     contingency_table[name] = contingency_table[name] / sum(contingency_table[name])
     #get mean
-    Benford_mean[name] = sum(contingency_table[name] * contingency_table['Digits'])
+    Benford_mean[name] = sum(contingency_table[name] * as.numeric(rownames(contingency_table)))
   }
   return(list(Benford_mean=Benford_mean, contingency_table=contingency_table))
 }
@@ -84,13 +84,121 @@ combine_by_columns = function(digitdata, data_columns, indexes=NA){
 #' @return A list of 4 items:
 #' \itemize{
 #'   \item \code{expected_mean}: A table of expected mean for the dataset \code{data}
-#'   \item \code{final_data}: Cleaned final data to be used for padding test after getting rid of numbers > max_length and numbers < num_digits
-#'   \item \code{freq}: The number digits of each length in \code{final_data}
-#'   \item \code{freq_table}: The number of left-aligned digit place numbers in each right-aligned digit position in \code{final_data}
+#'   \item \code{freq_table}: The number of left-aligned digit place numbers in each right-aligned digit position in \code{data}
 #' }
-get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digits){
+get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digits, omit_05){
   if (max_length < num_digits){
     stop('max_length must be as least as large as num_digits')
+  }
+
+  #initialize a table to store the number of left-aligned digit place numbers in each right-aligned digit position
+  #row means the right alighed digit position
+  #column means how many are from nth digit place
+  freq_table = data.frame(matrix(0, ncol = num_digits, nrow = max_length))
+  colnames(freq_table) = num_digits:1
+  rownames(freq_table) = digitdata@left_aligned_column_names[1:max_length]
+
+  #do it for each length each time
+  for (curr_length in num_digits:max_length){
+    #get data of current length
+    data_of_curr_length = data[which(rowSums(!(is.na(data))) == curr_length), ]
+    #ensure only num_digits columns from right
+    data_of_curr_length = data_of_curr_length[(ncol(data_of_curr_length)-num_digits+1):ncol(data_of_curr_length)]
+    #remove 0 and 5 if specified
+    if (!(is.na(omit_05[1]))){
+      #omit 0
+      data_of_curr_length[data_of_curr_length == 0] = NA
+      if (length(omit_05) == 2){
+        #also omit 5
+        data_of_curr_length[data_of_curr_length == 5] = NA
+      }
+    }
+
+    #count the number of entries in each column and update to freq_table
+    for (i in 1:ncol(data_of_curr_length)){
+      nums = length(which(!(is.na(data_of_curr_length[i]))))
+      #col index: ith position from the right --> i = num_digits:1 --> reverse order
+      #row index: in terms of curr_length, i is the (curr_length - num_digits + i)th digit place
+      freq_table[(curr_length - num_digits + i), i] = nums
+    }
+  }
+
+  #intialize table for expected mean
+  expected_mean = data.frame(matrix(nrow = 1, ncol = num_digits))
+  colnames(expected_mean) = rev(digitdata@right_aligned_column_names[1:num_digits])
+
+  #get the benford expacted mean for this data set in each digit place aligned right
+  for (i in 1:num_digits){
+    expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
+  }
+
+  return(list(expected_mean=expected_mean, freq_table=freq_table))
+  # indexes_over_max_length = NA
+  # if (max_length < length(data)){
+  #   #to be removed
+  #   indexes_over_max_length = which(complete.cases(data[(length(data)-max_length):length(data)]) == TRUE)
+  # }
+  # #to use, including the ones passes max length
+  # indexes_qualified = which(complete.cases(data[(length(data)-num_digits+1):length(data)]) == TRUE)
+  #
+  # #final indexes to be used
+  # indexes_to_use = setdiff(indexes_qualified, indexes_over_max_length)
+  #
+  # #final data to be used
+  # final_data = data[indexes_to_use, ]
+  #
+  # #remove 0 and 5 in finalm data if specified
+  # if (!(is.na(omit_05[1]))){
+  #   #omit 0
+  #   final_data[final_data == 0] = NA
+  #   if (length(omit_05) == 2){
+  #     #also omit 5
+  #     final_data[final_data == 5] = NA
+  #   }
+  # }
+  # #count the number digits of each length in this dataframe
+  # freq = table(rowSums(!(is.na(final_data))))
+  # print(freq)
+  #
+  # #initialize a table to store the number of left-aligned digit place numbers in each right-aligned digit position
+  # #row means the right alighed digit position
+  # #column means how many are from nth digit place
+  # freq_table = data.frame(matrix(0, ncol = num_digits, nrow = max_length))
+  # colnames(freq_table) = num_digits:1
+  # rownames(freq_table) = digitdata@left_aligned_column_names[1:max_length]
+  #
+  # #fill out the table in a diagonal fashion
+  # for (name in names(freq)){
+  #   length = as.integer(name)
+  #   row = length - num_digits + 1
+  #   for (col in 1:num_digits){
+  #     freq_table[row, col] = freq_table[row, col] + freq[name]
+  #     row = row + 1
+  #   }
+  # }
+  # #intialize table for expected mean
+  # expected_mean = data.frame(matrix(nrow = 1, ncol = num_digits))
+  # colnames(expected_mean) = rev(digitdata@right_aligned_column_names[1:num_digits])
+  #
+  # #get the benford expacted mean for this data set in each digit place aligned right
+  # for (i in 1:num_digits){
+  #   expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
+  # }
+  # print(freq)
+  # print(freq_table)
+  # return(list(expected_mean=expected_mean, final_data=final_data, freq=freq, freq_table=freq_table))
+}
+
+
+#' Obtains the observed mean from input \code{data}
+#'
+#' @inheritParams get_expected_mean
+#' @inheritParams padding_test
+#'
+#' @return A table of observed mean for the dataset \code{data}
+get_observed_mean = function(data, num_digits){
+  if (num_digits > length(data)){
+    stop('the number of digits desired to evaluate is greater than the max length number in the dataset')
   }
 
   indexes_over_max_length = NA
@@ -105,53 +213,8 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
   indexes_to_use = setdiff(indexes_qualified, indexes_over_max_length)
 
   #final data to be used
-  final_data = data[indexes_to_use, ]
+  data = data[indexes_to_use, ]
 
-  print(final_data)
-
-  #count the number digits of each length in this dataframe
-  freq = table(rowSums(!(is.na(final_data))))
-
-  #initialize a table to store the number of left-aligned digit place numbers in each right-aligned digit position
-  #row means the right alighed digit position
-  #column means how many are from nth digit place
-  freq_table = data.frame(matrix(0, ncol = num_digits, nrow = max_length))
-  colnames(freq_table) = num_digits:1
-  rownames(freq_table) = digitdata@left_aligned_column_names[1:max_length]
-
-  #fill out the table in a diagonal fashion
-  for (name in names(freq)){
-    length = as.integer(name)
-    row = length - num_digits + 1
-    for (col in 1:num_digits){
-      freq_table[row, col] = freq_table[row, col] + freq[name]
-      row = row + 1
-    }
-  }
-  #intialize table for expected mean
-  expected_mean = data.frame(matrix(nrow = 1, ncol = num_digits))
-  colnames(expected_mean) = rev(digitdata@right_aligned_column_names[1:num_digits])
-
-  #get the benford expacted mean for this data set in each digit place aligned right
-  for (i in 1:num_digits){
-    expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
-  }
-  print(freq)
-  print(freq_table)
-  return(list(expected_mean=expected_mean, final_data=final_data, freq=freq, freq_table=freq_table))
-}
-
-
-#' Obtains the observed mean from input \code{data}
-#'
-#' @inheritParams get_expected_mean
-#' @inheritParams padding_test
-#'
-#' @return A table of observed mean for the dataset \code{data}
-get_observed_mean = function(data, num_digits){
-  if (num_digits > length(data)){
-    stop('the number of digits desired to evaluate is greater than the max length number in the dataset')
-  }
   #the digit places from right we are interested in
   data = data[(length(data)-num_digits+1):length(data)]
   if (!(is.na(omit_05[1]))){
@@ -199,7 +262,7 @@ Benford_stimulation = function(N, freq_table, expected_mean, contingency_table){
         size = freq_of_digit_position[j]
         if (size != 0){
           #sample according to the digit place probability and with the size
-          stimulated_numbers = c(stimulated_numbers, sample(contingency_table[['Digits']], size = size, replace = TRUE, prob = contingency_table[[paste('Digit Place', as.character(j))]]))
+          stimulated_numbers = c(stimulated_numbers, sample(as.numeric(rownames(contingency_table)), size = size, replace = TRUE, prob = contingency_table[[paste('Digit Place', as.character(j))]]))
         }
       }
       stimulated_mean[paste('sample', as.character(n)), ][i] = mean(stimulated_numbers)
@@ -249,13 +312,13 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
   combined_data = combine_by_columns(digitdata, data_columns, indexes=NA)
 
   #get expected and observed mean in each digit position
-  lst = get_expected_mean(digitdata, combined_data, Benford_mean, max_length, num_digits)
+  lst = get_expected_mean(digitdata, combined_data, Benford_mean, max_length, num_digits, omit_05)
   freq_table=lst$freq_table
 
   expected_mean = lst$expected_mean
   rownames(expected_mean) = 'All'
 
-  observed_mean = get_observed_mean(lst$final_data, num_digits)
+  observed_mean = get_observed_mean(combined_data, num_digits)
   rownames(observed_mean) = 'All'
 
   #get the difference in expected and observed mean in each digit position
@@ -293,7 +356,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 
       expected_mean[category_name, ] = lst$expected_mean
 
-      observed_mean[category_name, ] = get_observed_mean(lst$final_data, num_digits)
+      observed_mean[category_name, ] = get_observed_mean(combined_data_of_category, num_digits)
 
       #get the difference in expected and observed mean in each digit position
       diff_in_mean[category_name, ]  = observed_mean[category_name, ] - expected_mean[category_name, ]
@@ -306,7 +369,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
       ######################################################
     }
   }
-  return(list(diff_in_mean=diff_in_mean, p_values=p_values))#, expected_mean=expected_mean, observed_mean=observed_mean))
+  return(list(diff_in_mean=diff_in_mean, p_values=p_values, expected_mean=expected_mean, observed_mean=observed_mean))
 }
 
 
@@ -336,13 +399,32 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #' padding_test(digitdata, contingency_table, data_columns=c('col_name1', 'col_name2'), omit_05=NA)
 #' padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0, category='category_name', category_grouping=list(...))
 #' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name', category='category_name', category_grouping=list(...))
-padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5), break_out=NA, category=NA, category_grouping=NA, plot=TRUE){
+padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5),
+                        distribution='Benford', break_out=NA, category=NA, category_grouping=NA, plot=TRUE){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
               break_out=break_out, max_length=max_length, num_digits=num_digits, N=N, category=category)
 
-  #handles if grouping is NA, while group is not
-  category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
+  #deal with contingency table and distribution situation
+  if (TRUE %in% ((is.na(contingency_table)))){
+    #if contingency_table is not passed in, use distribution
+    if (tolower(distribution) == 'benford'){
+      load(file = "data/benford_table.RData")
+      contingency_table = benford_table
+    }
+    else if (tolower(distribution) == 'uniform'){
+      load(file = "data/uniform_table.RData")
+      contingency_table = uniform_table
+    }
+    else {
+      stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
+    }
+  }
+
+  #handles if category_grouping is NA, while category is not
+  if (!(is.na(category))){
+    category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
+  }
 
   #list of results from all break out category to be returned
   padding_test_results = list()

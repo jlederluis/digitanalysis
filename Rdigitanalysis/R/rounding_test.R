@@ -133,7 +133,6 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   rownames(percent_rounded_table) = 'percent rounded digits'
   #sort by decreasing rounded percentage
   percent_rounded_table = t(sort(percent_rounded_table, decreasing = TRUE))
-
   return(percent_rounded_table)
 }
 

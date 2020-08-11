@@ -52,14 +52,15 @@ skip_first_digit = TRUE
 skip_last_digit = FALSE
 break_out = NA#'DIST'
 category = 'YEAR'
+distribution='Benford'
 
 #match the data with Jetson's
 # result = single_high_low_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, high=high, omit_05=omit_05,
 #                        skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, category=category)
 
 
-result = high_low_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, high=high, omit_05=omit_05,
-                       skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, break_out=break_out, category=category, plot=F)
+result = high_low_test(digitdata=DigitData, contingency_table=NA, data_columns=data_columns, high=high, omit_05=omit_05,
+                       distribution=distribution, skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, break_out=break_out, category=category, plot=F)
 
 result
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'All')

@@ -119,8 +119,8 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
 
   #distribution must be either 'Benford' or 'Uniform'
   if (TRUE %in% (!(is.na(distribution)))){
-    if (!(distribution %in% c('Benford', 'Uniform'))){
-      stop("distribution must be either 'Benford' or 'Uniform'!")
+    if (!(distribution %in% c('Benford', 'Uniform', 'benford', 'uniform'))){
+      stop("distribution must be either 'Benford' or 'Uniform', case insensitive!")
     }
   }
 

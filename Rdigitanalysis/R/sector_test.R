@@ -11,7 +11,7 @@
 #' A wrapper function for \code{repeat_test}.
 #'
 #' @param category The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.
-#' @param category_grouping A list of arrays, or defaulted to NA.
+#' @param category_grouping A list of arrays, or defaulted to NA. Only effective if \code{category} is not NA.
 #' \itemize{
 #'   \item Each the names of the elements in the list is the category name
 #'   \item Each array contains the values belonging to that category

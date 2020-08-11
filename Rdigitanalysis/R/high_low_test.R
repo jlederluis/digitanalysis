@@ -193,11 +193,29 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE, break_out='col_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
-high_low_test = function(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, category=NA, plot=TRUE){
+high_low_test = function(digitdata, contingency_table=NA, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE,
+                         distribution='Benford', skip_last_digit=FALSE, break_out=NA, category=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
               omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, category=category)
+
+  #deal with contingency table and distribution situation
+  if (TRUE %in% ((is.na(contingency_table)))){
+    #if contingency_table is not passed in, use distribution
+    if (tolower(distribution) == 'benford'){
+      load(file = "data/benford_table.RData")
+      contingency_table = benford_table
+    }
+    else if (tolower(distribution) == 'uniform'){
+      load(file = "data/uniform_table.RData")
+      contingency_table = uniform_table
+    }
+    else {
+      stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
+    }
+  }
+
 
   #perform high low test on all data
   result = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)

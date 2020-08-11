@@ -52,11 +52,14 @@ N = 1 #120k datasets took 15 mins
 omit_05 = c(0,5)
 break_out = NA#'DIST'
 category= NA#'SECTOR'
-category_grouping = list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
+category_grouping = NA#list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
+distribution='benford'
 
 #match the data with Jetson's
-result = padding_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, max_length=max_length,
-                      num_digits=num_digits, N=N, omit_05=omit_05, break_out=break_out, category=category, category_grouping=category_grouping, plot=TRUE)
-
+result = padding_test(digitdata=DigitData, contingency_table=NA, data_columns=data_columns, max_length=max_length,
+                      num_digits=num_digits, N=N, omit_05=omit_05, distribution=distribution, break_out=break_out,
+                      category=category, category_grouping=category_grouping, plot=TRUE)
 result
 
+# single_padding_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, max_length=max_length,
+#                     num_digits=num_digits, N=N, omit_05=omit_05, category=category, category_grouping=category_grouping)

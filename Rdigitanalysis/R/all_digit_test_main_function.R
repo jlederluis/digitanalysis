@@ -9,7 +9,11 @@
 #' Performs all-digit-place two-way chi square test vs Benford’s Law
 #'
 #' @param digitdata A object of class \code{DigitAnalysis}.
-#' @param contingency_table The Benford probability table.
+#' @param contingency_table The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
+#' Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
+#' \itemize{
+#'   \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
+#' }
 #' @param data_columns The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 #' an array of column names, as characters; a single column name, as character.
 #' @param digit_places The indexes of left-aligned digit places to analyze. There are three options:
@@ -26,7 +30,7 @@
 #'   \item The first division (usually x-axis) shown in plots.
 #'   \item Default to NA.
 #' }
-#' @param distribution 'Benford' or 'Uniform'. Specifies the distribution the chi square test is testing against. Default to 'Benford'.
+#' @param distribution 'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.
 #' @param plot TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.
 #' @param skip_last_digit TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 #' \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.
@@ -49,7 +53,7 @@
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
-all_digits_test = function(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=FALSE,
+all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', digit_places='all', skip_first_digit=FALSE,
                            omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE){
 
   #check input
@@ -60,6 +64,22 @@ all_digits_test = function(digitdata, contingency_table, data_columns='all', dig
   #######################################################################
   #parse the data
   #######################################################################
+
+  #deal with contingency table and distribution situation
+  if (TRUE %in% ((is.na(contingency_table)))){
+    #if contingency_table is not passed in, use distribution
+    if (tolower(distribution) == 'benford'){
+      load(file = "data/benford_table.RData")
+      contingency_table = benford_table
+    }
+    else if (tolower(distribution) == 'uniform'){
+      load(file = "data/uniform_table.RData")
+      contingency_table = uniform_table
+    }
+    else {
+      stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
+    }
+  }
 
   align_direction = 'left'
 
