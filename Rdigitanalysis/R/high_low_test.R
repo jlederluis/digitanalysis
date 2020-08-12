@@ -93,7 +93,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
 #' @inheritParams high_low_test
 #'
 #' @return p_values table of high low test for input data from \code{digitdata}.
-single_high_low_test = function(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category){
+single_high_low_test = function(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category, category_grouping){
 
   #if omit_05 in high, then should throw error
   for (digit in omit_05){
@@ -147,7 +147,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
   #perform a 'year effect' high low test break by category
   if (!(is.na(category))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=category) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, category, category_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
@@ -194,11 +194,12 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
 high_low_test = function(digitdata, contingency_table=NA, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE,
-                         distribution='Benford', skip_last_digit=FALSE, break_out=NA, category=NA, plot=TRUE){
+                         distribution='Benford', skip_last_digit=FALSE, break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA,plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
-              omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, category=category)
+              omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, break_out_grouping=break_out_grouping,
+              category=category, category_grouping=category_grouping)
 
   #deal with contingency table and distribution situation
   if (TRUE %in% ((is.na(contingency_table)))){
@@ -218,7 +219,7 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
 
 
   #perform high low test on all data
-  result = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)
+  result = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category, category_grouping)
   p_values_table = data.frame(matrix(nrow = 0, ncol = ncol(result$p_values)))
   colnames(p_values_table) = colnames(result$p_values)
   p_values_table['All', ] = result$p_values
@@ -231,7 +232,7 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
   #perform high low test on all break out categories
   if (!(is.na(break_out))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
@@ -243,7 +244,8 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
       digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)
 
       #perform high low test on this category
-      result_of_category = single_high_low_test(digitdata_of_category, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category)
+      result_of_category = single_high_low_test(digitdata_of_category, contingency_table, data_columns, high, omit_05, skip_first_digit,
+                                                skip_last_digit, category, category_grouping)
       p_values_table[category_name, ] = result_of_category$p_values
 
       if (plot){

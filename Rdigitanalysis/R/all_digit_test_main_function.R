@@ -30,6 +30,13 @@
 #'   \item The first division (usually x-axis) shown in plots.
 #'   \item Default to NA.
 #' }
+#' @param break_out_grouping A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
+#' \itemize{
+#'   \item Each the names of the elements in the list is the break_out name
+#'   \item Each array contains the values belonging to that break_out
+#'   \item If it is remain as NA as default, while \code{break_out} is not NA, then \code{break_out_grouping} will default to every individual item in
+#'   \code{break_out} will be in a separate group.
+#' }
 #' @param distribution 'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.
 #' @param plot TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.
 #' @param skip_last_digit TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
@@ -54,12 +61,13 @@
 #' all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
 all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', digit_places='all', skip_first_digit=FALSE,
-                           omit_05=c(0,5), break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE){
+                           omit_05=c(0,5), break_out=NA, break_out_grouping=NA, distribution='Benford', plot=TRUE,
+                           skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
-              skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, distribution=distribution, plot=plot,
-              skip_last_digit=skip_last_digit, standard_df=standard_df, suppress_low_N=suppress_low_N)
+              skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, break_out_grouping=break_out_grouping,
+              distribution=distribution, plot=plot, skip_last_digit=skip_last_digit, standard_df=standard_df, suppress_low_N=suppress_low_N)
 
   #######################################################################
   #parse the data
@@ -80,6 +88,11 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
       stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
     }
   }
+
+  # #handles if category_grouping is NA, while category is not
+  # if (!(is.na(break_out))){
+  #   break_out_grouping = get_grouping(grouping=break_out_grouping, column=break_out, digitdata=digitdata)
+  # }
 
   align_direction = 'left'
 
@@ -120,7 +133,7 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
   #break on category if specified
   if (!(is.na(break_out))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){

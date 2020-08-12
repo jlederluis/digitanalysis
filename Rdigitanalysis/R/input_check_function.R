@@ -31,9 +31,9 @@
 #'
 #' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
-                       distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA, duplicate_matching_cols=NA,
-                       category=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA, standard_df=NA, rounding_patterns=NA,
-                       suppress_low_N=NA) {
+                       break_out_grouping=NA, distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA,
+                       duplicate_matching_cols=NA, category=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA,
+                       standard_df=NA, rounding_patterns=NA, suppress_low_N=NA) {
 
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
@@ -117,6 +117,13 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
   }
 
+  #break_out_grouping must be a list specifying the columns for grouping the first division of data to split upon
+  if (TRUE %in% (!(is.na(break_out_grouping)))){
+    if (!(is.list(break_out_grouping))){
+      stop('break_out_grouping must be a list specifying the columns for grouping the first division of data to split upon!')
+    }
+  }
+
   #distribution must be either 'Benford' or 'Uniform'
   if (TRUE %in% (!(is.na(distribution)))){
     if (!(distribution %in% c('Benford', 'Uniform', 'benford', 'uniform'))){
@@ -181,23 +188,12 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
   }
 
-  #category_grouping must be a list specifying the columns in each sector intended to split upo
+  #category_grouping must be a list specifying the columns in each sector intended to split upon second division
   if (TRUE %in% (!(is.na(category_grouping)))){
     if (!(is.list(category_grouping))){
-      stop('category_grouping must be a list specifying the columns in each sector intended to split upon!')
+      stop('category_grouping must be a list specifying the columns in each sector intended to split upon second division!')
     }
   }
-
-  # need add this option later
-  # #"failure_factor must be an integer denoting the factor that one must exceed the other sector to be categorized as failure of the sector test
-  # if (TRUE %in% (!(is.na(failure_factor)))){
-  #   if (length(failure_factor) != 1){
-  #     stop("failure_factor must be an integer denoting the factor that one must exceed the other sector to be categorized as failure of the sector test!")
-  #   }
-  #   else if (!(is.numeric(failure_factor))){
-  #     stop("failure_factor must be an integer denoting the factor that one must exceed the other sector to be categorized as failure of the sector test!")
-  #   }
-  # }
 
   #high must be a single digit place integer or an array of digit places specifying the digits that are classified as high digits
   if (TRUE %in% (!(is.na(high)))){
@@ -205,10 +201,6 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
       stop("high must be a single digit place integer or an array of digit places specifying the digits that are classified as high digits!")
     }
   }
-
-  #########################################################
-  ##########add the 05 option testing for rounding test
-  #########################################################
 
   #max_length must be an integer denoting the maximum length of the numbers to be analyzed in padding test
   if (TRUE %in% (!(is.na(max_length)))){

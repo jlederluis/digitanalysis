@@ -54,6 +54,7 @@ digit_places =  'all'
 skip_first_digit=TRUE
 omit_05 = c(0,5)
 break_out='DIST'
+break_out_grouping=NA
 skip_last_digit=FALSE
 standard_df=TRUE
 suppress_low_N=FALSE
@@ -61,8 +62,8 @@ distribution = 'benford'
 
 #match the data with Jetson's
 result = all_digits_test(digitdata = DigitData, contingency_table = NA, data_columns = data_columns, digit_places = digit_places,
-                         skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, distribution=distribution, plot=FALSE,
-                         skip_last_digit = skip_last_digit, standard_df=standard_df, suppress_low_N=suppress_low_N)
+                         skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=break_out, break_out_grouping=break_out_grouping,
+                         distribution=distribution, plot=FALSE, skip_last_digit = skip_last_digit, standard_df=standard_df, suppress_low_N=suppress_low_N)
 result
 # order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
 # result[order]

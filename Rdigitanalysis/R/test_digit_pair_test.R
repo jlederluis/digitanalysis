@@ -52,7 +52,8 @@ min_length = 3
 omit_05 = 0
 data_columns = "BENTOT.Values"
 break_out = 'DIST'
+break_out_grouping=NA
 
-result = digit_pairs_test(DigitData, data_columns, omit_05, min_length, break_out)
-order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
+result = digit_pairs_test(DigitData, data_columns, omit_05, min_length, break_out, break_out_grouping=break_out_grouping)
+order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'All')
 result[order]

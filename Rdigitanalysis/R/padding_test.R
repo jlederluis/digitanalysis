@@ -336,22 +336,23 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
   #break out by category
   if (!(is.na(category))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, category) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, category, category_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
-    for (category_name in names(category_grouping)){
+    for (category_name in names(indexes_of_categories)){
 
       #get the index of category containing multiple groups
-      #by accessing the names of the categories in the data column that belong to this category
-      indexes_of_category = indexes_of_categories[category_grouping[[category_name]]]
-      indexes_of_category = unlist(indexes_of_category) #turn into an array
+      indexes_of_category = indexes_of_categories[[category_name]]
+      # #by accessing the names of the categories in the data column that belong to this category
+      # indexes_of_category = indexes_of_categories[category_grouping[[category_name]]]
+      # indexes_of_category = unlist(indexes_of_category) #turn into an array
 
       ######################################################
       #get combined by rows data for all data columns needed
       combined_data_of_category = combine_by_columns(digitdata, data_columns, indexes=indexes_of_category)
 
       #get expected and observed mean in each digit position
-      lst = get_expected_mean(digitdata, combined_data_of_category, Benford_mean, max_length, num_digits)
+      lst = get_expected_mean(digitdata, combined_data_of_category, Benford_mean, max_length, num_digits, omit_05)
       freq_table=lst$freq_table
 
       expected_mean[category_name, ] = lst$expected_mean
@@ -400,10 +401,11 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #' padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0, category='category_name', category_grouping=list(...))
 #' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name', category='category_name', category_grouping=list(...))
 padding_test = function(digitdata, contingency_table, data_columns='all', max_length=8, num_digits=5, N=10000, omit_05=c(0,5),
-                        distribution='Benford', break_out=NA, category=NA, category_grouping=NA, plot=TRUE){
+                        distribution='Benford', break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, plot=TRUE){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
-              break_out=break_out, max_length=max_length, num_digits=num_digits, N=N, category=category)
+              break_out=break_out, break_out_grouping=break_out_grouping, max_length=max_length, num_digits=num_digits,
+              N=N, category=category, category_grouping=category_grouping)
 
   #deal with contingency table and distribution situation
   if (TRUE %in% ((is.na(contingency_table)))){
@@ -421,10 +423,10 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
     }
   }
 
-  #handles if category_grouping is NA, while category is not
-  if (!(is.na(category))){
-    category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
-  }
+  # #handles if category_grouping is NA, while category is not
+  # if (!(is.na(category))){
+  #   category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
+  # }
 
   #list of results from all break out category to be returned
   padding_test_results = list()
@@ -447,7 +449,7 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
   #perform padding test on all break out categories
   if (!(is.na(break_out))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(data=digitdata@cleaned, break_out=break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){

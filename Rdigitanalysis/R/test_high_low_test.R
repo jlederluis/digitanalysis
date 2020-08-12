@@ -50,7 +50,7 @@ high = c(6,7,8,9)
 omit_05 = c(0,5)
 skip_first_digit = TRUE
 skip_last_digit = FALSE
-break_out = NA#'DIST'
+break_out = 'DIST'
 category = 'YEAR'
 distribution='Benford'
 

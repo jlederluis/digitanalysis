@@ -326,16 +326,14 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, sk
 #' @inheritParams all_digits_test
 #'
 #' @return A list of array of indexes in \code{data} that belongs to each category
-break_by_category = function(data, break_out){
+break_by_category = function(data, break_out, break_out_grouping){
 
   if (is.na(match(break_out, colnames(data)))) {
     stop('specified category is not a column in the data')
   }
-
   if (typeof(data[, break_out]) != "character"){
     stop('specified break out column is not a category column')
   }
-
   indexes_of_categories = list()
   for (category_name in unique(data[, break_out])){
     #what if there is NA? havent encountered yet...I guess ignore
@@ -346,8 +344,38 @@ break_by_category = function(data, break_out){
     #add rows to the named element in list
     indexes_of_categories[[category_name]] = rows
   }
+
+  if (!(is.na(break_out_grouping))){
+    #merge the indexes for categories in the same grouping to same list element
+    indexes_of_grouping = list()
+    for (group_name in names(break_out_grouping)){
+      #get the index of sector by accessing the names of the categories in the data column that belong to this sector
+      indexes_of_group = indexes_of_categories[break_out_grouping[[group_name]]]
+      indexes_of_grouping[[group_name]] = unlist(indexes_of_group) #turn into an array and update output list
+    }
+    return(indexes_of_grouping)
+  }
   return(indexes_of_categories)
 }
+
+
+#' #' Updates \code{grouping} to default if it is NA.
+#' #'
+#' #' @param grouping The grouping in \code{column}.
+#' #' @param column The column to break data on
+#' #' @inheritParams all_digits_test
+#' #'
+#' #' @return \code{grouping} that is not NA.
+#' get_grouping = function(grouping, column, digitdata){
+#'   if (is.na(grouping)){
+#'     unique_items = unique(digitdata@cleaned[column])[[1]]
+#'     grouping = list()
+#'     for (item in unique_items){
+#'       grouping[[item]] = item
+#'     }
+#'   }
+#'   return(grouping)
+#' }
 
 
 #' Create a sub-object of the \code{digitdata} object given the indexes of the rows that belong to the sub-object.
@@ -370,24 +398,4 @@ make_sub_digitdata = function(digitdata, indexes){
   colnames(sub_digitdata@right_aligned) = colnames(digitdata@right_aligned)
   return(sub_digitdata)
 }
-
-
-#' Updates \code{grouping} to default if it is NA.
-#'
-#' @param grouping The grouping in \code{column}.
-#' @param column The column to break data on
-#' @inheritParams all_digits_test
-#'
-#' @return \code{grouping} that is not NA.
-get_grouping = function(grouping, column, digitdata){
-  if (is.na(grouping)){
-    unique_items = unique(digitdata@cleaned[column])[[1]]
-    grouping = list()
-    for (item in unique_items){
-      grouping[[item]] = item
-    }
-  }
-  return(grouping)
-}
-
 

@@ -48,10 +48,10 @@ find_percent_repeats = function(data){
 #' repeat_test(digitdata)
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'))
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name')
-repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, plot=TRUE){
+repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, break_out_grouping=NA, plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, break_out=break_out, duplicate_matching_cols=duplicate_matching_cols, plot=plot)
+  input_check(digitdata=digitdata, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols, plot=plot)
 
   #handles the duplicate_matching_cols = 'all' situation
   if (duplicate_matching_cols[1] == 'all'){
@@ -71,7 +71,7 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, p
   #break out by category
   if (!(is.na(break_out))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){

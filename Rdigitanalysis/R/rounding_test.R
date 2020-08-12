@@ -89,10 +89,12 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
 #' rounding_test(digitdata, omit_05=0)
 #' rounding_test(digitdata, omit_05=NA, break_out='col_name')
 #' rounding_test(digitdata, data_columns=c('col_name1', 'col_name2'))
-rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0','00','000','0000', '00000', '000000', '5', '50', '500'), break_out=NA, plot=TRUE){
+rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0','00','000','0000', '00000', '000000', '5', '50', '500'),
+                         break_out=NA, break_out_grouping=NA, plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, contingency_table=NA, data_columns=data_columns, rounding_patterns=rounding_patterns, break_out=break_out, plot=plot)
+  input_check(digitdata=digitdata, contingency_table=NA, data_columns=data_columns, rounding_patterns=rounding_patterns,
+              break_out=break_out, break_out_grouping=break_out_grouping, plot=plot)
 
   #handle the data_columns = 'all' situation
   data_columns = get_data_columns(digitdata, data_columns)
@@ -109,7 +111,7 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   #break out by category
   if (!(is.na(break_out))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){

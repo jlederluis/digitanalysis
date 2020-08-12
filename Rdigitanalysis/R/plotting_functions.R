@@ -45,7 +45,7 @@ hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', titl
 
   #add the horizontal line desired
   if (!(is.na(hline))){
-    hist2d = hist2d + geom_hline(aes(yintercept=hline, linetype=hline_name), color='red', lwd=1)
+    hist2d = hist2d + geom_hline(aes(yintercept=hline, linetype=hline_name), color='red', lwd=1) + theme(legend.title=element_blank())
   }
   return(hist2d)
 }
@@ -78,8 +78,8 @@ hist_2D_variables = function(data, data_style='row', xlab='digits', ylab='freque
   library(ggplot2)
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
-    scale_fill_grey(start=0.7, end=0.3) + scale_y_continuous(breaks=number_ticks(10)) +
-    xlab(xlab) + ylab(ylab) + ggtitle(title) #ensure order of digit places
+    scale_fill_grey(start=0.7, end=0.1) + scale_y_continuous(breaks=number_ticks(10)) +
+    xlab(xlab) + ylab(ylab) + ggtitle(title) + theme(legend.title=element_blank()) #ensure order of digit places
     #+ theme(legend.position="bottom") #legend position
   return(hist2d_multiple)
 }

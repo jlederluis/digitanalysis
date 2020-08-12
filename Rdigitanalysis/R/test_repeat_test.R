@@ -48,8 +48,9 @@ DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 #test repeat test
 duplicate_matching_cols = c("ALEXP.Values", "YEAR", "DIST", "SECTOR")
 break_out = 'DIST'
+break_out_grouping=NA
 
-result = repeat_test(DigitData, duplicate_matching_cols, break_out=break_out)
+result = repeat_test(DigitData, duplicate_matching_cols, break_out=break_out, break_out_grouping=break_out_grouping)
 result
 
 # order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')

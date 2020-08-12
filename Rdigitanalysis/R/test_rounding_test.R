@@ -51,7 +51,8 @@ contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California 
 rounding_patterns = c('0','00','000','0000', '00000', '000000', '5', '50', '500')
 data_columns = c("ALEXP.Values")
 break_out = 'DIST'
-result=rounding_test(DigitData, data_columns=data_columns, rounding_patterns=rounding_patterns, break_out=break_out)
+break_out_grouping=NA
+result=rounding_test(DigitData, data_columns=data_columns, rounding_patterns=rounding_patterns, break_out=break_out, break_out_grouping=break_out_grouping)
 
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
 result[order, ]
