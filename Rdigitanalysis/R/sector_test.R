@@ -16,7 +16,6 @@
 #'   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
 #'   \code{category} will be in a separate group.
 #' }
-#' @param failure_factor NEED TO EDIT LATER
 #' @inheritParams repeat_test
 #'
 #' @return
@@ -31,11 +30,12 @@
 #' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
 #' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 #' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
-sector_test = function(digitdata, category, category_grouping=NA, duplicate_matching_cols='all', break_out=NA, break_out_grouping=NA, failure_factor=3, plot=TRUE){
+sector_test = function(digitdata, category, category_grouping=NA, data_columns='all', duplicate_matching_cols='all',
+                       break_out=NA, break_out_grouping=NA, round_digit_to_skip=c(0,5), plot=TRUE){
 
   #check input
-  input_check(digitdata=digitdata, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols,
-              category=category, category_grouping=category_grouping, plot=plot)
+  input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols,
+              category=category, category_grouping=category_grouping, omit_05=round_digit_to_skip, plot=plot)
 
   #check if the sector columns are valid
   if (is.na(match(category, colnames(digitdata@cleaned)))){
@@ -80,7 +80,7 @@ sector_test = function(digitdata, category, category_grouping=NA, duplicate_matc
     digitdata_of_sector = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_sector)
 
     #repeats test
-    repeats_table = repeat_test(digitdata_of_sector, duplicate_matching_cols=duplicate_matching_cols, break_out=break_out, plot=FALSE)
+    repeats_table = repeat_test(digitdata_of_sector, data_columns, duplicate_matching_cols, break_out, break_out_grouping, round_digit_to_skip, plot=F)$percent_repeats
     #update table
     print(repeats_table)
 
@@ -90,6 +90,7 @@ sector_test = function(digitdata, category, category_grouping=NA, duplicate_matc
 
     print(sector_repeats_table)
   }
+
   #plot
   sector_plot = NA
   if (plot){

@@ -56,4 +56,5 @@ break_out_grouping=NA
 
 result = digit_pairs_test(DigitData, data_columns, omit_05, min_length, break_out, break_out_grouping=break_out_grouping)
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'All')
-result[order]
+result$p_values
+result$p_values[order]

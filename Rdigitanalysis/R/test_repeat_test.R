@@ -46,14 +46,14 @@ indexes_with_valid_alexp_values = which(!(is.na(DigitData@cleaned$ALEXP.Values))
 DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 
 #test repeat test
+data_columns = "ALEXP.Values"
 duplicate_matching_cols = c("ALEXP.Values", "YEAR", "DIST", "SECTOR")
 break_out = 'DIST'
 break_out_grouping=NA
+round_digit_to_skip=c(0,5)
 
-result = repeat_test(DigitData, duplicate_matching_cols, break_out=break_out, break_out_grouping=break_out_grouping)
+result = repeat_test(DigitData, data_columns, duplicate_matching_cols, break_out=break_out, break_out_grouping=break_out_grouping, round_digit_to_skip=round_digit_to_skip)
 result
 
 # order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
 # result[order, ]
-
-

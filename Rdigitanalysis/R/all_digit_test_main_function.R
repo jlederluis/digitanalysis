@@ -67,6 +67,11 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   #parse the data
   #######################################################################
 
+  #handles the data_columns = 'all' situation
+  if (data_columns[1] == 'all'){
+    data_columns = colnames(digitdata@numbers)
+  }
+
   align_direction = 'left'
 
   #get the digits of the desired data columns to be analyzed

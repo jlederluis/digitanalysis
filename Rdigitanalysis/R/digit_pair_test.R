@@ -22,7 +22,6 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
     if (!(is.na(indexes[1]))){
       digit_pair_table = digit_pair_table[indexes, ]
     }
-
     #remove all numbers that has length less than min_length
     digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-min_length+1):ncol(digit_pair_table)]
     ##remove incomplete rows (with nans/length < min_length)
@@ -35,7 +34,6 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
     #update
     occurances = rbind(occurances, digit_pair_table)
   }
-
   #paste the last tywo digits together as numbers
   occurances = as.character(paste(occurances[,1], occurances[,2], sep=''))
 
@@ -104,7 +102,6 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
   else if (min_length < 2){
     stop("min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test!")
   }
-
   #get the theoratical frequency based on Benford's Law --> Uniform Distribution
   p = freq_true(omit_05)
 
@@ -115,7 +112,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
   counts = counts_observed(digitdata, data_columns, omit_05, min_length)
 
   #get p_value from binomial test
-  p_value = binom.test(x=counts, p = p, alternative = 't')$p.value #has to specify p = p !!!!!!
+  p_value = binom.test(x=counts, p = p, alternative = 'l')$p.value ##############has to specify p = p !!!!!!
   #p_value = pbinom(counts[1], size=sum(counts), prob=p)
   #print(p_value)
 
@@ -129,7 +126,6 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
     #get indexes for each category
     indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
-
     #break by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
@@ -140,9 +136,8 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
       # print(sum())
 
       #p_value_in_category = pbinom(counts_in_category[1], size=sum(counts_in_category), prob=p)
-      p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = 't')$p.value ############
+      p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = 'l')$p.value ############
       p_values[category_name] = p_value_in_category #p-value
-
       freq_digit_pairs[category_name] = counts_in_category[1]/sum(counts_in_category) #for plotting
     }
   }
