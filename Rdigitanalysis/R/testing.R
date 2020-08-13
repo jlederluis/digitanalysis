@@ -56,6 +56,8 @@
 # source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\input_check_function.R')
 #
 # #load(file = "data/uniform_table.RData")
+# ptm <- proc.time()
+# proc.time() - ptm
 # #############################################################
 # #############try it with given data##########################
 # #############################################################

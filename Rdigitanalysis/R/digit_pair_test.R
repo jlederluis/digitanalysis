@@ -123,7 +123,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
   p_values = data.frame(All=p_value)
 
   #freq of digit pairs for plotting
-  freq_digit_pairs = data.frame(all=counts[1]/sum(counts))
+  freq_digit_pairs = data.frame(All=counts[1]/sum(counts))
 
   if (!(is.na(break_out))){
     #get indexes for each category
@@ -147,12 +147,14 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
     }
   }
   #plot only if we break_out == have > 1 column
+  digit_pair_plot = NA
   if (plot){
     if (!(is.na(break_out))){
-      print(hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='percent digit pairs', title='Digit Pairs Test',
-                    hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution')) #-1 since we want uniform distribution without 'all'
+      digit_pair_plot = hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='Percent Digit Pairs', title='Digit Pairs Test',
+                                hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution') #-1 since we want uniform distribution without 'all'
+      print(digit_pair_plot)
     }
   }
-  return(p_values)
+  return(list(p_values=p_values, plot=digit_pair_plot))
 }
 

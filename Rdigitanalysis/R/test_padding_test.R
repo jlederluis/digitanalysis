@@ -48,19 +48,23 @@ DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 data_columns = c("ALEXP.Values")#c("ALEXP")#,"BENTOT", "BENM", "BENF")
 max_length = 7
 num_digits = 5
-N = 1 #120k datasets took 15 mins
+N = 100000 #120k datasets took 15 mins #2400s for N=10,000; data = 4000 x 5, all data
 omit_05 = c(0,5)
 break_out = NA#'DIST'
 break_out_grouping=NA
-category= 'SECTOR'
-category_grouping = list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
+category= NA#'SECTOR'
+category_grouping = NA#list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE"))
 distribution='benford'
+
+
+ptm <- proc.time()
 
 #match the data with Jetson's
 result = padding_test(digitdata=DigitData, contingency_table=NA, data_columns=data_columns, max_length=max_length,
                       num_digits=num_digits, N=N, omit_05=omit_05, distribution=distribution, break_out=break_out,
                       break_out_grouping=break_out_grouping, category=category, category_grouping=category_grouping, plot=TRUE)
 result
+proc.time() - ptm
 
-# single_padding_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, max_length=max_length,
-#                     num_digits=num_digits, N=N, omit_05=omit_05, category=category, category_grouping=category_grouping)
+
+

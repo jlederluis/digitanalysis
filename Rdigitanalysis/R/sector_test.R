@@ -5,8 +5,6 @@
 #Summer 2020
 ############################################################
 
-####failure factor
-
 #' Performs sector test to analyze uneven distribution of percent repeats across sectors (supposed to be uniform).
 #' A wrapper function for \code{repeat_test}.
 #'
@@ -92,11 +90,12 @@ sector_test = function(digitdata, category, category_grouping=NA, duplicate_matc
 
     print(sector_repeats_table)
   }
-
   #plot
+  sector_plot = NA
   if (plot){
-    print(hist_2D_variables(data.frame(sector_repeats_table), data_style='col', xlab='districts', ylab='percent repeats', title='Sector Effect Test'))
+    sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='col', xlab=break_out, ylab='Percent Repeats', title='Sector Effect Test')
+    print(sector_plot)
   }
-  return(sector_repeats_table)
+  return(list(percent_repeats=sector_repeats_table, plot=sector_plot))
 }
 

@@ -26,9 +26,11 @@ number_ticks <- function(n) {function(limits) pretty(limits, n)}
 #' @param ylab y-axis label. Defaulted to 'frequency'.
 #' @param title Plot title. Defaulted to '2D Histogram'.
 #' @param hline Specifies the y-intercept value if a horizontal line is desired. Defaulted to NA.
+#' @param hline_name The title of the horizontal line added. Defaulted to ''.
+#' @param width The width of the bars. Defaulted to 0.5.
 #'
 #' @return A ggplot instance.
-hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', title='2D Histogram', hline=NA, hline_name=''){
+hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='2D Histogram', hline=NA, hline_name='', width=0.5){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
@@ -39,13 +41,20 @@ hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', titl
   #2d plot
   library(ggplot2)
   hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
-    geom_bar(stat="identity") + xlab(xlab) + ylab(ylab) + ggtitle(title) + scale_x_discrete(limits=rownames(data)) +
-    scale_y_continuous(breaks=number_ticks(10)) + theme(legend.position="top")
+    geom_bar(stat="identity", width=width) + xlab(xlab) + ylab(ylab) + ggtitle(title) + scale_x_discrete(limits=rownames(data)) +
+    scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0.1))) + theme_bw() +
+    theme(axis.line.x = element_blank(),
+          axis.line.y = element_line(colour = "black"),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_blank()) +
+    geom_hline(aes(yintercept=0), color='black', lwd=0.5)
   #+ geom_text(aes(label=values), vjust=-0.3, size=3.5, color='blue') #for label exact value
 
   #add the horizontal line desired
   if (!(is.na(hline))){
-    hist2d = hist2d + geom_hline(aes(yintercept=hline, linetype=hline_name), color='red', lwd=1) + theme(legend.title=element_blank())
+    hist2d = hist2d + geom_hline(aes(yintercept=hline, linetype=hline_name), color='red', lwd=1) + theme(legend.title=element_blank(), legend.position="top")
   }
   return(hist2d)
 }
@@ -58,7 +67,7 @@ hist_2D = function(data, data_style='row', xlab='digits', ylab='frequency', titl
 #' @inheritParams hist_2D
 #'
 #' @return A ggplot instance.
-hist_2D_variables = function(data, data_style='row', xlab='digits', ylab='frequency', title='Multi-variable 2D Histogram'){
+hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='Multi-variable 2D Histogram'){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
@@ -78,8 +87,16 @@ hist_2D_variables = function(data, data_style='row', xlab='digits', ylab='freque
   library(ggplot2)
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
-    scale_fill_grey(start=0.7, end=0.1) + scale_y_continuous(breaks=number_ticks(10)) +
-    xlab(xlab) + ylab(ylab) + ggtitle(title) + theme(legend.title=element_blank()) #ensure order of digit places
+    scale_fill_grey(start=0.7, end=0.1) + xlab(xlab) + ylab(ylab) + ggtitle(title) +
+    scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0.1))) + theme_bw() +
+    theme(axis.line.x = element_blank(),
+          axis.line.y = element_line(colour = "black"),
+          panel.grid.major = element_blank(),
+          panel.grid.minor = element_blank(),
+          panel.border = element_blank(),
+          panel.background = element_blank(),
+          legend.title=element_blank()) +
+    geom_hline(aes(yintercept=0), color='black', lwd=0.5)
     #+ theme(legend.position="bottom") #legend position
   return(hist2d_multiple)
 }
@@ -106,7 +123,7 @@ plot_table_by_columns = function(digits_table, name='', data_style='col', save=F
   plot_list = list()
   for (i in 1:length(digits_table)){
     curr_digit_place = colnames(digits_table)[i]
-    hist_digit_place_i = hist_2D(digits_table[i], data_style=data_style, xlab='digits', ylab='frequency', title=paste(name, curr_digit_place), hline=NA)
+    hist_digit_place_i = hist_2D(digits_table[i], data_style=data_style, xlab='Digits', ylab='Frequency', title=paste(name, curr_digit_place), hline=NA)
     plot_list[[curr_digit_place]] = hist_digit_place_i
   }
   plots = plot_multiple_hist2d(plot_list)
@@ -129,7 +146,7 @@ plot_table_by_columns = function(digits_table, name='', data_style='col', save=F
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
-hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=16, save=FALSE){
+hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Bar Plot', theta=55, phi=16, save=FALSE){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
 
@@ -178,17 +195,17 @@ plot_all_digit_test = function(digitdata, observation_table, digit_places, title
     test_type = 'Unpack Rounded Numbers Test'
     #round numbers
     if (digitdata@numbers[[1]][1] %% 10 == 0){
-      hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, '(Round Numbers)', test_type, sep='_')) #3D histogram
+      hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, '(Round Numbers)', test_type, sep='_')) #3D histogram
       #plot_table_by_columns(observation_table, name=paste(title, '(Round Numbers)', test_type, sep='_'), data_style='col') #multiple 2D histograms
     }
     else {
-      hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, '(Unround Numbers)', test_type, sep='_')) #3D histogram
+      hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, '(Unround Numbers)', test_type, sep='_')) #3D histogram
       #plot_table_by_columns(observation_table, name=paste(title, '(Unround Numbers)', test_type, sep='_'), data_style='col') #multiple 2D histograms
     }
   }
   else {
     test_type = 'All Digit Test'
-    hist_3d(observation_table, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title=paste(title, test_type, sep='_')) #3D histogram
+    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, test_type, sep='_')) #3D histogram
     plot_table_by_columns(observation_table, name=paste(title, test_type, sep='_'), data_style='col') #multiple 2D histograms
   }
   return()

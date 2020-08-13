@@ -238,56 +238,76 @@ get_observed_mean = function(data, num_digits){
 #' @param expected_mean \code{expected_mean} item returned from \code{get_expected_mean}
 #' @inheritParams padding_test
 #'
-#' @return A dataframe for the mean of each stimulated dataset in every digit place
+#' @return A dataframe for the mean of each simulated dataset in every digit place
 #' @export
-Benford_stimulation = function(N, freq_table, expected_mean, contingency_table){
+Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
+  #printing for user
+  print('Begin simulation...')
 
   #sample each digit place from right according to frequency table of our observed dataset
   #initialize the returned table
-  stimulated_mean = data.frame(matrix(nrow = 0, ncol = length(expected_mean)))
-  colnames(stimulated_mean) = colnames(expected_mean)
+  simulated_mean = data.frame(matrix(nrow = 0, ncol = length(expected_mean)))
+  colnames(simulated_mean) = colnames(expected_mean)
 
-  #stimulate n datasets
+  #simulate n datasets
   for (n in 1:N){
-    #initialize the row for this stimulated set
-    stimulated_mean[paste('sample', as.character(n)), ] = NA
+
+    #printing for user
+    if (n %% 5000 == 0){
+      print(paste("Simulated", n, 'datasets...'))
+    }
+
+    #initialize the row for this simulated set
+    simulated_mean[paste('sample', as.character(n)), ] = NA
     for (i in 1:length(freq_table)){
       #the frequency of each left-aligned digits in each right-aligned digit
       freq_of_digit_position = freq_table[[i]]
 
-      #stimulate data
-      stimulated_numbers = c()
+      #simulate data
+      simulated_numbers = c()
       for (j in 1:length(freq_of_digit_position)){
         #returns logical(0) if sample 0 number
         size = freq_of_digit_position[j]
         if (size != 0){
           #sample according to the digit place probability and with the size
-          stimulated_numbers = c(stimulated_numbers, sample(as.numeric(rownames(contingency_table)), size = size, replace = TRUE, prob = contingency_table[[paste('Digit Place', as.character(j))]]))
+          simulated_numbers = c(simulated_numbers, sample(as.numeric(rownames(contingency_table)), size = size, replace = TRUE, prob = contingency_table[[paste('Digit Place', as.character(j))]]))
         }
       }
-      stimulated_mean[paste('sample', as.character(n)), ][i] = mean(stimulated_numbers)
+      simulated_mean[paste('sample', as.character(n)), ][i] = mean(simulated_numbers)
     }
   }
-  return(stimulated_mean)
+  return(simulated_mean)
 }
 
 
-#' Obtains p_values for comparing with Monte Carlo stimulated datasets
+#' Obtains p_values for comparing with Monte Carlo simulated datasets
 #'
 #' @param observed_mean \code{observed_mean} returned from \code{get_observed_mean}
-#' @param stimulated_mean \code{stimulated_mean} returned from \code{Benford_stimulation}
+#' @param simulated_mean \code{simulated_mean} returned from \code{Benford_simulation}
 #'
 #' @return A table of p-values for each digit place
-get_p_value = function(observed_mean, stimulated_mean){
+get_p_value = function(observed_mean, simulated_mean, diff_in_mean){
   p_values = data.frame(matrix(nrow=1, ncol=length(observed_mean)))
   colnames(p_values) = colnames(observed_mean)
 
-  combined_mean_data = rbind(observed_mean, stimulated_mean)
+  combined_mean_data = rbind(observed_mean, simulated_mean)
 
   for (i in 1:length(observed_mean)){
-    #combine observed and stimulated and find rank of observed
-    #first row is observation --> first index
-    p_values[i] = rank(-combined_mean_data[[i]])[1] / length(combined_mean_data[,i])
+    #combine observed and simulated and find rank of observed
+    #diff_in_mean positive, look at how many simulations larger than it
+    if (diff_in_mean[i] > 0){
+      #first row is observation --> first index
+      p_values[i] = (rank(-combined_mean_data[[i]])[1] - 1) / length(simulated_mean[,i])
+    }
+    #diff_in_mean negative, look at how many simulations smaller than it
+    else {
+      #first row is observation --> first index
+      p_values[i] = (rank(combined_mean_data[[i]])[1] - 1) / length(simulated_mean[,i])
+    }
+    #either largest or smallest number, give it p-value 1/N since it cannot be 0
+    if (p_values[i] == 0){
+      p_values[i] = 1/length(simulated_mean[,i])
+    }
   }
   return(p_values)
 }
@@ -311,6 +331,9 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
   #get combined by rows data for all data columns needed
   combined_data = combine_by_columns(digitdata, data_columns, indexes=NA)
 
+  #printing for user
+  print(paste("Current category:", 'All'))
+
   #get expected and observed mean in each digit position
   lst = get_expected_mean(digitdata, combined_data, Benford_mean, max_length, num_digits, omit_05)
   freq_table=lst$freq_table
@@ -325,11 +348,11 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
   diff_in_mean = observed_mean - expected_mean
   rownames(diff_in_mean) = 'All'
 
-  #Monte Carlo Stimulation of N datasets and get mean
-  stimulated_mean = Benford_stimulation(N, freq_table, expected_mean, contingency_table)
+  #Monte Carlo simulation of N datasets and get mean
+  simulated_mean = Benford_simulation(N, freq_table, expected_mean, contingency_table)
 
-  #get p values by comparing with stimulation
-  p_values = get_p_value(observed_mean, stimulated_mean)
+  #get p values by comparing with simulation
+  p_values = get_p_value(observed_mean, simulated_mean, diff_in_mean)
   rownames(p_values) = 'All'
   ######################################################
 
@@ -340,6 +363,9 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
+
+      #printing for user
+      print(paste("Current category:", category_name))
 
       #get the index of category containing multiple groups
       indexes_of_category = indexes_of_categories[[category_name]]
@@ -362,36 +388,37 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
       #get the difference in expected and observed mean in each digit position
       diff_in_mean[category_name, ]  = observed_mean[category_name, ] - expected_mean[category_name, ]
 
-      #Monte Carlo Stimulation of N datasets and get mean
-      stimulated_mean = Benford_stimulation(N, freq_table, expected_mean[category_name, ], contingency_table)
+      #Monte Carlo Simulation of N datasets and get mean
+      simulated_mean = Benford_simulation(N, freq_table, expected_mean[category_name, ], contingency_table)
 
-      #get p values by comparing with stimulation
-      p_values[category_name, ] = get_p_value(observed_mean[category_name, ], stimulated_mean)
+      #get p values by comparing with simulation
+      p_values[category_name, ] = get_p_value(observed_mean[category_name, ], simulated_mean, diff_in_mean[category_name, ])
       ######################################################
     }
   }
-  return(list(diff_in_mean=diff_in_mean, p_values=p_values, expected_mean=expected_mean, observed_mean=observed_mean))
+  return(list(diff_in_mean=diff_in_mean, p_values=p_values))#, expected_mean=expected_mean, observed_mean=observed_mean))
 }
 
 
-#' Performs padding test vs stimulations of Benford conforming datasets via percentile
+#' Performs padding test vs simulations of Benford conforming datasets via percentile
 #'
 #' @param max_length The length of the longest numbers considered. Defaulted to 8.
 #' @param num_digits The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.
-#' @param N The number of Benford conforming datasets to stimulate.
+#' @param N The number of Benford conforming datasets to simulate.
 #' @inheritParams all_digits_test
 #' @inheritParams sector_test
 #'
 #' @return
 #' \itemize{
-#'   \item A list with 4 elements
+#'   \item A list with 5 elements
 #'   \itemize{
 #'     \item \code{expected_mean}: the expected mean by Benford's Law
 #'     \item \code{observed_mean}: the mean of the input data
 #'     \item \code{diff_in_mean}: the mean difference betweeen observed_mean and expected_mean
-#'     \item \code{p_values}: the percentile of the observed dataset among all stimulated datasets in decreasing order
+#'     \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
+#'     \item \code{plot}: one ggplot instance per \code{break_out}
 #'   }
-#'   \item Plots on \code{diff_in_mean} for each category if \code{plot = TRUE}
+#'   \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE}
 #' }
 #' @export
 #'
@@ -431,19 +458,26 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
   #list of results from all break out category to be returned
   padding_test_results = list()
 
+  #printing for user
+  print(paste("Current dataset:", 'All'))
+
   #perform padding test on all data
   result = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping)
   padding_test_results[['All']] = result
 
   if (plot){
     #2D histogram
+    padding_plot = NA
     if (is.na(category)){
-      print(hist_2D(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', 'All', sep='_'), hline=NA, hline_name=''))
+      padding_plot = hist_2D(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', 'All', sep='_'), hline=NA, hline_name='')
+      print(padding_plot)
     }
     #Multi-variable 2D histogram
     else {
-      print(hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', 'All', sep='_')))
+      padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', 'All', sep='_'))
+      print(padding_plot)
     }
+    padding_test_results[['All']][['plot']] = padding_plot
   }
 
   #perform padding test on all break out categories
@@ -453,6 +487,9 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
+      #printing for user
+      print(paste("Current dataset:", category_name))
+
       indexes_of_category = indexes_of_categories[[category_name]]
 
       #create a digitdata class for this category
@@ -463,17 +500,22 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
       padding_test_results[[category_name]] = result_of_category
 
       if (plot){
+        padding_plot = NA
         #2D histogram
         if (is.na(category)){
-          print(hist_2D(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_'), hline=NA, hline_name=''))
+          padding_plot = hist_2D(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_'))
+          print(padding_plot)
         }
         #Multi-variable 2D histogram
         else {
-          print(hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_')))
+          padding_plot = hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_'))
+          print(padding_plot)
         }
+        padding_test_results[[category_name]][['plot']] = padding_plot
       }
     }
   }
+  print(paste('Minimum possible p-value =', 1/N))
   return(padding_test_results)
 }
 

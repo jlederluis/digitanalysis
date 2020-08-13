@@ -345,7 +345,7 @@ break_by_category = function(data, break_out, break_out_grouping){
     indexes_of_categories[[category_name]] = rows
   }
 
-  if (!(is.na(break_out_grouping))){
+  if (!(is.na(break_out_grouping[1]))){
     #merge the indexes for categories in the same grouping to same list element
     indexes_of_grouping = list()
     for (group_name in names(break_out_grouping)){

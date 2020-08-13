@@ -90,10 +90,12 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, b
   mean_percent_repeated = rowMeans(percent_repeats_table)
 
   #plot only if we break_out == have > 1 column
+  repeat_plot = NA
   if (plot){
     if (!(is.na(break_out))){
-      print(hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='percent repeats', title='Repeats Test',
-                    hline=mean_percent_repeated, hline_name='Mean Percentage Repeats'))
+      repeat_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats', title='Repeats Test',
+                            hline=mean_percent_repeated, hline_name='Mean Percentage Repeats')
+      print(repeat_plot)
     }
   }
   #create a rowname
@@ -101,6 +103,6 @@ repeat_test = function(digitdata, duplicate_matching_cols='all', break_out=NA, b
   #sort by decreasing rounded percentage
   percent_repeats_table = t(sort(percent_repeats_table, decreasing = TRUE))
 
-  return(percent_repeats_table)
+  return(list(percent_repeats=percent_repeats_table, plot=repeat_plot))
 }
 

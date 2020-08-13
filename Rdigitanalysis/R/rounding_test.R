@@ -106,7 +106,7 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   percent_rounded_all = compute_percent_rounded_digits(data, rounding_patterns)
 
   #df to store stats
-  percent_rounded_table = data.frame(all=percent_rounded_all)
+  percent_rounded_table = data.frame(All=percent_rounded_all)
 
   #break out by category
   if (!(is.na(break_out))){
@@ -125,16 +125,18 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   mean_percent_rounded = rowMeans(percent_rounded_table)
 
   #plot only if we break_out == have > 1 column
+  rounding_plot = NA
   if (plot){
     if (!(is.na(break_out))){
-      print(hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='percent rounding', title='Rounding Test',
-                    hline=mean_percent_rounded, hline_name='Mean Percentage Rounding'))
+      rounding_plot = hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='Percent Rounding', title='Rounding Test',
+                              hline=mean_percent_rounded, hline_name='Mean Percentage Rounding')
+      print(rounding_plot)
     }
   }
   #create a rowname
   rownames(percent_rounded_table) = 'percent rounded digits'
   #sort by decreasing rounded percentage
   percent_rounded_table = t(sort(percent_rounded_table, decreasing = TRUE))
-  return(percent_rounded_table)
+  return(list(percent_rounded=percent_rounded_table, plot=rounding_plot))
 }
 

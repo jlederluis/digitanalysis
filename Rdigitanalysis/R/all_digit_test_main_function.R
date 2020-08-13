@@ -60,39 +60,12 @@
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
-all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', digit_places='all', skip_first_digit=FALSE,
-                           omit_05=c(0,5), break_out=NA, break_out_grouping=NA, distribution='Benford', plot=TRUE,
-                           skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE){
-
-  #check input
-  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
-              skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, break_out_grouping=break_out_grouping,
-              distribution=distribution, plot=plot, skip_last_digit=skip_last_digit, standard_df=standard_df, suppress_low_N=suppress_low_N)
+single_all_digits_test = function(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05, category,
+                                  category_grouping, distribution, skip_last_digit, standard_df, suppress_low_N){
 
   #######################################################################
   #parse the data
   #######################################################################
-
-  #deal with contingency table and distribution situation
-  if (TRUE %in% ((is.na(contingency_table)))){
-    #if contingency_table is not passed in, use distribution
-    if (tolower(distribution) == 'benford'){
-      load(file = "data/benford_table.RData")
-      contingency_table = benford_table
-    }
-    else if (tolower(distribution) == 'uniform'){
-      load(file = "data/uniform_table.RData")
-      contingency_table = uniform_table
-    }
-    else {
-      stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
-    }
-  }
-
-  # #handles if category_grouping is NA, while category is not
-  # if (!(is.na(break_out))){
-  #   break_out_grouping = get_grouping(grouping=break_out_grouping, column=break_out, digitdata=digitdata)
-  # }
 
   align_direction = 'left'
 
@@ -123,17 +96,17 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
 
   #all digit test
   result = chi_square_gof(observation_table, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N, standard=standard_df)
-  p_values = data.frame(all=result$p_value)
+  p_values = data.frame(All=result$p_value)
 
-  #plot
-  if (plot){
-    plot_all_digit_test(digitdata, result$observed_table, digit_places, title='All')
-  }
+#   #plot
+#   if (plot){
+#     plot_all_digit_test(digitdata, result$observed_table, digit_places, title='All')
+#   }
 
-  #break on category if specified
-  if (!(is.na(break_out))){
+  #break on category if specified #do not plot for these
+  if (!(is.na(category))){
     #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, category, category_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
     for (category_name in names(indexes_of_categories)){
@@ -149,22 +122,64 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
       result_in_category = chi_square_gof(obs_in_category, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N, standard=standard_df)
       p_values[category_name] = result_in_category$p_value
 
-      # #debug
-      # if (category_name == 'Ijara'){
-      #   print('Ijara')
-      #   print(result_in_category$observed_table)
-      #   print(result_in_category$expected_table)
-      #   print(sum(result_in_category$observed_table))
+      # #plot
+      # if (plot){
+      #   plot_all_digit_test(digitdata, result_in_category$observed_table, digit_places, title=category_name)
       # }
-
-      #plot
-      if (plot){
-        plot_all_digit_test(digitdata, result_in_category$observed_table, digit_places, title=category_name)
-      }
     }
   }
-  # print('all digit test')
-  # print(p_values)
+  return(p_values)
+}
+
+###########neeed fix doc, plotting
+all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', digit_places='all', skip_first_digit=FALSE,
+                           omit_05=c(0,5), break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA,
+                           distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE){
+
+  #check input
+  input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
+              skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, break_out_grouping=break_out_grouping,
+              distribution=distribution, plot=plot, skip_last_digit=skip_last_digit, standard_df=standard_df,
+              suppress_low_N=suppress_low_N, category=category, category_grouping=category_grouping)
+
+  #deal with contingency table and distribution situation
+  if (TRUE %in% ((is.na(contingency_table)))){
+    #if contingency_table is not passed in, use distribution
+    if (tolower(distribution) == 'benford'){
+      load(file = "data/benford_table.RData")
+      contingency_table = benford_table
+    }
+    else if (tolower(distribution) == 'uniform'){
+      load(file = "data/uniform_table.RData")
+      contingency_table = uniform_table
+    }
+    else {
+      stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
+    }
+  }
+  #perform digit test for all
+  result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
+                                      category, category_grouping, distribution, skip_last_digit, standard_df, suppress_low_N)
+
+  #p values to return
+  p_values = data.frame(matrix(nrow = 0, ncol = ncol(result_all)))
+  colnames(p_values) = colnames(result_all)
+  p_values['All', ] = result_all
+
+  #break on break out category if specified
+  if (!(is.na(break_out))){
+    #get indexes for each category
+    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
+
+    #break by category for all
+    for (category_name in names(indexes_of_categories)){
+      indexes_of_category = indexes_of_categories[[category_name]]
+      digitdata_of_category = make_sub_digitdata(digitdata, indexes_of_category)
+      result_of_category = single_all_digits_test(digitdata_of_category, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
+                                                  category, category_grouping, distribution, skip_last_digit, standard_df, suppress_low_N)
+      p_values[category_name, ] = result_of_category
+    }
+  }
   return(p_values)
 }
 
