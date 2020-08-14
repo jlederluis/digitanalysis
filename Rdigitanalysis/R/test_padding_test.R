@@ -48,7 +48,7 @@ DigitData = make_sub_digitdata(DigitData, indexes_with_valid_alexp_values)
 data_columns = c("ALEXP.Values")#c("ALEXP")#,"BENTOT", "BENM", "BENF")
 max_length = 7
 num_digits = 5
-N = 100000 #120k datasets took 15 mins #2400s for N=10,000; data = 4000 x 5, all data
+N = 100000 #120k datasets took 15 mins #2400s for N=10,000; data dimension = 4000 x 5 totla digits
 omit_05 = c(0,5)
 break_out = NA#'DIST'
 break_out_grouping=NA
@@ -65,6 +65,4 @@ result = padding_test(digitdata=DigitData, contingency_table=NA, data_columns=da
                       break_out_grouping=break_out_grouping, category=category, category_grouping=category_grouping, plot=TRUE)
 result
 proc.time() - ptm
-
-
 

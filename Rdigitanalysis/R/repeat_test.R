@@ -53,6 +53,7 @@ find_percent_repeats = function(data, data_columns, round_digit_to_skip){
 #'   \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
 #'   \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
 #'   \item If not omitting rounded numbers, pass in NA. Default is NA.
+#' }
 #' @inheritParams all_digits_test
 #'
 #' @return

@@ -405,6 +405,9 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #' @param max_length The length of the longest numbers considered. Defaulted to 8.
 #' @param num_digits The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.
 #' @param N The number of Benford conforming datasets to simulate.
+#' \itemize{
+#'   \item 2400 seconds for N=10,000; data dimension = 4000 x 5 totla digits.
+#' }
 #' @inheritParams all_digits_test
 #' @inheritParams sector_test
 #'
