@@ -53,15 +53,15 @@ data_columns = 'all'#'ALEXP.Values'#
 digit_places =  'all'
 skip_first_digit=TRUE
 omit_05 = c(0,5)
-break_out='DIST'
+break_out=NA#'DIST'
 break_out_grouping=NA
-category='YEAR'
+category=NA#'YEAR'
 category_grouping=NA
 skip_last_digit=FALSE
 standard_df=TRUE
 suppress_low_N=FALSE
 distribution = 'benford'
-suppress_first_division_plots=T
+suppress_first_division_plots=F
 suppress_second_division_plots=T
 
 #match the data with Jetson's

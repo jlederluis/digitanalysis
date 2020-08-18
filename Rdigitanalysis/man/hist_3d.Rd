@@ -7,12 +7,13 @@
 hist_3d(
   data,
   digitdata,
-  xlab = "digits",
-  ylab = "digit places",
-  zlab = "frequency",
+  xlab = "Digits",
+  ylab = "Digit Places",
+  zlab = "Frequency",
   title = "3D Bar Plot",
   theta = 55,
-  phi = 20
+  phi = 16,
+  save = FALSE
 )
 }
 \arguments{
@@ -30,10 +31,10 @@ hist_3d(
 
 \item{theta}{x-y (left-right) viewing angle. Defaulted to 55.}
 
-\item{phi}{xy-z (up-down) viewing angle. Defaulted to 20.}
+\item{phi}{xy-z (up-down) viewing angle. Defaulted to 16.}
 }
 \value{
-Nothing is retuned. Displays a \code{plot3D} 3d plot automatically.
+Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
 }
 \description{
 Plot 3D histogram. The display follows that rows will be x-axis, and columns will be y-axis.

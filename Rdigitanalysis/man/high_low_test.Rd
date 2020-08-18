@@ -6,33 +6,68 @@
 \usage{
 high_low_test(
   digitdata,
-  contingency_table,
+  contingency_table = NA,
   data_columns = "all",
   high = c(6, 7, 8, 9),
   omit_05 = c(0, 5),
   skip_first_digit = FALSE,
+  distribution = "Benford",
   skip_last_digit = FALSE,
-  break_out = NA
+  break_out = NA,
+  break_out_grouping = NA,
+  category = NA,
+  category_grouping = NA,
+  plot = TRUE
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{contingency_table}{The Benford probability table.}
+\item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
+Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
+\itemize{
+  \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
+}}
 
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
 
-\item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9)}
+\item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).}
 
 \item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
 
 \item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
 
+\item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
+
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}
 
-\item{break_out}{The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character. Default to NA.}
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+  \item Default to NA.
+}}
+
+\item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the break_out name
+  \item Each array contains the values belonging to that break_out
+  \item If it is remain as NA as default, while \code{break_out} is not NA, then \code{break_out_grouping} will default to every individual item in
+  \code{break_out} will be in a separate group.
+}}
+
+\item{category}{The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.}
+
+\item{category_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{category} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the category name
+  \item Each array contains the values belonging to that category
+  \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
+  \code{category} will be in a separate group.
+}}
+
+\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
 }
 \value{
 \itemize{
@@ -45,7 +80,7 @@ Performs high to low digit tests vs probability of high to low digits by Benford
 }
 \examples{
 high_low_test(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9))
-high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE)
-high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, break_out=NA)
-high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name')
+high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE, break_out='col_name')
+high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
+high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
 }

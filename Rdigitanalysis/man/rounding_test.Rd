@@ -7,8 +7,10 @@
 rounding_test(
   digitdata,
   data_columns = "all",
-  omit_05 = c(0, 5),
-  break_out = NA
+  rounding_patterns = c("0", "00", "000", "0000", "00000", "000000", "5", "50", "500"),
+  break_out = NA,
+  break_out_grouping = NA,
+  plot = TRUE
 )
 }
 \arguments{
@@ -17,9 +19,28 @@ rounding_test(
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{rounding_patterns}{The patterns to be counted as rounding digits.
+\itemize{
+  \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
+  \item Defaulted to c('0','00','000','0000', '00000', '000000', '5', '50', '500').
+  \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
+}}
 
-\item{break_out}{The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character. Default to NA.}
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+  \item Default to NA.
+}}
+
+\item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the break_out name
+  \item Each array contains the values belonging to that break_out
+  \item If it is remain as NA as default, while \code{break_out} is not NA, then \code{break_out_grouping} will default to every individual item in
+  \code{break_out} will be in a separate group.
+}}
+
+\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
 }
 \value{
 \itemize{

@@ -10,20 +10,20 @@ high_low_by_digit_place(
   digits_table,
   high,
   high_freq_theoratical,
-  skip_first_digit,
-  omit_05
+  omit_05,
+  skip_first_digit
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9)}
+\item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).}
 
 \item{high_freq_theoratical}{A table for theoratical high digit frequency in each digit place.}
 
-\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
-
 \item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+
+\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
 
 \item{data}{A digits table for some data columns, preferably returned by \code{grab_desired_aligned_columns}}
 }

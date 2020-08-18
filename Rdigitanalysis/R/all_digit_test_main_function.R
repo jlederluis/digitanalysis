@@ -11,7 +11,7 @@
 #'
 #' @return p_values for input data possibly break by \code{category}.
 single_all_digits_test = function(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05, category,
-                                  category_grouping, distribution, skip_last_digit, standard_df, suppress_low_N, subset_name, plot,
+                                  category_grouping, skip_last_digit, standard_df, suppress_low_N, subset_name, plot,
                                   suppress_second_division_plots){
 
   #######################################################################
@@ -194,8 +194,8 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
 
   #perform digit test for all
   result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
-                                      category, category_grouping, distribution, skip_last_digit, standard_df, suppress_low_N,
-                                      subset_name='All', plot=plot, suppress_second_division_plots=suppress_second_division_plots)
+                                      category, category_grouping, skip_last_digit, standard_df, suppress_low_N, subset_name='All',
+                                      plot=plot, suppress_second_division_plots=suppress_second_division_plots)
   #return(result_all)
   p_values_all = result_all$p_values
   plots_all = result_all$plots
@@ -222,8 +222,8 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
       digitdata_of_category = make_sub_digitdata(digitdata, indexes_of_category)
 
       result_of_category = single_all_digits_test(digitdata_of_category, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
-                                                  category, category_grouping, distribution, skip_last_digit, standard_df, suppress_low_N,
-                                                  subset_name=category_name, plot=plot, suppress_second_division_plots=suppress_second_division_plots)
+                                                  category, category_grouping, skip_last_digit, standard_df, suppress_low_N, subset_name=category_name,
+                                                  plot=plot, suppress_second_division_plots=suppress_second_division_plots)
       p_values_of_category = result_of_category$p_values
       plots_of_category = result_of_category$plots
 

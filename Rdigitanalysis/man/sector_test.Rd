@@ -7,35 +7,62 @@ A wrapper function for \code{repeat_test}.}
 \usage{
 sector_test(
   digitdata,
-  sector_column,
-  sector_grouping,
+  category,
+  category_grouping = NA,
+  data_columns = "all",
   duplicate_matching_cols = "all",
   break_out = NA,
-  failure_factor = 3
+  break_out_grouping = NA,
+  round_digit_to_skip = c(0, 5),
+  plot = TRUE
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{sector_column}{The column for splitting the data into sectors for separate analysis.}
+\item{category}{The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.}
 
-\item{sector_grouping}{A list of arrays
+\item{category_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{category} is not NA.
 \itemize{
-  \item Each the names of the elements in the list is the sector name
-  \item Each array contains the categories belonging to that sector
+  \item Each the names of the elements in the list is the category name
+  \item Each array contains the values belonging to that category
+  \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
+  \code{category} will be in a separate group.
 }}
 
+\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
+an array of column names, as characters; a single column name, as character.}
+
 \item{duplicate_matching_cols}{An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
-Default to 'all', meaning matching all columns in 'clean' slot of \code{digitdata}}
+Default to 'all', meaning matching all columns in 'clean' slot of \code{digitdata}. Must include all columns in \code{data_columns}.}
 
-\item{break_out}{The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character. Default to NA.}
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+  \item Default to NA.
+}}
 
-\item{failure_factor}{NEED TO EDIT LATER}
+\item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the break_out name
+  \item Each array contains the values belonging to that break_out
+  \item If it is remain as NA as default, while \code{break_out} is not NA, then \code{break_out_grouping} will default to every individual item in
+  \code{break_out} will be in a separate group.
+}}
+
+\item{round_digit_to_skip}{Whether to omit all rounding numbers in \code{data_columns} represented by numbers ending in 0 or both 0 and 5.
+\itemize{
+  \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
+  \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
+  \item If not omitting rounded numbers, pass in NA. Default is NA.
+}}
+
+\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
 }
 \value{
 \itemize{
   \item A table of p-values for repeat test by sector on each category
-  \item Plots for each category with variables as sectors if \code{plot = TRUE}
+  \item Plots for each break out element with variables as categories specified by \code{category_grouping} if \code{plot = TRUE}
   \item If NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
 }
 }
@@ -44,7 +71,7 @@ Performs sector test to analyze uneven distribution of percent repeats across se
 A wrapper function for \code{repeat_test}.
 }
 \examples{
-sector_test(digitdata, sector_column='sector_name', sector_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
-sector_test(digitdata, sector_column='sector_name', sector_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
+sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
+sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
 }

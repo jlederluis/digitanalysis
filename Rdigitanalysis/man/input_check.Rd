@@ -12,19 +12,24 @@ input_check(
   skip_first_digit = NA,
   omit_05 = NA,
   break_out = NA,
+  break_out_grouping = NA,
   distribution = NA,
   plot = NA,
   skip_last_digit = NA,
   unpacking_rounding_column = NA,
   min_length = NA,
   duplicate_matching_cols = NA,
-  sector_column = NA,
-  sector_grouping = NA,
+  category = NA,
+  category_grouping = NA,
   high = NA,
   max_length = NA,
   num_digits = NA,
   N = NA,
-  standard_df = NA
+  standard_df = NA,
+  rounding_patterns = NA,
+  suppress_low_N = NA,
+  suppress_first_division_plots = NA,
+  suppress_second_division_plots = NA
 )
 }
 \arguments{
@@ -54,9 +59,9 @@ input_check(
 
 \item{duplicate_matching_cols}{Defaulted to NA. Pass in to check if it is a valid input.}
 
-\item{sector_column}{Defaulted to NA. Pass in to check if it is a valid input.}
+\item{category}{Defaulted to NA. Pass in to check if it is a valid input.}
 
-\item{sector_grouping}{Defaulted to NA. Pass in to check if it is a valid input.}
+\item{category_grouping}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{high}{Defaulted to NA. Pass in to check if it is a valid input.}
 
@@ -67,6 +72,12 @@ input_check(
 \item{N}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{standard_df}{Defaulted to NA. Pass in to check if it is a valid input.}
+
+\item{suppress_low_N}{Defaulted to NA. Pass in to check if it is a valid input.}
+
+\item{suppress_first_division_plots}{Defaulted to NA. Pass in to check if it is a valid input.}
+
+\item{suppress_second_division_plots}{Defaulted to NA. Pass in to check if it is a valid input.}
 }
 \value{
 Throw error with message if input is of incorrect type. Returns nothing.

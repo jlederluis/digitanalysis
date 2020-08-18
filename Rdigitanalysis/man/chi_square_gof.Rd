@@ -2,22 +2,38 @@
 % Please edit documentation in R/chi_square_goodness_of_fit_functions.R
 \name{chi_square_gof}
 \alias{chi_square_gof}
-\title{Perform chi square test for goodness of fit test}
+\title{Performs chi square test for goodness of fit test. Plots \code{expected_table} with 2D and/or 3D histograms accordingly if specified.}
 \usage{
-chi_square_gof(observed_table, expected_table, df, freq = TRUE)
+chi_square_gof(
+  observed_table,
+  expected_table,
+  freq = TRUE,
+  suppress_low_N = TRUE,
+  standard = FALSE,
+  plot = TRUE
+)
 }
 \arguments{
 \item{observed_table}{Observation table for chi square test}
 
 \item{expected_table}{Expected table for chi square test}
 
-\item{df}{Degrees of freedom}
-
 \item{freq}{TRUE or FALSE: Whether the input expected table is in decimal.}
+
+\item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
+if at least one cell in that column has expected value < 5. Default to TRUE.}
+
+\item{standard}{TRUE or FALSE: Default to FALSE.
+\itemize{
+  \item TRUE: Compute degrees of freedom using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
+  \item FALSE: Compute degrees of freedom using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
+}}
+
+\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
 }
 \value{
 p-value for chi square goodness of fit test
 }
 \description{
-Perform chi square test for goodness of fit test
+Performs chi square test for goodness of fit test. Plots \code{expected_table} with 2D and/or 3D histograms accordingly if specified.
 }

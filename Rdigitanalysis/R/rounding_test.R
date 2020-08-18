@@ -74,7 +74,7 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
 #' \itemize{
 #'   \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
 #'   \item Defaulted to c('0','00','000','0000', '00000', '000000', '5', '50', '500').
-#'   \ietm \code{n_zeros_pattern} might be helpful for generating strings of 0s.
+#'   \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
 #' }
 #'
 #' @return

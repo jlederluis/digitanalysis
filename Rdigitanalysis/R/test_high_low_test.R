@@ -50,8 +50,8 @@ high = c(6,7,8,9)
 omit_05 = c(0,5)
 skip_first_digit = TRUE
 skip_last_digit = FALSE
-break_out = 'DIST'
-category = 'YEAR'
+break_out = NA#'DIST'
+category = NA#'YEAR'
 distribution='Benford'
 
 #match the data with Jetson's

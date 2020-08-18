@@ -121,6 +121,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
   #get the frequency for high digits in each digit place
   high_freq_theoratical = t(data.frame(colSums(high_freq_theoratical[as.character(high), ])))
   rownames(high_freq_theoratical) = 'high digits freq'
+  print(high_freq_theoratical)
 
   #############################################################
   #handle the data_columns = 'all' situation
@@ -223,6 +224,7 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
   p_values_table = data.frame(matrix(nrow = 0, ncol = ncol(result$p_values)))
   colnames(p_values_table) = colnames(result$p_values)
   p_values_table['All', ] = result$p_values
+  return(result)
 
   if (plot){
     hist_3d(result$high_digits_freq_table, digitdata, xlab=category, ylab='digit places', zlab='high digits frequency',

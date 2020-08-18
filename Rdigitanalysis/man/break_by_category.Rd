@@ -4,12 +4,24 @@
 \alias{break_by_category}
 \title{Breaks the data on specfied column}
 \usage{
-break_by_category(data, break_out)
+break_by_category(data, break_out, break_out_grouping)
 }
 \arguments{
 \item{data}{A dataframe, preferably 'cleaned' slot for \code{DigitAnalysis} object any parsed version of it}
 
-\item{break_out}{The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character. Default to NA.}
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+  \item Default to NA.
+}}
+
+\item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the break_out name
+  \item Each array contains the values belonging to that break_out
+  \item If it is remain as NA as default, while \code{break_out} is not NA, then \code{break_out_grouping} will default to every individual item in
+  \code{break_out} will be in a separate group.
+}}
 }
 \value{
 A list of array of indexes in \code{data} that belongs to each category

@@ -2,18 +2,18 @@
 % Please edit documentation in R/padding_test.R
 \name{get_p_value}
 \alias{get_p_value}
-\title{Obtains p_values for comparing with Monte Carlo stimulated datasets}
+\title{Obtains p_values for comparing with Monte Carlo simulated datasets}
 \usage{
-get_p_value(observed_mean, stimulated_mean)
+get_p_value(observed_mean, simulated_mean, diff_in_mean)
 }
 \arguments{
 \item{observed_mean}{\code{observed_mean} returned from \code{get_observed_mean}}
 
-\item{stimulated_mean}{\code{stimulated_mean} returned from \code{Benford_stimulation}}
+\item{simulated_mean}{\code{simulated_mean} returned from \code{Benford_simulation}}
 }
 \value{
 A table of p-values for each digit place
 }
 \description{
-Obtains p_values for comparing with Monte Carlo stimulated datasets
+Obtains p_values for comparing with Monte Carlo simulated datasets
 }

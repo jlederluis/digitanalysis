@@ -2,7 +2,7 @@
 % Please edit documentation in R/padding_test.R
 \name{padding_test}
 \alias{padding_test}
-\title{Performs padding test vs stimulations of Benford conforming datasets via percentile}
+\title{Performs padding test vs simulations of Benford conforming datasets via percentile}
 \usage{
 padding_test(
   digitdata,
@@ -12,13 +12,22 @@ padding_test(
   num_digits = 5,
   N = 10000,
   omit_05 = c(0, 5),
-  break_out = NA
+  distribution = "Benford",
+  break_out = NA,
+  break_out_grouping = NA,
+  category = NA,
+  category_grouping = NA,
+  plot = TRUE
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{contingency_table}{The Benford probability table.}
+\item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
+Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
+\itemize{
+  \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
+}}
 
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
@@ -27,30 +36,60 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{num_digits}{The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.}
 
-\item{N}{The number of Benford conforming datasets to stimulate.}
+\item{N}{The number of Benford conforming datasets to simulate.
+\itemize{
+  \item 2400 seconds for N=10,000; data dimension = 4000 x 5 totla digits.
+}}
 
 \item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
 
-\item{break_out}{The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character. Default to NA.}
+\item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
+
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+  \item Default to NA.
+}}
+
+\item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the break_out name
+  \item Each array contains the values belonging to that break_out
+  \item If it is remain as NA as default, while \code{break_out} is not NA, then \code{break_out_grouping} will default to every individual item in
+  \code{break_out} will be in a separate group.
+}}
+
+\item{category}{The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.}
+
+\item{category_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{category} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the category name
+  \item Each array contains the values belonging to that category
+  \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
+  \code{category} will be in a separate group.
+}}
+
+\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
 }
 \value{
 \itemize{
-  \item A list with 4 elements
+  \item A list with 5 elements
   \itemize{
     \item \code{expected_mean}: the expected mean by Benford's Law
     \item \code{observed_mean}: the mean of the input data
     \item \code{diff_in_mean}: the mean difference betweeen observed_mean and expected_mean
-    \item \code{p_values}: the percentile of the observed dataset among all stimulated datasets in decreasing order
+    \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
+    \item \code{plot}: one ggplot instance per \code{break_out}
   }
-  \item Plots on \code{diff_in_mean} for each category if \code{plot = TRUE}
+  \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE}
 }
 }
 \description{
-Performs padding test vs stimulations of Benford conforming datasets via percentile
+Performs padding test vs simulations of Benford conforming datasets via percentile
 }
 \examples{
-padding_test(digitdata, contingency_table, data_columns='all')
+padding_test(digitdata, contingency_table, data_columns='all', break_out='col_name')
 padding_test(digitdata, contingency_table, data_columns=c('col_name1', 'col_name2'), omit_05=NA)
-padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0)
-padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name')
+padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0, category='category_name', category_grouping=list(...))
+padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name', category='category_name', category_grouping=list(...))
 }

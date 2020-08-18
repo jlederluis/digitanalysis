@@ -16,7 +16,11 @@ parse_contigency_table(
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{contingency_table}{The Benford probability table.}
+\item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
+Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
+\itemize{
+  \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
+}}
 
 \item{digit_places}{The indexes of left-aligned digit places to analyze. There are three options:
 \itemize{

@@ -4,7 +4,14 @@
 \alias{get_expected_mean}
 \title{Obtains expected mean conforming to Benford's Law from input \code{data} based on the number of digits in each left-aligned digit place}
 \usage{
-get_expected_mean(digitdata, data, Benford_mean, max_length, num_digits)
+get_expected_mean(
+  digitdata,
+  data,
+  Benford_mean,
+  max_length,
+  num_digits,
+  omit_05
+)
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
@@ -16,14 +23,14 @@ get_expected_mean(digitdata, data, Benford_mean, max_length, num_digits)
 \item{max_length}{The length of the longest numbers considered. Defaulted to 8.}
 
 \item{num_digits}{The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.}
+
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
 }
 \value{
 A list of 4 items:
 \itemize{
   \item \code{expected_mean}: A table of expected mean for the dataset \code{data}
-  \item \code{final_data}: Cleaned final data to be used for padding test after getting rid of numbers > max_length and numbers < num_digits
-  \item \code{freq}: The number digits of each length in \code{final_data}
-  \item \code{freq_table}: The number of left-aligned digit place numbers in each right-aligned digit position in \code{final_data}
+  \item \code{freq_table}: The number of left-aligned digit place numbers in each right-aligned digit position in \code{data}
 }
 }
 \description{

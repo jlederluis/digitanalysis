@@ -7,10 +7,14 @@
 hist_2D(
   data,
   data_style = "row",
-  xlab = "digits",
-  ylab = "frequency",
+  xlab = "Digits",
+  ylab = "Frequency",
   title = "2D Histogram",
-  hline = NA
+  hline = NA,
+  hline_name = "",
+  abline = NA,
+  abline_name = "",
+  width = 0.5
 )
 }
 \arguments{
@@ -30,6 +34,10 @@ hist_2D(
 \item{title}{Plot title. Defaulted to '2D Histogram'.}
 
 \item{hline}{Specifies the y-intercept value if a horizontal line is desired. Defaulted to NA.}
+
+\item{hline_name}{The title of the horizontal line added. Defaulted to ''.}
+
+\item{width}{The width of the bars. Defaulted to 0.5.}
 }
 \value{
 A ggplot instance.

@@ -8,8 +8,8 @@ If \code{data} is row style, rownames would be the categories, and colnames woul
 hist_2D_variables(
   data,
   data_style = "row",
-  xlab = "digits",
-  ylab = "frequency",
+  xlab = "Digits",
+  ylab = "Frequency",
   title = "Multi-variable 2D Histogram"
 )
 }

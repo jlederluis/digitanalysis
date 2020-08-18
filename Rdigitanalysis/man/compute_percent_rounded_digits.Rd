@@ -5,12 +5,17 @@
 \title{Compute the percent of rounded digits in a given dataframe.
 Removes all 0 entries before begin.}
 \usage{
-compute_percent_rounded_digits(data, omit_05)
+compute_percent_rounded_digits(data, rounding_patterns)
 }
 \arguments{
 \item{data}{The dataframe to analyze percent rounded digits on}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{rounding_patterns}{The patterns to be counted as rounding digits.
+\itemize{
+  \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
+  \item Defaulted to c('0','00','000','0000', '00000', '000000', '5', '50', '500').
+  \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
+}}
 }
 \value{
 The percentage of rounded digits in input data

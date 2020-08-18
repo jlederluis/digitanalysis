@@ -9,7 +9,9 @@ digit_pairs_test(
   data_columns = "all",
   omit_05 = c(0, 5),
   min_length = 3,
-  break_out = NA
+  break_out = NA,
+  break_out_grouping = NA,
+  plot = TRUE
 )
 }
 \arguments{
@@ -22,7 +24,21 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{min_length}{The minimum length of the numbers to be analyzed in digit pair test. Must be an integer >= 2. Default to 3.}
 
-\item{break_out}{The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character. Default to NA.}
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+  \item Default to NA.
+}}
+
+\item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the break_out name
+  \item Each array contains the values belonging to that break_out
+  \item If it is remain as NA as default, while \code{break_out} is not NA, then \code{break_out_grouping} will default to every individual item in
+  \code{break_out} will be in a separate group.
+}}
+
+\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
 }
 \value{
 \itemize{

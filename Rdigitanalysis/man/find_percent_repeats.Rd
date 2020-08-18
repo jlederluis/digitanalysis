@@ -4,10 +4,20 @@
 \alias{find_percent_repeats}
 \title{Finds the percent of repeats in the given data based on given definition of a repeat (what columns need to match)}
 \usage{
-find_percent_repeats(data)
+find_percent_repeats(data, data_columns, round_digit_to_skip)
 }
 \arguments{
-\item{dataThe}{The dataframe to compute percent repeat on}
+\item{data}{The The dataframe to compute percent repeat on}
+
+\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
+an array of column names, as characters; a single column name, as character.}
+
+\item{round_digit_to_skip}{Whether to omit all rounding numbers in \code{data_columns} represented by numbers ending in 0 or both 0 and 5.
+\itemize{
+  \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
+  \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
+  \item If not omitting rounded numbers, pass in NA. Default is NA.
+}}
 }
 \value{
 The percentage of repeated numbers in input data

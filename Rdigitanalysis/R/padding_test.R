@@ -249,20 +249,27 @@ Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
   simulated_mean = data.frame(matrix(nrow = 0, ncol = length(expected_mean)))
   colnames(simulated_mean) = colnames(expected_mean)
 
+  #debug
+  times = c()
   #simulate n datasets
+  start = proc.time()
   for (n in 1:N){
-
     #printing for user
     if (n %% 5000 == 0){
       print(paste("Simulated", n, 'datasets...'))
+      print(paste('Current memory:', memory.size()))
+      print(paste('Current dataset total digits:', sum(freq_table)))
+      print(paste('Current time:', (proc.time()-start)[[3]], 'seconds'))
+      print("")
+      times = c(times, (proc.time()-start)[[3]])
     }
 
     #initialize the row for this simulated set
     simulated_mean[paste('sample', as.character(n)), ] = NA
+
     for (i in 1:length(freq_table)){
       #the frequency of each left-aligned digits in each right-aligned digit
       freq_of_digit_position = freq_table[[i]]
-
       #simulate data
       simulated_numbers = c()
       for (j in 1:length(freq_of_digit_position)){
@@ -276,6 +283,7 @@ Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
       simulated_mean[paste('sample', as.character(n)), ][i] = mean(simulated_numbers)
     }
   }
+  #return(times)
   return(simulated_mean)
 }
 
@@ -291,22 +299,27 @@ get_p_value = function(observed_mean, simulated_mean, diff_in_mean){
   colnames(p_values) = colnames(observed_mean)
 
   combined_mean_data = rbind(observed_mean, simulated_mean)
-
   for (i in 1:length(observed_mean)){
     #combine observed and simulated and find rank of observed
-    #diff_in_mean positive, look at how many simulations larger than it
-    if (diff_in_mean[i] > 0){
-      #first row is observation --> first index
-      p_values[i] = (rank(-combined_mean_data[[i]])[1] - 1) / length(simulated_mean[,i])
+    if (is.na(diff_in_mean[i])){
+      #this is stupid...some category has no data
+      p_values[i] = NA
     }
-    #diff_in_mean negative, look at how many simulations smaller than it
     else {
-      #first row is observation --> first index
-      p_values[i] = (rank(combined_mean_data[[i]])[1] - 1) / length(simulated_mean[,i])
-    }
-    #either largest or smallest number, give it p-value 1/N since it cannot be 0
-    if (p_values[i] == 0){
-      p_values[i] = 1/length(simulated_mean[,i])
+      #diff_in_mean positive, look at how many simulations larger than it
+      if (diff_in_mean[i] > 0){
+        #first row is observation --> first index
+        p_values[i] = (rank(-combined_mean_data[[i]])[1] - 1) / length(simulated_mean[,i])
+      }
+      #diff_in_mean negative, look at how many simulations smaller than it
+      else {
+        #first row is observation --> first index
+        p_values[i] = (rank(combined_mean_data[[i]])[1] - 1) / length(simulated_mean[,i])
+      }
+      #either largest or smallest number, give it p-value 1/N since it cannot be 0
+      if (p_values[i] == 0){
+        p_values[i] = 1/length(simulated_mean[,i])
+      }
     }
   }
   return(p_values)
@@ -350,6 +363,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 
   #Monte Carlo simulation of N datasets and get mean
   simulated_mean = Benford_simulation(N, freq_table, expected_mean, contingency_table)
+  #return(simulated_mean)
 
   #get p values by comparing with simulation
   p_values = get_p_value(observed_mean, simulated_mean, diff_in_mean)
@@ -389,10 +403,10 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
       diff_in_mean[category_name, ]  = observed_mean[category_name, ] - expected_mean[category_name, ]
 
       #Monte Carlo Simulation of N datasets and get mean
-      simulated_mean = Benford_simulation(N, freq_table, expected_mean[category_name, ], contingency_table)
+      simulated_mean_in_category = Benford_simulation(N, freq_table, expected_mean[category_name, ], contingency_table)
 
       #get p values by comparing with simulation
-      p_values[category_name, ] = get_p_value(observed_mean[category_name, ], simulated_mean, diff_in_mean[category_name, ])
+      p_values[category_name, ] = get_p_value(observed_mean[category_name, ], simulated_mean_in_category, diff_in_mean[category_name, ])
       ######################################################
     }
   }
@@ -466,6 +480,7 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
 
   #perform padding test on all data
   result = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping)
+  #return(result)
   padding_test_results[['All']] = result
 
   if (plot){
@@ -489,32 +504,32 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
     indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
     #break by category for all
-    for (category_name in names(indexes_of_categories)){
+    for (break_out_name in names(indexes_of_categories)){
       #printing for user
-      print(paste("Current dataset:", category_name))
+      print(paste("Current dataset:", break_out_name))
 
-      indexes_of_category = indexes_of_categories[[category_name]]
+      indexes_of_category = indexes_of_categories[[break_out_name]]
 
       #create a digitdata class for this category
       digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)
 
       #perform padding test on this category
-      result_of_category = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping)
-      padding_test_results[[category_name]] = result_of_category
+      result_of_category = single_padding_test(digitdata_of_category, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping)
+      padding_test_results[[break_out_name]] = result_of_category
 
       if (plot){
         padding_plot = NA
         #2D histogram
         if (is.na(category)){
-          padding_plot = hist_2D(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_'))
+          padding_plot = hist_2D(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', break_out_name, sep='_'))
           print(padding_plot)
         }
         #Multi-variable 2D histogram
         else {
-          padding_plot = hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', category_name, sep='_'))
+          padding_plot = hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test', break_out_name, sep='_'))
           print(padding_plot)
         }
-        padding_test_results[[category_name]][['plot']] = padding_plot
+        padding_test_results[[break_out_name]][['plot']] = padding_plot
       }
     }
   }
