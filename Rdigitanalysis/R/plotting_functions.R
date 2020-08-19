@@ -60,7 +60,6 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
   }
   #add the distribution line desired
   if ('gg' %in% class(abline)){
-    print('abline')
     hist2d = hist2d + abline
   }
   return(hist2d)
@@ -74,7 +73,7 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
 #' @inheritParams hist_2D
 #'
 #' @return A ggplot instance.
-hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='Multi-variable 2D Histogram'){
+hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='Multi-variable 2D Histogram', abline=NA){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
@@ -104,6 +103,11 @@ hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Freque
           panel.background = element_blank(),
           legend.title=element_blank()) +
     geom_hline(aes(yintercept=0), color='black', lwd=0.5)
+
+  #add the distribution line desired
+  if ('gg' %in% class(abline)){
+    hist2d_multiple = hist2d_multiple + abline
+  }
   return(hist2d_multiple)
 }
 
@@ -125,14 +129,14 @@ plot_multiple_hist2d = function(plot_list){
 #' @inheritParams hist_2D
 #'
 #' @return A figure with each data column's value plotted against rownames
-plot_table_by_columns = function(observed_table, expected_table, name='', data_style='col', save=FALSE){
+plot_table_by_columns = function(observed_table, expected_table, name='', save=FALSE){
   plot_list = list()
   for (i in 1:length(observed_table)){
     curr_digit_place = colnames(observed_table)[i]
     #create ggplot object for abline distribution
     dist_line = geom_line(data = data.frame(x=rownames(expected_table), y=expected_table[[i]]), aes(x = x, y = y, group=1, linetype='Expected Distribution'), color='red', lwd=1)
     print(class(dist_line))
-    hist_digit_place_i = hist_2D(observed_table[i], data_style=data_style, xlab='Digits', ylab='Frequency', title=paste(name, curr_digit_place), abline=dist_line)
+    hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(name, curr_digit_place), abline=dist_line)
     plot_list[[curr_digit_place]] = hist_digit_place_i
 
     #s.t. return a ggplot if it is not a multiple plot
@@ -164,13 +168,38 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
 
-  x = as.numeric(rownames(data))
+  x = NA
+  if (NA %in% as.numeric(rownames(data))){
+    x = 1:length(rownames(data))
+  }
+  else {
+    x = as.numeric(rownames(data))
+  }
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
 
-  plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
+  bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
+
+  #xticks only when the rownames are not int
+  if (NA %in% (x == as.numeric(rownames(data)))){
+    xticks = rownames(data)
+    xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
+    text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
+  }
+
+  # #yticks
+  # yticks = y
+  # ylabel_pos = trans3d(max(x)+1, y-0.2, 0, bar3D)
+  # text(ylabel_pos$x, ylabel_pos$y, labels=yticks, adj=c(0, NA), srt=0, cex=1)
+  #
+  # #zticks
+  # zticks = seq(from=0.0, to=max(z, na.rm=TRUE)+0.01, by=round(max(z, na.rm=TRUE)/max(length(x),length(y)), digits = 1))
+  # zlabel_pos = trans3d(min(x)-1, min(y)-1, zticks, bar3D)
+  # text(zlabel_pos$x, zlabel_pos$y, labels=zticks, adj=c(0, NA), srt=0, cex=1)
+
+
   # if (save){
   #   filename = paste(title, ".pdf", sep='')
   #   print(filename)
@@ -204,7 +233,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   }
   if (length(digit_places) == 1){
     test_type = 'Single Digit Test'
-    aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, test_type, sep='_'), data_style='col') #multiple 2D histograms
+    aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, test_type, sep='_')) #multiple 2D histograms
     plots_list[['aggregate histogram']] = aggregate_hist
     print(aggregate_hist)
   }
@@ -214,14 +243,14 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     #round numbers
     if (digitdata@raw[1,1] == 'round'){
       hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, '(Round Numbers)', test_type, sep='_')) #3D histogram
-      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, '(Round Numbers)', test_type, sep='_'), data_style='col') #multiple 2D histograms
+      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, '(Round Numbers)', test_type, sep='_')) #multiple 2D histograms
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, '(Round Numbers)', test_type, sep='_')) #plot aggregate histogram across digit place
       plots_list[['multiple_histograms']] = multiple_hist
       plots_list[['aggregate histogram']] = aggregate_hist
     }
     else if (digitdata@raw[1,1] == 'unround'){
       hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, '(Unround Numbers)', test_type, sep='_')) #3D histogram
-      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, '(Unround Numbers)', test_type, sep='_'), data_style='col') #multiple 2D histograms
+      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, '(Unround Numbers)', test_type, sep='_')) #multiple 2D histograms
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, '(Unround Numbers)', test_type, sep='_')) #plot aggregate histogram across digit place
       plots_list[['multiple_histograms']] = multiple_hist
       plots_list[['aggregate histogram']] = aggregate_hist
@@ -233,7 +262,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   else {
     test_type = 'All Digit Test'
     hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, test_type, sep='_')) #3D histogram
-    multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, test_type, sep='_'), data_style='col') #multiple 2D histograms
+    multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, test_type, sep='_')) #multiple 2D histograms
     aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, test_type, sep='_')) #plot aggregate histogram across digit place
     plots_list[['multiple_histograms']] = multiple_hist
     plots_list[['aggregate histogram']] = aggregate_hist
@@ -259,7 +288,7 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
     aggregate_expected[rownames(observation_table)[i], ] = sum(freq_digit_place * expected_table[i, ])
     aggregate_observed[rownames(observation_table)[i], ] = sum(freq_digit_place * observation_table[i, ])
   }
-  aggregate_plot = plot_table_by_columns(aggregate_observed, aggregate_expected, name=name, data_style='col', save=FALSE)
+  aggregate_plot = plot_table_by_columns(aggregate_observed, aggregate_expected, name=name, save=FALSE)
   return(aggregate_plot)
 }
 ############

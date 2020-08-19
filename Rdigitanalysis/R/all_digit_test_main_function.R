@@ -163,7 +163,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
 all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', digit_places='all', skip_first_digit=FALSE,
                            omit_05=c(0,5), break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA,
-                           distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=TRUE,
+                           distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=FALSE,
                            suppress_first_division_plots=FALSE, suppress_second_division_plots=TRUE){
 
   #check input

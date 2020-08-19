@@ -200,6 +200,7 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
 #' }
 #' @param delim Defaulted to ','. Can specify other delimeters as well.
 #' @param filetype Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
+#' 'excel' supports both 'xlsx' and 'xls'.
 #' @param raw_df Default to NA. If loading data using a dataframe. Pass in the dataframe instance.
 #'
 #' @return An object in \code{DigitAnalysis}

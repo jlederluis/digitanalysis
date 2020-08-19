@@ -81,7 +81,7 @@ get_df = function(table, standard=FALSE){
 #'
 #' @return p-value for chi square goodness of fit test
 #' @export
-chi_square_gof = function(observed_table, expected_table, freq=TRUE, suppress_low_N=TRUE, standard=FALSE, plot=TRUE){
+chi_square_gof = function(observed_table, expected_table, freq=TRUE, suppress_low_N=FALSE, standard=FALSE){
 
   #for subsets on break_out, there might be columns that are all zeros in sub-observation table
   #that needs to be removed

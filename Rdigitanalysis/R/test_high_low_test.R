@@ -28,6 +28,9 @@ source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop
 #load helper functions for all digit test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_helper_functions.R')
 
+#load chi square test GOF functions
+source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\chi_square_goodness_of_fit_functions.R')
+
 #load all functions for high low test
 source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\high_low_test.R')
 
@@ -50,8 +53,8 @@ high = c(6,7,8,9)
 omit_05 = c(0,5)
 skip_first_digit = TRUE
 skip_last_digit = FALSE
-break_out = NA#'DIST'
-category = NA#'YEAR'
+break_out = 'DIST'
+category = 'YEAR'
 distribution='Benford'
 
 #match the data with Jetson's
@@ -60,45 +63,21 @@ distribution='Benford'
 
 
 result = high_low_test(digitdata=DigitData, contingency_table=NA, data_columns=data_columns, high=high, omit_05=omit_05,
-                       distribution=distribution, skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, break_out=break_out, category=category, plot=F)
+                       distribution=distribution, skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, break_out=break_out, category=category, plot=T, test_type='chisq')
 
 result
 order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'All')
 t(result[order, ]['2007'])
 
 
-
-
-# #weird columns
-# result = result[!(rownames(result) %in% c('all', 'Turkana')), ]
-# result
-# rowMeans(result)
-# # order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
-# # result[order]
+# a=result$high_digits_freq_table[1,]
+# a =data.frame(a)
+# theoratical = c(0.4546635,      0.495134,     0.4995116,     0.4999511,     0.4999951,     0.4999995)
+# theoratical = data.frame(theoratical)
+# rownames(theoratical) = rownames(a)
+# theoratical
+# dist_line = geom_line(data = data.frame(x=rownames(theoratical), y=theoratical[[1]]), aes(x = x, y = y, group=1, linetype='Expected High Digits Frequency'), color='red', lwd=1)
+# hist_2D(a, data_style='col', xlab='Digit Place', ylab='High Digits Frequency', title='High Low Test', abline=dist_line, width=0.5)
+# data=result$high_digits_freq_table
 #
-# hist_3d = function(data, digitdata, xlab='digits', ylab='digit places', zlab='frequency', title='3D Bar Plot', theta=55, phi=16, save=FALSE){
-#   #assert digitdata is of correct class
-#   input_check(digitdata=digitdata)
-#
-#   x = 1:length(rownames(data))
-#   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
-#
-#   z = as.matrix(data)
-#   plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
-#                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
-#                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
-#
-#   if (save){
-#     filename = paste(title, ".pdf", sep='')
-#     print(filename)
-#     pdf(file = filename)
-#     plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
-#                    ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
-#                    lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
-#     # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
-#     # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
-#     dev.off()
-#   }
-# }
-#
-# hist_3d(data=result, digitdata=DigitData, xlab=break_out, ylab='digit places', zlab='p value', title='High Low Test', theta=55, phi=16)
+# hist_3d(data=data, digitdata=DigitData, xlab=break_out, ylab='digit places', zlab='p value', title='High Low Test', theta=55, phi=16)
