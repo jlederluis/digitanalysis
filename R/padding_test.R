@@ -5,13 +5,6 @@
 #Summer 2020
 ############################################################
 
-
-
-############################################################
-#helper functions
-############################################################
-
-
 #' Obtains Benford mean in each digit place after specifying omitting 0 and 5 or not
 #'
 #' @inheritParams padding_test
@@ -196,7 +189,7 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
 #' @inheritParams padding_test
 #'
 #' @return A table of observed mean for the dataset \code{data}
-get_observed_mean = function(data, num_digits){
+get_observed_mean = function(data, num_digits, max_length){
   if (num_digits > length(data)){
     stop('the number of digits desired to evaluate is greater than the max length number in the dataset')
   }
@@ -249,19 +242,19 @@ Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
   simulated_mean = data.frame(matrix(nrow = 0, ncol = length(expected_mean)))
   colnames(simulated_mean) = colnames(expected_mean)
 
-  #debug
-  times = c()
+  # #debug
+  # times = c()
   #simulate n datasets
-  start = proc.time()
+  # start = proc.time()
   for (n in 1:N){
     #printing for user
     if (n %% 5000 == 0){
       print(paste("Simulated", n, 'datasets...'))
-      print(paste('Current memory:', memory.size()))
-      print(paste('Current dataset total digits:', sum(freq_table)))
-      print(paste('Current time:', (proc.time()-start)[[3]], 'seconds'))
-      print("")
-      times = c(times, (proc.time()-start)[[3]])
+      # print(paste('Current memory:', memory.size()))
+      # print(paste('Current dataset total digits:', sum(freq_table)))
+      # print(paste('Current time:', (proc.time()-start)[[3]], 'seconds'))
+      # print("")
+      # times = c(times, (proc.time()-start)[[3]])
     }
 
     #initialize the row for this simulated set
@@ -354,7 +347,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
   expected_mean = lst$expected_mean
   rownames(expected_mean) = 'All'
 
-  observed_mean = get_observed_mean(combined_data, num_digits)
+  observed_mean = get_observed_mean(combined_data, num_digits, max_length)
   rownames(observed_mean) = 'All'
 
   #get the difference in expected and observed mean in each digit position
@@ -383,9 +376,6 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 
       #get the index of category containing multiple groups
       indexes_of_category = indexes_of_categories[[category_name]]
-      # #by accessing the names of the categories in the data column that belong to this category
-      # indexes_of_category = indexes_of_categories[category_grouping[[category_name]]]
-      # indexes_of_category = unlist(indexes_of_category) #turn into an array
 
       ######################################################
       #get combined by rows data for all data columns needed
@@ -394,10 +384,8 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
       #get expected and observed mean in each digit position
       lst = get_expected_mean(digitdata, combined_data_of_category, Benford_mean, max_length, num_digits, omit_05)
       freq_table=lst$freq_table
-
       expected_mean[category_name, ] = lst$expected_mean
-
-      observed_mean[category_name, ] = get_observed_mean(combined_data_of_category, num_digits)
+      observed_mean[category_name, ] = get_observed_mean(combined_data_of_category, num_digits, max_length)
 
       #get the difference in expected and observed mean in each digit position
       diff_in_mean[category_name, ]  = observed_mean[category_name, ] - expected_mean[category_name, ]
@@ -466,11 +454,6 @@ padding_test = function(digitdata, contingency_table, data_columns='all', max_le
       stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
     }
   }
-
-  # #handles if category_grouping is NA, while category is not
-  # if (!(is.na(category))){
-  #   category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
-  # }
 
   #list of results from all break out category to be returned
   padding_test_results = list()

@@ -52,6 +52,7 @@ an array of column names, as characters; a single column name, as character.}
   \item Each array contains the values belonging to that category
   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
   \code{category} will be in a separate group.
+  \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
 }}
 
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
@@ -64,7 +65,7 @@ an array of column names, as characters; a single column name, as character.}
 }}
 
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
-if at least one cell in that column has expected value < 5. Default to TRUE.}
+if at least one cell in that column has expected value < 5. Default to FALSE.}
 
 \item{subset_name}{The main title to put on plots for current test.}
 

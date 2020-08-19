@@ -12,29 +12,43 @@
 #'
 #' @return The percentage of repeated numbers in input data
 find_percent_repeats = function(data, data_columns, round_digit_to_skip){
-  #remove all rows with NA entries in numeric columns
-  data = data[complete.cases(data[data_columns]), ]
-  #drop 0, rounded numbers before analysis
-  for (numeric_column in data_columns){
-    #drop 0 entiry rows since we dont want to count 0 as repeats
-    data = data[data[numeric_column] != 0, ]
-    #turn rounded digits to NA if round_digit_to_skip is specified
-    if (!(is.na(round_digit_to_skip[1]))){
-      #omit all entries with trailing 0 with round_digit_to_skip = 0
-      data = data[data[numeric_column] %% 10 != 0, ]
-      if (length(round_digit_to_skip) == 2){
-        #also omit all entries with trailing 5 with round_digit_to_skip = c(0,5)
-        data = data[data[numeric_column] %% 5 != 0, ]
-      }
-    }
-  }
+  # #remove all rows with NA entries in numeric columns
+  # complete_data = as.data.frame(data[complete.cases(data[data_columns]), ])
+  # colnames(complete_data) = colnames(data)
+  # print(data)
+  # print(complete_data)
+  #
+  # #drop 0 entiry rows since we dont want to count 0 as repeats
+  # complete_data = as.data.frame(complete_data[rowSums(abs(complete_data[data_columns])) != 0, ])
+  # #turn rounded digits to NA if round_digit_to_skip is specified
+  # if (!(is.na(round_digit_to_skip[1]))){
+  #   #omit all entries with trailing 0 with round_digit_to_skip = 0
+  #   complete_data = as.data.frame(complete_data[rowSums(complete_data[data_columns]) %% 10 != 0, ])
+  #   if (length(round_digit_to_skip) == 2){
+  #     #also omit all entries with trailing 5 with round_digit_to_skip = c(0,5)
+  #     complete_data = as.data.frame(complete_data[rowSums(complete_data[data_columns]) %% 5 != 0, ])
+  #   }
+  # }
+
+  # for (numeric_column in data_columns){
+  #   #drop 0 entiry rows since we dont want to count 0 as repeats
+  #   data = data[data[numeric_column] != 0, ]
+  #   #turn rounded digits to NA if round_digit_to_skip is specified
+  #   if (!(is.na(round_digit_to_skip[1]))){
+  #     #omit all entries with trailing 0 with round_digit_to_skip = 0
+  #     data = data[data[numeric_column] %% 10 != 0, ]
+  #     if (length(round_digit_to_skip) == 2){
+  #       #also omit all entries with trailing 5 with round_digit_to_skip = c(0,5)
+  #       data = data[data[numeric_column] %% 5 != 0, ]
+  #     }
+  #   }
+  # }
   #find repeats based on specified definition of a repeat
   unique_numbers = dim(unique(data))[1]
   total_numbers = dim(data)[1]
   num_repeats = total_numbers - unique_numbers
   percent_repeats = num_repeats / total_numbers
 
-  #print(data)
   print('unique')
   print(unique_numbers)
   print('total')
@@ -87,14 +101,14 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='a
   #check data_columns is subset of duplicate_matching_cols
   for (column in data_columns){
     if (!(column %in% duplicate_matching_cols)){
-      stop('duplicate_matching_cols must include all columns in data_columns!')
+      stop('The argument duplicate_matching_cols must include all column(s) where you are analyzing digit data!')
     }
   }
 
   #the columns we want to analyze
   data = digitdata@cleaned[duplicate_matching_cols]
 
-  print('all')
+  print('All')
 
   #percent repeats for all
   percent_repeats_all = find_percent_repeats(data, data_columns, round_digit_to_skip)
@@ -111,7 +125,7 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='a
     for (category_name in names(indexes_of_categories)){
 
       indexes_of_category = indexes_of_categories[[category_name]]
-      data_of_category = data.frame(data[indexes_of_category, ])
+      data_of_category = as.data.frame(data[indexes_of_category, ])
 
       percent_repeats_in_category = find_percent_repeats(data_of_category, data_columns, round_digit_to_skip)
       percent_repeats_table[category_name] = percent_repeats_in_category #a value
@@ -125,18 +139,19 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='a
 
   #plot only if we break_out == have > 1 column
   repeat_plot = NA
-  if (plot){
-    if (!(is.na(break_out))){
-      repeat_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats', title='Repeats Test',
-                            hline=mean_percent_repeated, hline_name='Mean Percentage Repeats')
-      print(repeat_plot)
-    }
+  if (plot && !(is.na(break_out))){
+    repeat_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats', title='Repeats Test',
+                          hline=mean_percent_repeated, hline_name='Mean Percentage Repeats')
+    print(repeat_plot)
+  }
+  else {
+    #tell user there is no plot
+    repeat_plot = 'No plot with plot=FALSE or without break_out'
   }
   #create a rowname
   rownames(percent_repeats_table) = 'percent repeated numbers'
   #sort by decreasing rounded percentage
   percent_repeats_table = t(sort(percent_repeats_table, decreasing = TRUE))
-
   return(list(percent_repeats=percent_repeats_table, plot=repeat_plot))
 }
 

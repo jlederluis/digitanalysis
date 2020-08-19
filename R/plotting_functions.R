@@ -39,7 +39,7 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
   colnames(plotting_data) = c('x', 'y') #ensure col name are correct
 
   #2d plot
-  library(ggplot2)
+  require(ggplot2)
   hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
     geom_bar(stat="identity", width=width) + xlab(xlab) + ylab(ylab) + ggtitle(title) + scale_x_discrete(limits=rownames(data)) +
     scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0.1))) + theme_bw() +
@@ -90,7 +90,7 @@ hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Freque
 
   #stacked 2d barplot with multiple groups
   #use position=position_dodge()
-  library(ggplot2)
+  require(ggplot2)
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
     scale_fill_grey(start=0.7, end=0.1) + xlab(xlab) + ylab(ylab) + ggtitle(title) +
@@ -134,8 +134,8 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
   for (i in 1:length(observed_table)){
     curr_digit_place = colnames(observed_table)[i]
     #create ggplot object for abline distribution
+    require(ggplot2)
     dist_line = geom_line(data = data.frame(x=rownames(expected_table), y=expected_table[[i]]), aes(x = x, y = y, group=1, linetype='Expected Distribution'), color='red', lwd=1)
-    print(class(dist_line))
     hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(name, curr_digit_place), abline=dist_line)
     plot_list[[curr_digit_place]] = hist_digit_place_i
 
@@ -147,7 +147,6 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
   plots = plot_multiple_hist2d(plot_list)
   # if (save){
   #   filename = paste(name, '_2D_histograms.pdf', sep='')
-  #   print(filename)
   #   ggsave(plots, file=paste(name, '_2D_histograms.pdf', sep=''))
   # }
   return(plots)
@@ -178,6 +177,7 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
 
+  dev.new()
   bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
@@ -202,7 +202,6 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
 
   # if (save){
   #   filename = paste(title, ".pdf", sep='')
-  #   print(filename)
   #   pdf(file = filename)
   #   plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
   #                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
@@ -235,6 +234,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     test_type = 'Single Digit Test'
     aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, test_type, sep='_')) #multiple 2D histograms
     plots_list[['aggregate histogram']] = aggregate_hist
+    dev.new()
     print(aggregate_hist)
   }
   #unpack rounded test
@@ -247,6 +247,12 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, '(Round Numbers)', test_type, sep='_')) #plot aggregate histogram across digit place
       plots_list[['multiple_histograms']] = multiple_hist
       plots_list[['aggregate histogram']] = aggregate_hist
+
+      dev.new()
+      print(aggregate_hist)
+      dev.new()
+      multiple_hist
+
     }
     else if (digitdata@raw[1,1] == 'unround'){
       hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, '(Unround Numbers)', test_type, sep='_')) #3D histogram
@@ -254,6 +260,11 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, '(Unround Numbers)', test_type, sep='_')) #plot aggregate histogram across digit place
       plots_list[['multiple_histograms']] = multiple_hist
       plots_list[['aggregate histogram']] = aggregate_hist
+
+      dev.new()
+      print(aggregate_hist)
+      dev.new()
+      multiple_hist
     }
     else {
       stop('shit happened in plot_all_digit_test in plotting_functions.R')
@@ -266,7 +277,11 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, test_type, sep='_')) #plot aggregate histogram across digit place
     plots_list[['multiple_histograms']] = multiple_hist
     plots_list[['aggregate histogram']] = aggregate_hist
+
+    dev.new()
     print(aggregate_hist)
+    dev.new()
+    multiple_hist
   }
   return(plots_list)
 }
@@ -299,12 +314,12 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
 # result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
 #                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit, standard_df=TRUE)
 #
-# library("plot3Drgl")
+# require("plot3Drgl")
 # plotrgl()
 
 
 
-# library(ggplot2)
+# require(ggplot2)
 # load(file = "data/benford_table.RData")
 # ggplot(data=data.frame(x=rownames(benford_table), y=benford_table[[2]]), aes(x=x, y=y)) +
 #   geom_line(data = data.frame(x=rownames(benford_table), y=benford_table[[2]]), aes(x = x, y = y, group=1), color='red', lwd=1) +

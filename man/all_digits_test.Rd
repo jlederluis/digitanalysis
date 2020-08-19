@@ -69,6 +69,7 @@ an array of column names, as characters; a single column name, as character.}
   \item Each array contains the values belonging to that category
   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
   \code{category} will be in a separate group.
+  \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
 }}
 
 \item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
@@ -85,7 +86,7 @@ an array of column names, as characters; a single column name, as character.}
 }}
 
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
-if at least one cell in that column has expected value < 5. Default to TRUE.}
+if at least one cell in that column has expected value < 5. Default to FALSE.}
 
 \item{suppress_first_division_plots}{TRUE or FALSE: If TRUE, suppress all plots on first and second division.
 If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}

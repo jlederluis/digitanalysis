@@ -6,7 +6,7 @@
 \usage{
 make_aligned_data(
   cleaned_data,
-  col_analyzing,
+  digit_columns,
   naming_method,
   align_direction = "left"
 )
@@ -14,7 +14,7 @@ make_aligned_data(
 \arguments{
 \item{cleaned_data}{'cleaned' slot for DigitAnalysis}
 
-\item{col_analyzing}{The numeric columns to be used}
+\item{digit_columns}{The numeric columns to be used}
 
 \item{naming_method}{Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from \code{DigitAnalysis} class}
 

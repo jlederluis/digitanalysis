@@ -9,37 +9,15 @@
 # rm(list = ls())
 # #free up R memory
 # gc()
+# #load stuff
+# library(digitanalysis)
 # ##############################
-# #general functions
-# #load data input functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data_input_functions.R')
-#
-# #load functions for computing Benford table
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\Benford_table_functions.R')
-#
-# #load all plotting functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\plotting_functions.R')
-#
-# #load input check function
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\input_check_function.R')
-#
-# ############################
-# #testing
-# #load helper functions for all digit test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_helper_functions.R')
-#
-# #load all functions for repeat test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\repeat_test.R')
-#
 #
 # #test with data
 # #load data input functions
 # data_columns = c("ALEXP.Values")
 # fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
-#
-# DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-# contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-#
+# DigitData = process_digit_data(filepath = fp, digit_columns = data_columns)
 #
 # #DigitData has to drop all columns with NA in ALEXP.Values
 # indexes_with_valid_alexp_values = which(!(is.na(DigitData@cleaned$ALEXP.Values)))
@@ -48,7 +26,7 @@
 # #test repeat test
 # data_columns = "ALEXP.Values"
 # duplicate_matching_cols = c("ALEXP.Values")#, "YEAR", "DIST")#, "SECTOR")
-# break_out ='YEAR' #'DIST'
+# break_out ='DIST'
 # break_out_grouping=NA
 # round_digit_to_skip=NA#c(0,5)
 #

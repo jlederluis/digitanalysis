@@ -4,12 +4,12 @@
 \alias{make_numeric_data}
 \title{Create dataframe for only the numeric columns of the cleaned data}
 \usage{
-make_numeric_data(cleaned_data, col_analyzing)
+make_numeric_data(cleaned_data, digit_columns)
 }
 \arguments{
 \item{cleaned_data}{'cleaned' slot for \code{DigitAnalysis}}
 
-\item{col_analyzing}{The numeric columns to be used}
+\item{digit_columns}{The numeric columns to be used}
 }
 \value{
 Numeric dataframe for \code{DigitAnalysis} slot 'numbers'

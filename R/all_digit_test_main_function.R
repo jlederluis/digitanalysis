@@ -22,7 +22,6 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   if (data_columns[1] == 'all'){
     data_columns = colnames(digitdata@numbers)
   }
-
   align_direction = 'left'
 
   #get the digits of the desired data columns to be analyzed
@@ -73,7 +72,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
       obs_in_category = NA
 
       #single digit place: need to change the subsetted array into dataframe with colname
-      usable_in_category = data.frame(usable_data[indexes_of_category, ])
+      usable_in_category = as.data.frame(usable_data[indexes_of_category, ])
       colnames(usable_in_category) = colnames(usable_data)
       obs_in_category = obtain_observation(digitdata, usable_in_category, digit_places, skip_first_digit, skip_last_digit, omit_05)
 
@@ -89,6 +88,9 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
         }
       }
     }
+  }
+  if (length(all_digit_test_plots) == 0){
+    all_digit_test_plots = 'No plots since plot=FALSE'
   }
   return(list(p_values=p_values, plots=all_digit_test_plots))
 }
@@ -134,6 +136,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #'   \item Each array contains the values belonging to that category
 #'   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
 #'   \code{category} will be in a separate group.
+#'   \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
 #' }
 #' @param distribution 'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.
 #' @param plot TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.
@@ -145,7 +148,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #'   \item FALSE: Computes degrees of freedom for chi square test using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
 #' }
 #' @param suppress_low_N TRUE or FALSE: If TRUE, suppress columns in expected table
-#' if at least one cell in that column has expected value < 5. Default to TRUE.
+#' if at least one cell in that column has expected value < 5. Default to FALSE.
 #' @param suppress_first_division_plots TRUE or FALSE: If TRUE, suppress all plots on first and second division.
 #' If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.
 #' @param suppress_second_division_plots TRUE or FALSE: If TRUE, suppress all plots on second division.
@@ -191,7 +194,6 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
   if (suppress_first_division_plots){
     suppress_second_division_plots = TRUE
   }
-
   #perform digit test for all
   result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
                                       category, category_grouping, skip_last_digit, standard_df, suppress_low_N, subset_name='All',

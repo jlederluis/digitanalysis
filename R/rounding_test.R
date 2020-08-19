@@ -63,7 +63,6 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
       rounded_digits = rounded_digits + length(matched_indexes) * nchar(pattern) #number of matched instances x length of the pattern
     }
   }
-  print(total_digits)
   return(rounded_digits/total_digits)
 }
 
@@ -126,12 +125,14 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
 
   #plot only if we break_out == have > 1 column
   rounding_plot = NA
-  if (plot){
-    if (!(is.na(break_out))){
-      rounding_plot = hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='Percent Rounding', title='Rounding Test',
-                              hline=mean_percent_rounded, hline_name='Mean Percentage Rounding')
-      print(rounding_plot)
-    }
+  if (plot && !(is.na(break_out))){
+    rounding_plot = hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='Percent Rounding', title='Rounding Test',
+                            hline=mean_percent_rounded, hline_name='Mean Percentage Rounding')
+    print(rounding_plot)
+  }
+  else {
+    #tell user there is no plot
+    rounding_plot = 'No plot with plot=FALSE or without break_out'
   }
   #create a rowname
   rownames(percent_rounded_table) = 'percent rounded digits'

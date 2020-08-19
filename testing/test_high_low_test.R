@@ -9,39 +9,14 @@
 # rm(list = ls())
 # #free up R memory
 # gc()
+# #load stuff
+# library(digitanalysis)
 # ##############################
-# #general functions
-# #load data input functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data_input_functions.R')
 #
-# #load functions for computing Benford table
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\Benford_table_functions.R')
-#
-# #load all plotting functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\plotting_functions.R')
-#
-# #load input check function
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\input_check_function.R')
-#
-# ############################
-# #testing
-# #load helper functions for all digit test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_helper_functions.R')
-#
-# #load chi square test GOF functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\chi_square_goodness_of_fit_functions.R')
-#
-# #load all functions for high low test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\high_low_test.R')
-#
-#
-# #test with data
 # #load data input functions
 # data_columns = c("ALEXP.Values")
 # fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
-#
-# DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-# contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
+# DigitData = process_digit_data(filepath = fp, digit_columns = data_columns)
 #
 # #DigitData has to drop all columns with NA in ALEXP.Values
 # indexes_with_valid_alexp_values = which(!(is.na(DigitData@cleaned$ALEXP.Values)))
@@ -58,17 +33,12 @@
 # distribution='Benford'
 #
 # #match the data with Jetson's
-# # result = single_high_low_test(digitdata=DigitData, contingency_table=contingency_table, data_columns=data_columns, high=high, omit_05=omit_05,
-# #                        skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, category=category)
-#
-#
 # result = high_low_test(digitdata=DigitData, contingency_table=NA, data_columns=data_columns, high=high, omit_05=omit_05,
 #                        distribution=distribution, skip_first_digit=skip_first_digit, skip_last_digit=skip_last_digit, break_out=break_out, category=category, plot=T, test_type='chisq')
 #
 # result
 # order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'All')
 # t(result[order, ]['2007'])
-#
 #
 # # a=result$high_digits_freq_table[1,]
 # # a =data.frame(a)

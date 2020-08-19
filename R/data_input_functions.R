@@ -85,7 +85,7 @@ align_digits = function(indata, outdata, naming_method, col_name, align_directio
 
 #' Load raw dataframe from file or from passed-in dataframe
 #'
-#' @inheritParams make_class
+#' @inheritParams process_digit_data
 #'
 #' @return Raw dataframe for \code{DigitAnalysis} slot 'raw'
 make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
@@ -124,16 +124,15 @@ make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
 #' Clean up the numeric columns of dataframe
 #'
 #' @param raw_data 'raw' slot for \code{DigitAnalysis}
-#' @param col_analyzing The numeric columns to be cleaned
+#' @param digit_columns The numeric columns to be cleaned
 #'
 #' @return Cleaned dataframe for \code{DigitAnalysis} slot 'cleaned'
-make_cleaned_data = function(raw_data, col_analyzing){
+make_cleaned_data = function(raw_data, digit_columns){
   cleaned_data = data.frame(raw_data) #make copy without pointer issue
 
-  #drop rows with NaNs or empty strings in any numeric data column
-  for (i in 1:length(col_analyzing)) {
+  for (i in 1:length(digit_columns)) {
     #name of current data column modifying
-    col_name = col_analyzing[i]
+    col_name = digit_columns[i]
 
     #turn into numbers
     cleaned_data[[col_name]] = as.numeric(gsub(",","",as.character(cleaned_data[[col_name]]), fixed=TRUE))
@@ -141,6 +140,8 @@ make_cleaned_data = function(raw_data, col_analyzing){
     #rounding
     cleaned_data[[col_name]] = as.integer(cleaned_data[[col_name]])
   }
+  #drop rows with NaNs in all numeric data column
+  cleaned_data = as.data.frame(cleaned_data[complete.cases(cleaned_data[digit_columns]), ])
 
   return(cleaned_data)
 }
@@ -149,30 +150,30 @@ make_cleaned_data = function(raw_data, col_analyzing){
 #' Create dataframe for only the numeric columns of the cleaned data
 #'
 #' @param cleaned_data 'cleaned' slot for \code{DigitAnalysis}
-#' @param col_analyzing The numeric columns to be used
+#' @param digit_columns The numeric columns to be used
 #'
 #' @return Numeric dataframe for \code{DigitAnalysis} slot 'numbers'
-make_numeric_data = function(cleaned_data, col_analyzing){
+make_numeric_data = function(cleaned_data, digit_columns){
   numeric_data = data.frame(matrix(ncol = 0, nrow = length(cleaned_data[,1])))
-  numeric_data[col_analyzing] = cleaned_data[col_analyzing]
+  numeric_data[digit_columns] = cleaned_data[digit_columns]
   return(numeric_data)
 }
 
 #' Create the dataframe with the left/right aligned digits of each data column to be analyzed->'left_aligned'/'right_aligned' of the class
 #'
 #' @param cleaned_data 'cleaned' slot for DigitAnalysis
-#' @param col_analyzing The numeric columns to be used
+#' @param digit_columns The numeric columns to be used
 #' @param naming_method Either \code{left_aligned_column_names} or \code{right_aligned_column_names} from \code{DigitAnalysis} class
 #' @param align_direction 'left' or 'right': Create left-aligned or right-aligned dataframe
 #'
 #' @return The dataframe with the left/right aligned digits of each data column to be analyzed for \code{DigitAnalysis} slot 'left_aligned'/'right_aligned'
-make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_direction='left'){
+make_aligned_data = function(cleaned_data, digit_columns, naming_method, align_direction='left'){
   #initialize
   aligned_data = data.frame(matrix(ncol = 0, nrow = length(cleaned_data[,1])))
 
-  for (i in 1:length(col_analyzing)) {
+  for (i in 1:length(digit_columns)) {
     #name of current data column modifying
-    col_name = col_analyzing[i]
+    col_name = digit_columns[i]
 
     #update by 'align_left' or 'align_right'
     indata = cleaned_data[[col_name]]
@@ -192,25 +193,25 @@ make_aligned_data = function(cleaned_data, col_analyzing, naming_method, align_d
 #' Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.
 #'
 #' @param filepath Default to NA. If loading data using filepath, specify filepath as a string.
-#' @param col_analyzing All potential datra columns to be analyzed. Can be specified as any of
+#' @param digit_columns All potential datra columns to be analyzed. Can be specified as any of
 #' \itemize{
-#'   \item \code{col_analyzing} = 'col_name'
-#'   \item \code{col_analyzing} = c('col_name')
-#'   \item \code{col_analyzing} = c('col_name1','col_name2', ...)
+#'   \item \code{digit_columns} = 'col_name'
+#'   \item \code{digit_columns} = c('col_name')
+#'   \item \code{digit_columns} = c('col_name1','col_name2', ...)
 #' }
 #' @param delim Defaulted to ','. Can specify other delimeters as well.
 #' @param filetype Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
-#' 'excel' supports both 'xlsx' and 'xls'.
+#' 'excel' option supports both 'xlsx' and 'xls' format.
 #' @param raw_df Default to NA. If loading data using a dataframe. Pass in the dataframe instance.
 #'
 #' @return An object in \code{DigitAnalysis}
 #' @export
 #'
 #' @examples
-#' make_class('col_name', filepath='~/filename.csv')
-#' make_class('col_name', filepath='~/filename.xlsx', filetype='excel', delim=',')
-#' make_class('col_name', raw_df=my_dataframe)
-make_class = function(col_analyzing, filepath=NA, filetype='csv', delim=',', raw_df=NA){
+#' process_digit_data('col_name', filepath='~/filename.csv')
+#' process_digit_data('col_name', filepath='~/filename.xlsx', filetype='excel', delim=',')
+#' process_digit_data('col_name', raw_df=my_dataframe)
+process_digit_data = function(digit_columns, filepath=NA, filetype='csv', delim=',', raw_df=NA){
 
   ############important###############
   #hard-coded way of naming the digit places, should be sufficient, if not can further add
@@ -223,13 +224,13 @@ make_class = function(col_analyzing, filepath=NA, filetype='csv', delim=',', raw
 
   raw_data = make_raw_data(filepath, filetype, delim, raw_df)
 
-  cleaned_data = make_cleaned_data(raw_data, col_analyzing)
+  cleaned_data = make_cleaned_data(raw_data, digit_columns)
 
-  numeric_data = make_numeric_data(cleaned_data, col_analyzing)
+  numeric_data = make_numeric_data(cleaned_data, digit_columns)
 
-  left_aligned_data = make_aligned_data(cleaned_data, col_analyzing, naming_method=left_aligned_column_names, align_direction='left')
+  left_aligned_data = make_aligned_data(cleaned_data, digit_columns, naming_method=left_aligned_column_names, align_direction='left')
 
-  right_aligned_data = make_aligned_data(cleaned_data, col_analyzing, naming_method=right_aligned_column_names, align_direction='right')
+  right_aligned_data = make_aligned_data(cleaned_data, digit_columns, naming_method=right_aligned_column_names, align_direction='right')
   #reverse the dataframe for better visual in normal form
   right_aligned_data = rev(right_aligned_data)
 

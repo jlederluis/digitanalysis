@@ -4,48 +4,20 @@
 # #Summer 2020
 # ############################################################
 #
-#
-# ############################################################
-# #Testing; run the functions
-# #Wenjun Chang
-# #Summer 2020
-# ############################################################
-#
-#
 # #############prelim############
 # #clear workspace
 # rm(list = ls())
 # #free up R memory
 # gc()
+# #load stuff
+# library(digitanalysis)
 # ##############################
-# #general functions
-# #load data input functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\data_input_functions.R')
-#
-# #load functions for computing Benford table
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\Benford_table_functions.R')
-#
-# #load all plotting functions
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\plotting_functions.R')
-#
-# #load input check function
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\input_check_function.R')
-#
-# #load helper functions for all digit test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\all_digit_test_helper_functions.R')
-#
-# ############################
-# #testing
-# #load all functions for digit pair test
-# source('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\Rdigitanalysis\\R\\digit_pair_test.R')
 #
 # #load data input functions
 # data_columns = "BENTOT.Values"#c("ALEXP.Values")
 # fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 #
-# DigitData = make_class(filepath = fp, col_analyzing = data_columns)
-# contingency_table = load_Benford_table('C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\digitanalysis\\contingency_table.csv')
-#
+# DigitData = process_digit_data(filepath = fp, digit_columns = data_columns)
 #
 # #test digit pair test
 # min_length = 3

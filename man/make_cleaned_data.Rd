@@ -4,12 +4,12 @@
 \alias{make_cleaned_data}
 \title{Clean up the numeric columns of dataframe}
 \usage{
-make_cleaned_data(raw_data, col_analyzing)
+make_cleaned_data(raw_data, digit_columns)
 }
 \arguments{
 \item{raw_data}{'raw' slot for \code{DigitAnalysis}}
 
-\item{col_analyzing}{The numeric columns to be cleaned}
+\item{digit_columns}{The numeric columns to be cleaned}
 }
 \value{
 Cleaned dataframe for \code{DigitAnalysis} slot 'cleaned'

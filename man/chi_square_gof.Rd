@@ -20,7 +20,7 @@ chi_square_gof(
 \item{freq}{TRUE or FALSE: Whether the input expected table is in decimal.}
 
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
-if at least one cell in that column has expected value < 5. Default to TRUE.}
+if at least one cell in that column has expected value < 5. Default to FALSE.}
 
 \item{standard}{TRUE or FALSE: Default to FALSE.
 \itemize{

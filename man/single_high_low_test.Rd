@@ -46,6 +46,7 @@ an array of column names, as characters; a single column name, as character.}
   \item Each array contains the values belonging to that category
   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
   \code{category} will be in a separate group.
+  \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
 }}
 
 \item{test_type}{Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
