@@ -19,7 +19,7 @@ all_digits_test(
   plot = TRUE,
   skip_last_digit = FALSE,
   standard_df = FALSE,
-  suppress_low_N = TRUE,
+  suppress_low_N = FALSE,
   suppress_first_division_plots = FALSE,
   suppress_second_division_plots = TRUE
 )

@@ -17,7 +17,8 @@ high_low_test(
   break_out_grouping = NA,
   category = NA,
   category_grouping = NA,
-  plot = TRUE
+  plot = TRUE,
+  test_type = "binom"
 )
 }
 \arguments{
@@ -68,6 +69,9 @@ an array of column names, as characters; a single column name, as character.}
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+
+\item{test_type}{Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
+or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "binom".}
 }
 \value{
 \itemize{

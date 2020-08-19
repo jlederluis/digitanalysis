@@ -11,7 +11,8 @@ high_low_by_digit_place(
   high,
   high_freq_theoratical,
   omit_05,
-  skip_first_digit
+  skip_first_digit,
+  test_type = "binom"
 )
 }
 \arguments{
@@ -24,6 +25,9 @@ high_low_by_digit_place(
 \item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
 
 \item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
+
+\item{test_type}{Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
+or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "binom".}
 
 \item{data}{A digits table for some data columns, preferably returned by \code{grab_desired_aligned_columns}}
 }

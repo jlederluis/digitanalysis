@@ -15,11 +15,15 @@ unpack_round_numbers_test(
   omit_05 = c(0, 5),
   break_out = NA,
   break_out_grouping = NA,
+  category = NA,
+  category_grouping = NA,
   distribution = "Benford",
   plot = TRUE,
   skip_last_digit = FALSE,
   standard_df = FALSE,
-  suppress_low_N = TRUE
+  suppress_low_N = TRUE,
+  suppress_first_division_plots = FALSE,
+  suppress_second_division_plots = TRUE
 )
 }
 \arguments{
@@ -61,6 +65,16 @@ an array of column names, as characters; a single column name, as character.}
   \code{break_out} will be in a separate group.
 }}
 
+\item{category}{The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.}
+
+\item{category_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{category} is not NA.
+\itemize{
+  \item Each the names of the elements in the list is the category name
+  \item Each array contains the values belonging to that category
+  \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
+  \code{category} will be in a separate group.
+}}
+
 \item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
@@ -76,6 +90,11 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
 if at least one cell in that column has expected value < 5. Default to TRUE.}
+
+\item{suppress_first_division_plots}{TRUE or FALSE: If TRUE, suppress all plots on first and second division.
+If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
+
+\item{suppress_second_division_plots}{TRUE or FALSE: If TRUE, suppress all plots on second division.}
 }
 \value{
 A dataframe of p values on rounded and unrounded digits (also by category if break_out is specified)

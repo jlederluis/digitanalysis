@@ -13,7 +13,6 @@ single_all_digits_test(
   omit_05,
   category,
   category_grouping,
-  distribution,
   skip_last_digit,
   standard_df,
   suppress_low_N,
@@ -54,8 +53,6 @@ an array of column names, as characters; a single column name, as character.}
   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
   \code{category} will be in a separate group.
 }}
-
-\item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
 
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}

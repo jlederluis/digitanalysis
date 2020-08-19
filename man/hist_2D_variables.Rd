@@ -10,7 +10,8 @@ hist_2D_variables(
   data_style = "row",
   xlab = "Digits",
   ylab = "Frequency",
-  title = "Multi-variable 2D Histogram"
+  title = "Multi-variable 2D Histogram",
+  abline = NA
 )
 }
 \arguments{

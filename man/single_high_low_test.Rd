@@ -13,7 +13,8 @@ single_high_low_test(
   skip_first_digit,
   skip_last_digit,
   category,
-  category_grouping
+  category_grouping,
+  test_type
 )
 }
 \arguments{
@@ -46,6 +47,9 @@ an array of column names, as characters; a single column name, as character.}
   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
   \code{category} will be in a separate group.
 }}
+
+\item{test_type}{Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
+or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "binom".}
 }
 \value{
 p_values table of high low test for input data from \code{digitdata}.

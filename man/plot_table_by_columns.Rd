@@ -4,23 +4,10 @@
 \alias{plot_table_by_columns}
 \title{Plot 2D histogram on digits freqency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}}
 \usage{
-plot_table_by_columns(
-  observed_table,
-  expected_table,
-  name = "",
-  data_style = "col",
-  save = FALSE
-)
+plot_table_by_columns(observed_table, expected_table, name = "", save = FALSE)
 }
 \arguments{
 \item{observed_table}{The digits table for counts in each digits in each digit place}
-
-\item{data_style}{The style of input \code{data}. \code{ggplot} requires columns to be the arrays for x values, y values, etc.
-\itemize{
-  \item If \code{data} has a row for y values, pass in 'row'.
-  \item If \code{data} has a column for y values, pass in 'col'.
-  \item Defaulted to 'row'.
-}}
 }
 \value{
 A figure with each data column's value plotted against rownames

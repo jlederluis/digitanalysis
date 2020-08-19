@@ -13,7 +13,6 @@ hist_2D(
   hline = NA,
   hline_name = "",
   abline = NA,
-  abline_name = "",
   width = 0.5
 )
 }

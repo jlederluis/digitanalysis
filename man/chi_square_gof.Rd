@@ -8,9 +8,8 @@ chi_square_gof(
   observed_table,
   expected_table,
   freq = TRUE,
-  suppress_low_N = TRUE,
-  standard = FALSE,
-  plot = TRUE
+  suppress_low_N = FALSE,
+  standard = FALSE
 )
 }
 \arguments{
@@ -28,8 +27,6 @@ if at least one cell in that column has expected value < 5. Default to TRUE.}
   \item TRUE: Compute degrees of freedom using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
   \item FALSE: Compute degrees of freedom using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
 }}
-
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
 }
 \value{
 p-value for chi square goodness of fit test

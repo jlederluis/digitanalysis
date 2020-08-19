@@ -22,7 +22,8 @@ make_class(
 
 \item{filepath}{Default to NA. If loading data using filepath, specify filepath as a string.}
 
-\item{filetype}{Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.}
+\item{filetype}{Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
+'excel' supports both 'xlsx' and 'xls'.}
 
 \item{delim}{Defaulted to ','. Can specify other delimeters as well.}
 
