@@ -208,11 +208,11 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
   if (TRUE %in% ((is.na(contingency_table)))){
     #if contingency_table is not passed in, use distribution
     if (tolower(distribution) == 'benford'){
-      load(file = "data/benford_table.RData")
+      data("benford_table")
       contingency_table = benford_table
     }
     else if (tolower(distribution) == 'uniform'){
-      load(file = "data/uniform_table.RData")
+      data("uniform_table")
       contingency_table = uniform_table
     }
     else {
