@@ -12,7 +12,7 @@ counts_observed(digitdata, data_columns, omit_05, min_length, indexes = NA)
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 
 \item{min_length}{The minimum length of the numbers to be analyzed in digit pair test. Must be an integer >= 2. Default to 3.}
 

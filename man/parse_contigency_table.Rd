@@ -29,12 +29,12 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
   \item A number: Perform single digit test on the digit place desired to analyze. If last digit test is desired, pass in -1 or c(-1).
 }}
 
-\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
+\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip first digit place before analysis. Default to FALSE.}
 
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 }
 \value{
 Contigency table with exclusively the desired digits and digit places

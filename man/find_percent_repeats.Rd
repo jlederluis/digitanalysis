@@ -16,7 +16,7 @@ an array of column names, as characters; a single column name, as character.}
 \itemize{
   \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
   \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
-  \item If not omitting rounded numbers, pass in NA. Default is NA.
+  \item If not omitting rounded numbers, pass in NA. Default to NA.
 }}
 }
 \value{

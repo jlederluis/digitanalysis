@@ -13,7 +13,8 @@ single_padding_test(
   N,
   omit_05,
   category,
-  category_grouping
+  category_grouping,
+  simulate
 )
 }
 \arguments{
@@ -37,7 +38,7 @@ an array of column names, as characters; a single column name, as character.}
   \item 2400 seconds for N=10,000; data dimension = 4000 x 5 totla digits.
 }}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 
 \item{category}{The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.}
 
@@ -49,6 +50,9 @@ an array of column names, as characters; a single column name, as character.}
   \code{category} will be in a separate group.
   \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
 }}
+
+\item{simulate}{TRUE or FALSE: If TRUE, will stimulate the datasets and generate p-value. If FALSE, only produces \code{diff_in_mean} and plots.
+Overwrites \code{N}.}
 }
 \value{
 A list of padding test results for input data from \code{digitdata}.

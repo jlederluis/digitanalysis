@@ -10,10 +10,10 @@ sector_test(
   category,
   category_grouping = NA,
   data_columns = "all",
-  duplicate_matching_cols = "all",
+  duplicate_matching_cols = "digit_columns",
   break_out = NA,
   break_out_grouping = NA,
-  round_digit_to_skip = c(0, 5),
+  round_digit_to_skip = NA,
   plot = TRUE
 )
 }
@@ -34,7 +34,7 @@ sector_test(
 an array of column names, as characters; a single column name, as character.}
 
 \item{duplicate_matching_cols}{An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
-Default to 'all', meaning matching all columns in 'clean' slot of \code{digitdata}. Must include all columns in \code{data_columns}.}
+Must include all columns in \code{data_columns}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.}
 
 \item{break_out}{\itemize{
   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
@@ -54,7 +54,7 @@ Default to 'all', meaning matching all columns in 'clean' slot of \code{digitdat
 \itemize{
   \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
   \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
-  \item If not omitting rounded numbers, pass in NA. Default is NA.
+  \item If not omitting rounded numbers, pass in NA. Default to NA.
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}

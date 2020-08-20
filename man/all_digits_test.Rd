@@ -6,19 +6,18 @@
 \usage{
 all_digits_test(
   digitdata,
-  contingency_table = NA,
   data_columns = "all",
   digit_places = "all",
-  skip_first_digit = FALSE,
-  omit_05 = c(0, 5),
   break_out = NA,
   break_out_grouping = NA,
   category = NA,
   category_grouping = NA,
   distribution = "Benford",
+  contingency_table = NA,
   plot = TRUE,
+  omit_05 = NA,
+  skip_first_digit = FALSE,
   skip_last_digit = FALSE,
-  standard_df = FALSE,
   suppress_low_N = FALSE,
   suppress_first_division_plots = FALSE,
   suppress_second_division_plots = TRUE
@@ -26,12 +25,6 @@ all_digits_test(
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
-
-\item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
-Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
-\itemize{
-  \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
-}}
 
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
@@ -42,10 +35,6 @@ an array of column names, as characters; a single column name, as character.}
   \item An numeric array: Perform multiple digit test on the digit places desired to analyze.
   \item A number: Perform single digit test on the digit place desired to analyze. If last digit test is desired, pass in -1 or c(-1).
 }}
-
-\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
-
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
 
 \item{break_out}{\itemize{
   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
@@ -74,16 +63,20 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
 
+\item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
+Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
+\itemize{
+  \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
+}}
+
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
+
+\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip first digit place before analysis. Default to FALSE.}
 
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}
-
-\item{standard_df}{TRUE or FALSE: Default to FALSE.
-\itemize{
-  \item TRUE: Computes degrees of freedom for chi square test using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
-  \item FALSE: Computes degrees of freedom for chi square test using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
-}}
 
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
 if at least one cell in that column has expected value < 5. Default to FALSE.}

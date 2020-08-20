@@ -2,27 +2,39 @@
 % Please edit documentation in R/high_low_test.R
 \name{high_low_test}
 \alias{high_low_test}
-\title{Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test}
+\title{Performs high to low digit tests vs probability of high to low digits by Benford's Law via chi square test (default) or binomial test}
 \usage{
 high_low_test(
   digitdata,
-  contingency_table = NA,
   data_columns = "all",
   high = c(6, 7, 8, 9),
-  omit_05 = c(0, 5),
-  skip_first_digit = FALSE,
+  omit_05 = NA,
+  test_type = "chisq",
   distribution = "Benford",
+  contingency_table = NA,
+  skip_first_digit = FALSE,
   skip_last_digit = FALSE,
   break_out = NA,
   break_out_grouping = NA,
   category = NA,
   category_grouping = NA,
-  plot = TRUE,
-  test_type = "binom"
+  plot = TRUE
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
+
+\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
+an array of column names, as characters; a single column name, as character.}
+
+\item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).}
+
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
+
+\item{test_type}{Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
+or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "chisq".}
+
+\item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
 
 \item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
 Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
@@ -30,16 +42,7 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
   \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
 }}
 
-\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
-an array of column names, as characters; a single column name, as character.}
-
-\item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).}
-
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
-
-\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
-
-\item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
+\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip first digit place before analysis. Default to FALSE.}
 
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}
@@ -70,9 +73,6 @@ an array of column names, as characters; a single column name, as character.}
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
-
-\item{test_type}{Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
-or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "binom".}
 }
 \value{
 \itemize{
@@ -81,7 +81,7 @@ or a chi square test on high vs. low by each digit place with "chisq". Defaulted
 }
 }
 \description{
-Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test
+Performs high to low digit tests vs probability of high to low digits by Benford's Law via chi square test (default) or binomial test
 }
 \examples{
 high_low_test(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9))

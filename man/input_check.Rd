@@ -29,7 +29,8 @@ input_check(
   rounding_patterns = NA,
   suppress_low_N = NA,
   suppress_first_division_plots = NA,
-  suppress_second_division_plots = NA
+  suppress_second_division_plots = NA,
+  simulate = NA
 )
 }
 \arguments{
@@ -70,8 +71,6 @@ input_check(
 \item{num_digits}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{N}{Defaulted to NA. Pass in to check if it is a valid input.}
-
-\item{standard_df}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{suppress_low_N}{Defaulted to NA. Pass in to check if it is a valid input.}
 

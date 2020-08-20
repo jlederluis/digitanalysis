@@ -61,7 +61,7 @@ find_percent_repeats = function(data, data_columns, round_digit_to_skip){
 #' Performs repeat test across \code{break_out} category.
 #'
 #' @param duplicate_matching_cols An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
-#' Default to 'digit_columns', meaning matching all columns in 'number' slot of \code{digitdata}. Must include all columns in \code{data_columns}.
+#' Must include all columns in \code{data_columns}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.
 #' @param round_digit_to_skip Whether to omit all rounding numbers in \code{data_columns} represented by numbers ending in 0 or both 0 and 5.
 #' \itemize{
 #'   \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
@@ -82,19 +82,18 @@ find_percent_repeats = function(data, data_columns, round_digit_to_skip){
 #' repeat_test(digitdata)
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'))
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name')
-repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='digit_columns', break_out=NA, break_out_grouping=NA, round_digit_to_skip=NA, plot=TRUE){
+repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='all', break_out=NA, break_out_grouping=NA, round_digit_to_skip=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping,
               duplicate_matching_cols=duplicate_matching_cols, plot=plot, omit_05=round_digit_to_skip)
 
   #handles the data_columns = 'all' situation
-  if (data_columns[1] == 'all'){
-    data_columns = colnames(digitdata@cleaned)
-  }
+  data_columns = get_data_columns(digitdata, data_columns)
+
   #handles the duplicate_matching_cols = 'all' situation
   if (duplicate_matching_cols[1] == 'digit_columns'){
-    duplicate_matching_cols = colnames(digitdata@numbers)
+    duplicate_matching_cols = get_data_columns(digitdata, duplicate_matching_cols)
   }
   #check data_columns is subset of duplicate_matching_cols
   for (column in data_columns){

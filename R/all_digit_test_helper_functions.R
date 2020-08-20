@@ -5,11 +5,9 @@
 #Summer 2020
 ############################################################
 
-
 ############################################################################################################
 #the following functions help parse data into desirable data forms ready for analysis
 ############################################################################################################
-
 
 #' Grab all data column names when data_columns = 'all'
 #'
@@ -62,8 +60,7 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
       single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
     }
   }
-  #remove all NA columns
-  #happening cuz of testing
+  #remove all NA columns #happening cuz of testing
   single_align_df = single_align_df[colSums(!is.na(single_align_df)) > 0]
   return(single_align_df)
 }

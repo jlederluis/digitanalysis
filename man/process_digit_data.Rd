@@ -5,22 +5,22 @@
 \title{Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.}
 \usage{
 process_digit_data(
-  digit_columns,
   filepath = NA,
+  digit_columns = NA,
   filetype = "csv",
   delim = ",",
   raw_df = NA
 )
 }
 \arguments{
-\item{digit_columns}{All potential datra columns to be analyzed. Can be specified as any of
+\item{filepath}{Default to NA. If loading data using filepath, specify filepath as a string.}
+
+\item{digit_columns}{All potential datra columns to be analyzed. Defaulted to NA. Can be specified as any of
 \itemize{
   \item \code{digit_columns} = 'col_name'
   \item \code{digit_columns} = c('col_name')
   \item \code{digit_columns} = c('col_name1','col_name2', ...)
 }}
-
-\item{filepath}{Default to NA. If loading data using filepath, specify filepath as a string.}
 
 \item{filetype}{Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
 'excel' option supports both 'xlsx' and 'xls' format.}

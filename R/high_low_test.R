@@ -74,7 +74,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
     expected_freq = rbind(high_freq_theoratical, 1-high_freq_theoratical)[1:length(high_and_low_total_counts)] #high and low digit frequency expected
     rownames(expected_freq) = c('high digits freq', 'low digits freq')
     #chi square test # high_and_low_total_counts is observed table
-    p_value = chi_square_gof(high_and_low_total_counts, expected_freq, freq=TRUE, suppress_low_N=FALSE, standard=TRUE)$p_value
+    p_value = chi_square_gof(high_and_low_total_counts, expected_freq, freq=TRUE, suppress_low_N=FALSE)$p_value
   }
   else {
     stop('test_type can only be either "chisq" or "binom"!')
@@ -165,7 +165,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 }
 
 
-#' Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test
+#' Performs high to low digit tests vs probability of high to low digits by Benford's Law via chi square test (default) or binomial test
 #'
 #' @param high An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).
 #' @param test_type Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
@@ -265,7 +265,7 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
         print(high_low_plot)
         plots[[category_name]] = high_low_plot
       }
-    }#need fix plot title
+    }#need fix plot title  ##################
   }
   return(list(p_values=p_values_table, plots=plots))
 }

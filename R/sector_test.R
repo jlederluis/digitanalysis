@@ -72,7 +72,7 @@ sector_test = function(digitdata, category, category_grouping=NA, data_columns='
     digitdata_of_sector = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_sector)
 
     #repeats test
-    repeats_table = repeat_test(digitdata_of_sector, data_columns, duplicate_matching_cols, break_out, break_out_grouping, round_digit_to_skip, plot=F)$percent_repeats
+    repeats_table = repeat_test(digitdata_of_sector, data_columns, duplicate_matching_cols, break_out, break_out_grouping, round_digit_to_skip, plot=FALSE)$percent_repeats
     #update table
 
 

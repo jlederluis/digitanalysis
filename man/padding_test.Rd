@@ -6,28 +6,23 @@
 \usage{
 padding_test(
   digitdata,
-  contingency_table,
   data_columns = "all",
   max_length = 8,
   num_digits = 5,
   N = 10000,
-  omit_05 = c(0, 5),
-  distribution = "Benford",
+  simulate = TRUE,
+  omit_05 = NA,
   break_out = NA,
   break_out_grouping = NA,
   category = NA,
   category_grouping = NA,
+  distribution = "Benford",
+  contingency_table = NA,
   plot = TRUE
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
-
-\item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
-Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
-\itemize{
-  \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
-}}
 
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
@@ -41,9 +36,10 @@ an array of column names, as characters; a single column name, as character.}
   \item 2400 seconds for N=10,000; data dimension = 4000 x 5 totla digits.
 }}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{simulate}{TRUE or FALSE: If TRUE, will stimulate the datasets and generate p-value. If FALSE, only produces \code{diff_in_mean} and plots.
+Overwrites \code{N}.}
 
-\item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 
 \item{break_out}{\itemize{
   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
@@ -68,6 +64,14 @@ an array of column names, as characters; a single column name, as character.}
   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
   \code{category} will be in a separate group.
   \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
+}}
+
+\item{distribution}{'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.}
+
+\item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.
+Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
+\itemize{
+  \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}

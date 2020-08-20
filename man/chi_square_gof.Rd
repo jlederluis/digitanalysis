@@ -8,8 +8,7 @@ chi_square_gof(
   observed_table,
   expected_table,
   freq = TRUE,
-  suppress_low_N = FALSE,
-  standard = FALSE
+  suppress_low_N = FALSE
 )
 }
 \arguments{
@@ -21,12 +20,6 @@ chi_square_gof(
 
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
 if at least one cell in that column has expected value < 5. Default to FALSE.}
-
-\item{standard}{TRUE or FALSE: Default to FALSE.
-\itemize{
-  \item TRUE: Compute degrees of freedom using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
-  \item FALSE: Compute degrees of freedom using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
-}}
 }
 \value{
 p-value for chi square goodness of fit test

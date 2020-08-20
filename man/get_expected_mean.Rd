@@ -24,7 +24,7 @@ get_expected_mean(
 
 \item{num_digits}{The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 }
 \value{
 A list of 4 items:

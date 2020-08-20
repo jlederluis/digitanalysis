@@ -211,8 +211,14 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   # }
 }
 
-#tables in freq already
-#counts is observed in counts
+#' Plot aggregated histogram for each digit weighted average across each digit place with expected distribution.
+#'
+#' @param observation_table Observation table for chi square test in frequency.
+#' @param expected_table Expected table for chi square test in frequency.
+#' @param freq_digit_place The frequency of each digit place in data. N in digit place i / total N.
+#' @param name Title for the plot.
+#'
+#' @return A ggplot instance for aggregated histogram.
 plot_aggregate_histogram = function(observation_table, expected_table, freq_digit_place, name){
   if (abs(sum(freq_digit_place) - 1) > 0.001){
     print(name)
@@ -301,20 +307,16 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     plots_list[['aggregate histogram']] = aggregate_hist
 
     dev.new()
-    print(aggregate_hist)
-    dev.new()
     plot(multiple_hist)
+    dev.new()
+    print(aggregate_hist)
+
 
   }
   return(plots_list)
 }
 
 
-############
-############also look for functions without accounting for data_col = 'all'
-
-
-#
 # result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
 #                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit, standard_df=TRUE)
 #

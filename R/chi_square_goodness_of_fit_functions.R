@@ -44,7 +44,6 @@ drop_disqualified_columns = function(observed_table, expected_table, freq=TRUE){
 #' Formula: df = (r-1)(c-1). If table has only one column, df = r - 1.
 #'
 #' @param table Either the expected or the observation table for the chi square test
-#' @inheritParams chi_square_gof
 #'
 #' @return Degrees of freedom
 get_df = function(table){

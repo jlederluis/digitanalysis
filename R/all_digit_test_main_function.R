@@ -168,9 +168,8 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
               suppress_second_division_plots=suppress_second_division_plots)
 
   #handles the data_columns = 'all' situation
-  if (data_columns[1] == 'all'){
-    data_columns = colnames(digitdata@numbers)
-  }
+  data_columns = get_data_columns(digitdata, data_columns)
+
   #check if data_columns are valid
   for (desired_col in data_columns){
     if (is.na(match(desired_col, colnames(digitdata@numbers)))){

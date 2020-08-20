@@ -2,22 +2,18 @@
 % Please edit documentation in R/chi_square_goodness_of_fit_functions.R
 \name{get_df}
 \alias{get_df}
-\title{Compute the degrees of freedom for the input chi square test table}
+\title{Compute the degrees of freedom for the input chi square test table using formula matching that of excel.
+Formula: df = (r-1)(c-1). If table has only one column, df = r - 1.}
 \usage{
-get_df(table, standard = FALSE)
+get_df(table)
 }
 \arguments{
 \item{table}{Either the expected or the observation table for the chi square test}
-
-\item{standard}{TRUE or FALSE: Default to FALSE.
-\itemize{
-  \item TRUE: Compute degrees of freedom using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
-  \item FALSE: Compute degrees of freedom using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
-}}
 }
 \value{
 Degrees of freedom
 }
 \description{
-Compute the degrees of freedom for the input chi square test table
+Compute the degrees of freedom for the input chi square test table using formula matching that of excel.
+Formula: df = (r-1)(c-1). If table has only one column, df = r - 1.
 }

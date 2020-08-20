@@ -14,7 +14,6 @@ single_all_digits_test(
   category,
   category_grouping,
   skip_last_digit,
-  standard_df,
   suppress_low_N,
   subset_name,
   plot,
@@ -40,9 +39,9 @@ an array of column names, as characters; a single column name, as character.}
   \item A number: Perform single digit test on the digit place desired to analyze. If last digit test is desired, pass in -1 or c(-1).
 }}
 
-\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.}
+\item{skip_first_digit}{TRUE or FALSE: If TRUE, skip first digit place before analysis. Default to FALSE.}
 
-\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).}
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 
 \item{category}{The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.}
 
@@ -57,12 +56,6 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}
-
-\item{standard_df}{TRUE or FALSE: Default to FALSE.
-\itemize{
-  \item TRUE: Computes degrees of freedom for chi square test using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
-  \item FALSE: Computes degrees of freedom for chi square test using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
-}}
 
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
 if at least one cell in that column has expected value < 5. Default to FALSE.}
