@@ -90,7 +90,6 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
 #' rounding_test(digitdata, data_columns=c('col_name1', 'col_name2'))
 rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0','00','000','0000', '00000', '000000', '5', '50', '500'),
                          break_out=NA, break_out_grouping=NA, plot=TRUE){
-
   #check input
   input_check(digitdata=digitdata, contingency_table=NA, data_columns=data_columns, rounding_patterns=rounding_patterns,
               break_out=break_out, break_out_grouping=break_out_grouping, plot=plot)
@@ -128,6 +127,7 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   if (plot && !(is.na(break_out))){
     rounding_plot = hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='Percent Rounding', title='Rounding Test',
                             hline=mean_percent_rounded, hline_name='Mean Percentage Rounding')
+    dev.new()
     print(rounding_plot)
   }
   else {

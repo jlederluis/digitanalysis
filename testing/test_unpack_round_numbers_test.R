@@ -26,7 +26,6 @@
 # omit_05 = c(0,5)
 # break_out=NA#'DIST'
 # skip_last_digit=FALSE
-# standard_df=TRUE
 # suppress_low_N=FALSE
 # unpacking_rounding_column="BENTOT.Values"
 # distribution = 'benford'
@@ -37,8 +36,8 @@
 # result = unpack_round_numbers_test(digitdata=DigitData, contingency_table=NA, unpacking_rounding_column=unpacking_rounding_column, data_columns=data_columns,
 #                                    digit_places=digit_places, skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, category=category,
 #                                    category_grouping=category_grouping,distribution=distribution, plot=T, skip_last_digit=skip_last_digit,
-#                                    standard_df=standard_df, suppress_low_N=suppress_low_N)
+#                                    suppress_low_N=suppress_low_N)
 #
 # #order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
 # #result[order]
-
+#

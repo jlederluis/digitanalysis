@@ -89,7 +89,7 @@ freq_true = function(omit_05){
 #' digit_pairs_test(digitdata, data_columns=c('col_name1', 'col_name2'))
 #' digit_pairs_test(digitdata, data_columns='all', omit_05=NA, min_length=5)
 #' digit_pairs_test(digitdata, data_columns='all', omit_05=0, break_out='col_name')
-digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_length=3, break_out=NA, break_out_grouping=NA, plot=TRUE){
+digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_length=3, break_out=NA, break_out_grouping=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, omit_05=omit_05, break_out=break_out,
@@ -113,8 +113,6 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
 
   #get p_value from binomial test
   p_value = binom.test(x=counts, p = p, alternative = 'l')$p.value ##############has to specify p = p !!!!!!
-  #p_value = pbinom(counts[1], size=sum(counts), prob=p)
-  #print(p_value)
 
   #dataframe of p values to return
   p_values = data.frame(All=p_value)
@@ -131,11 +129,6 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
       indexes_of_category = indexes_of_categories[[category_name]]
       counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, indexes_of_category)
 
-      # print(category_name)
-      # print(counts_in_category[1])
-      # print(sum())
-
-      #p_value_in_category = pbinom(counts_in_category[1], size=sum(counts_in_category), prob=p)
       p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = 'l')$p.value ############
       p_values[category_name] = p_value_in_category #p-value
       freq_digit_pairs[category_name] = counts_in_category[1]/sum(counts_in_category) #for plotting
@@ -143,12 +136,16 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=c(0,5), min_l
   }
   #plot only if we break_out == have > 1 column
   digit_pair_plot = NA
-  if (plot){
-    if (!(is.na(break_out))){
-      digit_pair_plot = hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='Percent Digit Pairs', title='Digit Pairs Test',
-                                hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution') #-1 since we want uniform distribution without 'all'
-      print(digit_pair_plot)
-    }
+  if (plot && !(is.na(break_out))){
+    digit_pair_plot = hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='Percent Digit Pairs',
+                              title=paste('Digit Pairs Test \n', 'break_out = ', break_out, sep=''),
+                              hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution') #-1 since we want uniform distribution without 'all'
+    dev.new()
+    print(digit_pair_plot)
+  }
+  else {
+    #tell user there is no plot
+    digit_pair_plot = 'No plot with plot=FALSE or without break_out'
   }
   return(list(p_values=p_values, plot=digit_pair_plot))
 }

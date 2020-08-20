@@ -97,6 +97,7 @@ make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
       raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
     }
     else if (filetype == 'excel'){
+      print('Loading excel file...might be slow...')
       raw_data = readxl::read_excel(filepath) #really bad...takes 10 mins to load
       raw_data = data.frame(raw_data) #turn to dataframe..before is some weird type called tibble
     }
@@ -193,7 +194,7 @@ make_aligned_data = function(cleaned_data, digit_columns, naming_method, align_d
 #' Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.
 #'
 #' @param filepath Default to NA. If loading data using filepath, specify filepath as a string.
-#' @param digit_columns All potential datra columns to be analyzed. Can be specified as any of
+#' @param digit_columns All potential datra columns to be analyzed. Defaulted to NA. Can be specified as any of
 #' \itemize{
 #'   \item \code{digit_columns} = 'col_name'
 #'   \item \code{digit_columns} = c('col_name')
@@ -211,7 +212,7 @@ make_aligned_data = function(cleaned_data, digit_columns, naming_method, align_d
 #' process_digit_data('col_name', filepath='~/filename.csv')
 #' process_digit_data('col_name', filepath='~/filename.xlsx', filetype='excel', delim=',')
 #' process_digit_data('col_name', raw_df=my_dataframe)
-process_digit_data = function(digit_columns, filepath=NA, filetype='csv', delim=',', raw_df=NA){
+process_digit_data = function(filepath=NA, digit_columns=NA, filetype='csv', delim=',', raw_df=NA){
 
   ############important###############
   #hard-coded way of naming the digit places, should be sufficient, if not can further add
@@ -219,6 +220,10 @@ process_digit_data = function(digit_columns, filepath=NA, filetype='csv', delim=
                                 '8th digit', '9th digit', '10th digit', '11th digit', '12th digit', '13th digit')
   right_aligned_column_names = c('1s', '10s', '100s', '1k', '10k', '100k', '1m', '10m', '100m', '1b', '10b', '100b', '1t')
   ############important###############
+
+  if (is.na(digit_columns)){
+    stop('digit_columns cannot be NA. Must analyze something!')
+  }
 
   ########################creation of all sub-objects########################
 

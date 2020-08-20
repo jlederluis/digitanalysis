@@ -30,8 +30,8 @@
 #' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
 #' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 #' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
-sector_test = function(digitdata, category, category_grouping=NA, data_columns='all', duplicate_matching_cols='all',
-                       break_out=NA, break_out_grouping=NA, round_digit_to_skip=c(0,5), plot=TRUE){
+sector_test = function(digitdata, category, category_grouping=NA, data_columns='all', duplicate_matching_cols='digit_columns',
+                       break_out=NA, break_out_grouping=NA, round_digit_to_skip=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols,
@@ -51,11 +51,6 @@ sector_test = function(digitdata, category, category_grouping=NA, data_columns='
       }
     }
   }
-  # #handles if category_grouping is NA, while category is not
-  # if (!(is.na(category))){
-  #   category_grouping = get_grouping(grouping=category_grouping, column=category, digitdata=digitdata)
-  # }
-
   #initialize table to be returned
   category_names = c()
   if (!(is.na(break_out))){
@@ -70,9 +65,6 @@ sector_test = function(digitdata, category, category_grouping=NA, data_columns='
   for (sector_name in names(indexes_of_sectors)){
     print(sector_name)
 
-    # #get the index of sector by accessing the names of the categories in the data column that belong to this sector
-    # indexes_of_sector = sector_column_indexes[category_grouping[[sector_name]]]
-    # indexes_of_sector = unlist(indexes_of_sector) #turn into an array
     #index of this sector
     indexes_of_sector = indexes_of_sectors[[sector_name]]
 
@@ -82,6 +74,8 @@ sector_test = function(digitdata, category, category_grouping=NA, data_columns='
     #repeats test
     repeats_table = repeat_test(digitdata_of_sector, data_columns, duplicate_matching_cols, break_out, break_out_grouping, round_digit_to_skip, plot=F)$percent_repeats
     #update table
+
+
     print(repeats_table)
 
     sector_repeats_table[sector_name] = NA
@@ -90,11 +84,12 @@ sector_test = function(digitdata, category, category_grouping=NA, data_columns='
 
     print(sector_repeats_table)
   }
-
   #plot
   sector_plot = NA
   if (plot){
-    sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='col', xlab=break_out, ylab='Percent Repeats', title='Sector Effect Test')
+    sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='col', xlab=break_out, ylab='Percent Repeats',
+                                    title=paste('Sector Effect Test \n', 'break_out = ', break_out, ' \ncategory = ', category, sep=''))
+    dev.new()
     print(sector_plot)
   }
   return(list(percent_repeats=sector_repeats_table, plot=sector_plot))

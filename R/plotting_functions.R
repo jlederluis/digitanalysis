@@ -136,7 +136,7 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
     #create ggplot object for abline distribution
     require(ggplot2)
     dist_line = geom_line(data = data.frame(x=rownames(expected_table), y=expected_table[[i]]), aes(x = x, y = y, group=1, linetype='Expected Distribution'), color='red', lwd=1)
-    hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(name, curr_digit_place), abline=dist_line)
+    hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(curr_digit_place, ' \n', name, sep=''), abline=dist_line)
     plot_list[[curr_digit_place]] = hist_digit_place_i
 
     #s.t. return a ggplot if it is not a multiple plot
@@ -176,8 +176,7 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   }
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
-
-  dev.new()
+  rgl::open3d()
   bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
@@ -188,7 +187,7 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
     xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
     text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
   }
-
+  #rgl::rgl.close()
   # #yticks
   # yticks = y
   # ylabel_pos = trans3d(max(x)+1, y-0.2, 0, bar3D)
@@ -212,80 +211,6 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   # }
 }
 
-
-#' Plots the relevant plots for obseravtion table in \code{all_digits_test}.
-#'
-#' @param observation_table Observation table for chi square test
-#' @param title The title for the plot after automatically generating the name for the test: either single digit test or all digit test.
-#' @inheritParams all_digits_test
-#'
-#' @return Nothing is returned. Displays plots automatically.
-plot_all_digit_test = function(digitdata, observation_table, expected_table, digit_places, title=''){
-  plots_list = list()
-  test_type = NA
-  freq_digit_place = data.frame(t(colSums(observation_table))) / sum(observation_table) # for aggregate histogram
-
-  #turn observation table from counts into frequency
-  for (i in 1:length(observation_table)){
-    observation_table[, i] = observation_table[, i] / sum(observation_table[, i], na.rm = TRUE)
-    expected_table[, i] = expected_table[, i] / sum(expected_table[, i], na.rm = TRUE)
-  }
-  if (length(digit_places) == 1){
-    test_type = 'Single Digit Test'
-    aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, test_type, sep='_')) #multiple 2D histograms
-    plots_list[['aggregate histogram']] = aggregate_hist
-    dev.new()
-    print(aggregate_hist)
-  }
-  #unpack rounded test
-  else if (dim(digitdata@raw) != c(0,0) && digitdata@raw %in% c('round', 'unround')){
-    test_type = 'Unpack Rounded Numbers Test'
-    #round numbers
-    if (digitdata@raw[1,1] == 'round'){
-      hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, '(Round Numbers)', test_type, sep='_')) #3D histogram
-      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, '(Round Numbers)', test_type, sep='_')) #multiple 2D histograms
-      aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, '(Round Numbers)', test_type, sep='_')) #plot aggregate histogram across digit place
-      plots_list[['multiple_histograms']] = multiple_hist
-      plots_list[['aggregate histogram']] = aggregate_hist
-
-      dev.new()
-      print(aggregate_hist)
-      dev.new()
-      multiple_hist
-
-    }
-    else if (digitdata@raw[1,1] == 'unround'){
-      hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, '(Unround Numbers)', test_type, sep='_')) #3D histogram
-      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, '(Unround Numbers)', test_type, sep='_')) #multiple 2D histograms
-      aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, '(Unround Numbers)', test_type, sep='_')) #plot aggregate histogram across digit place
-      plots_list[['multiple_histograms']] = multiple_hist
-      plots_list[['aggregate histogram']] = aggregate_hist
-
-      dev.new()
-      print(aggregate_hist)
-      dev.new()
-      multiple_hist
-    }
-    else {
-      stop('shit happened in plot_all_digit_test in plotting_functions.R')
-    }
-  }
-  else {
-    test_type = 'All Digit Test'
-    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(title, test_type, sep='_')) #3D histogram
-    multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(title, test_type, sep='_')) #multiple 2D histograms
-    aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(title, test_type, sep='_')) #plot aggregate histogram across digit place
-    plots_list[['multiple_histograms']] = multiple_hist
-    plots_list[['aggregate histogram']] = aggregate_hist
-
-    dev.new()
-    print(aggregate_hist)
-    dev.new()
-    multiple_hist
-  }
-  return(plots_list)
-}
-
 #tables in freq already
 #counts is observed in counts
 plot_aggregate_histogram = function(observation_table, expected_table, freq_digit_place, name){
@@ -306,6 +231,85 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
   aggregate_plot = plot_table_by_columns(aggregate_observed, aggregate_expected, name=name, save=FALSE)
   return(aggregate_plot)
 }
+
+
+#' Plots the relevant plots for obseravtion table in \code{all_digits_test}.
+#'
+#' @param observation_table Observation table for chi square test
+#' @param title The title for the plot after automatically generating the name for the test: either single digit test or all digit test.
+#' @inheritParams all_digits_test
+#'
+#' @return Nothing is returned. Displays plots automatically.
+plot_all_digit_test = function(digitdata, observation_table, expected_table, digit_places, title=''){
+  plots_list = list()
+  test_type = NA
+  freq_digit_place = data.frame(t(colSums(observation_table))) / sum(observation_table) # for aggregate histogram
+
+  #turn observation table from counts into frequency
+  for (i in 1:length(observation_table)){
+    observation_table[, i] = observation_table[, i] / sum(observation_table[, i], na.rm = TRUE)
+    expected_table[, i] = expected_table[, i] / sum(expected_table[, i], na.rm = TRUE)
+  }
+  if (length(digit_places) == 1){
+    test_type = 'Single Digit Test'
+    aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
+    plots_list[['aggregate histogram']] = aggregate_hist
+    dev.new()
+    print(aggregate_hist)
+  }
+  #unpack rounded test
+  else if (dim(digitdata@raw) != c(0,0) && digitdata@raw %in% c('round', 'unround')){
+    test_type = 'Unpack Rounded Numbers Test'
+    #round numbers
+    if (digitdata@raw[1,1] == 'round'){
+      hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n(Round Numbers) \n', title, sep='')) #3D histogram
+      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n(Round Numbers) \n', title, sep='')) #multiple 2D histograms
+      aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n(Round Numbers) \n', title, sep='')) #plot aggregate histogram across digit place
+      plots_list[['multiple_histograms']] = multiple_hist
+      plots_list[['aggregate histogram']] = aggregate_hist
+
+      dev.new()
+      print(aggregate_hist)
+      dev.new()
+      plot(multiple_hist)
+
+    }
+    else if (digitdata@raw[1,1] == 'unround'){
+      dev.new()
+      hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n(Unround Numbers) \n', title, sep='')) #3D histogram
+      dev.off()
+      multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n(Unround Numbers) \n', title, sep='')) #multiple 2D histograms
+      aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n(Unround Numbers) \n', title, sep='')) #plot aggregate histogram across digit place
+      plots_list[['multiple_histograms']] = multiple_hist
+      plots_list[['aggregate histogram']] = aggregate_hist
+
+      dev.new()
+      print(aggregate_hist)
+      dev.new()
+      plot(multiple_hist)
+    }
+    else {
+      stop('shit happened in plot_all_digit_test in plotting_functions.R')
+    }
+  }
+  else {
+    test_type = 'All Digit Test'
+    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep='')) #3D histogram
+    multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
+    aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n', title, sep='')) #plot aggregate histogram across digit place
+    plots_list[['multiple_histograms']] = multiple_hist
+    plots_list[['aggregate histogram']] = aggregate_hist
+
+    dev.new()
+    print(aggregate_hist)
+    dev.new()
+    plot(multiple_hist)
+
+  }
+  return(plots_list)
+}
+
+
 ############
 ############also look for functions without accounting for data_col = 'all'
 

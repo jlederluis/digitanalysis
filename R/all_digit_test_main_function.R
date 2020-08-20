@@ -11,17 +11,13 @@
 #'
 #' @return p_values for input data possibly break by \code{category}.
 single_all_digits_test = function(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05, category,
-                                  category_grouping, skip_last_digit, standard_df, suppress_low_N, subset_name, plot,
+                                  category_grouping, skip_last_digit, suppress_low_N, subset_name, plot,
                                   suppress_second_division_plots){
 
   #######################################################################
   #parse the data
   #######################################################################
 
-  #handles the data_columns = 'all' situation
-  if (data_columns[1] == 'all'){
-    data_columns = colnames(digitdata@numbers)
-  }
   align_direction = 'left'
 
   #get the digits of the desired data columns to be analyzed
@@ -50,14 +46,15 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   #######################################################################
 
   #all digit test
-  result = chi_square_gof(observation_table, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N, standard=standard_df)
+  result = chi_square_gof(observation_table, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N)
   #return(list(a=contingency_table, b=observation_table))
   p_values = data.frame(All=result$p_value)
   all_digit_test_plots = list()
 
   #plot
   if (plot){
-    all_digits_plot = plot_all_digit_test(digitdata, result$observed_table, result$expected_table, digit_places, title=paste(subset_name, 'All', sep='_'))
+    all_digits_plot = plot_all_digit_test(digitdata, result$observed_table, result$expected_table, digit_places,
+                                          title=paste('break_out = ', subset_name, '\ncategory = ', 'All', sep=''))
     all_digit_test_plots[['All']] = all_digits_plot
   }
 
@@ -77,13 +74,14 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
       obs_in_category = obtain_observation(digitdata, usable_in_category, digit_places, skip_first_digit, skip_last_digit, omit_05)
 
       #chi square test
-      result_in_category = chi_square_gof(obs_in_category, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N, standard=standard_df)
+      result_in_category = chi_square_gof(obs_in_category, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N)
       p_values[category_name] = result_in_category$p_value
 
       #plot
       if (plot){
         if (!suppress_second_division_plots){
-          plot_in_category = plot_all_digit_test(digitdata, result_in_category$observed_table, result_in_category$expected_table, digit_places, title=paste(subset_name, category_name, sep='_'))
+          plot_in_category = plot_all_digit_test(digitdata, result_in_category$observed_table, result_in_category$expected_table, digit_places,
+                                                 title=paste('break_out = ', subset_name, '\ncategory = ', category_name, sep=''))
           all_digit_test_plots[[category_name]] = plot_in_category
         }
       }
@@ -114,8 +112,8 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #'   \item An numeric array: Perform multiple digit test on the digit places desired to analyze.
 #'   \item A number: Perform single digit test on the digit place desired to analyze. If last digit test is desired, pass in -1 or c(-1).
 #' }
-#' @param skip_first_digit TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to FALSE.
-#' @param omit_05 Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to c(0,5).
+#' @param skip_first_digit TRUE or FALSE: If TRUE, skip first digit place before analysis. Default to FALSE.
+#' @param omit_05 Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.
 #' @param break_out
 #' \itemize{
 #'   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
@@ -142,11 +140,6 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #' @param plot TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.
 #' @param skip_last_digit TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 #' \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.
-#' @param standard_df TRUE or FALSE: Default to FALSE.
-#'\itemize{
-#'   \item TRUE: Computes degrees of freedom for chi square test using formula df = (r-1)(c-1). If table has only one column, df = r - 1.
-#'   \item FALSE: Computes degrees of freedom for chi square test using df = r x (c-1). If first digit place is present, df = r x (c-1) - 1.
-#' }
 #' @param suppress_low_N TRUE or FALSE: If TRUE, suppress columns in expected table
 #' if at least one cell in that column has expected value < 5. Default to FALSE.
 #' @param suppress_first_division_plots TRUE or FALSE: If TRUE, suppress all plots on first and second division.
@@ -164,16 +157,29 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_digit=TRUE)
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
-all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', digit_places='all', skip_first_digit=FALSE,
-                           omit_05=c(0,5), break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA,
-                           distribution='Benford', plot=TRUE, skip_last_digit=FALSE, standard_df=FALSE, suppress_low_N=FALSE,
-                           suppress_first_division_plots=FALSE, suppress_second_division_plots=TRUE){
-
+all_digits_test = function(digitdata, data_columns='all', digit_places='all', break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA,
+                           distribution='Benford', contingency_table=NA, plot=TRUE, omit_05=NA, skip_first_digit=FALSE, skip_last_digit=FALSE,
+                           suppress_low_N=FALSE, suppress_first_division_plots=FALSE, suppress_second_division_plots=TRUE){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
               skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, break_out_grouping=break_out_grouping,
-              distribution=distribution, plot=plot, skip_last_digit=skip_last_digit, standard_df=standard_df,
-              suppress_low_N=suppress_low_N, category=category, category_grouping=category_grouping)
+              distribution=distribution, plot=plot, skip_last_digit=skip_last_digit, suppress_low_N=suppress_low_N,
+              category=category, category_grouping=category_grouping, suppress_first_division_plots=suppress_first_division_plots,
+              suppress_second_division_plots=suppress_second_division_plots)
+
+  #handles the data_columns = 'all' situation
+  if (data_columns[1] == 'all'){
+    data_columns = colnames(digitdata@numbers)
+  }
+  #check if data_columns are valid
+  for (desired_col in data_columns){
+    if (is.na(match(desired_col, colnames(digitdata@numbers)))){
+      #throw error
+      error_message = paste(deparse(substitute(desired_col)), " was not specified as a data column in the DigitAnalysis object ",
+                            deparse(substitute(digitdata)), ". You can re-run process_digit_data, or specify a different column to analyze.", sep="")
+      stop(error_message)
+    }
+  }
 
   #deal with contingency table and distribution situation
   if (TRUE %in% ((is.na(contingency_table)))){
@@ -196,7 +202,7 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
   }
   #perform digit test for all
   result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
-                                      category, category_grouping, skip_last_digit, standard_df, suppress_low_N, subset_name='All',
+                                      category, category_grouping, skip_last_digit, suppress_low_N, subset_name='All',
                                       plot=plot, suppress_second_division_plots=suppress_second_division_plots)
   #return(result_all)
   p_values_all = result_all$p_values
@@ -224,7 +230,7 @@ all_digits_test = function(digitdata, contingency_table=NA, data_columns='all', 
       digitdata_of_category = make_sub_digitdata(digitdata, indexes_of_category)
 
       result_of_category = single_all_digits_test(digitdata_of_category, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
-                                                  category, category_grouping, skip_last_digit, standard_df, suppress_low_N, subset_name=category_name,
+                                                  category, category_grouping, skip_last_digit, suppress_low_N, subset_name=category_name,
                                                   plot=plot, suppress_second_division_plots=suppress_second_division_plots)
       p_values_of_category = result_of_category$p_values
       plots_of_category = result_of_category$plots

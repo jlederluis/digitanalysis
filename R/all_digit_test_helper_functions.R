@@ -40,10 +40,6 @@ get_data_columns = function(digitdata, data_columns){
 #' single_column_aligned(digitdata, 'col_name1', align_diretion='left')
 #' single_column_aligned(digitdata, 'col_name2', align_diretion='right')
 single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
-  if (is.na(match(desired_col, colnames(digitdata@numbers)))){
-    #throw error
-    stop("Specified desired_col is not a numerical data column in the specified DigitAnalysis class object")
-  }
 
   original_df = NA
   if (align_diretion == 'left') {

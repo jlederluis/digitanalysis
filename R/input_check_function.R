@@ -26,7 +26,6 @@
 #' @param max_length Defaulted to NA. Pass in to check if it is a valid input.
 #' @param num_digits Defaulted to NA. Pass in to check if it is a valid input.
 #' @param N Defaulted to NA. Pass in to check if it is a valid input.
-#' @param standard_df Defaulted to NA. Pass in to check if it is a valid input.
 #' @param suppress_low_N Defaulted to NA. Pass in to check if it is a valid input.
 #' @param suppress_first_division_plots Defaulted to NA. Pass in to check if it is a valid input.
 #' @param suppress_second_division_plots Defaulted to NA. Pass in to check if it is a valid input.
@@ -35,7 +34,8 @@
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        break_out_grouping=NA, distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA,
                        duplicate_matching_cols=NA, category=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA,
-                       standard_df=NA, rounding_patterns=NA, suppress_low_N=NA, suppress_first_division_plots=NA, suppress_second_division_plots=NA) {
+                       standard_df=NA, rounding_patterns=NA, suppress_low_N=NA, suppress_first_division_plots=NA,
+                       suppress_second_division_plots=NA, simulate=NA) {
 
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
@@ -227,18 +227,15 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   #N must be an integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test
   if (TRUE %in% (!(is.na(N)))){
     if (length(N) != 1){
-      stop("N must be an integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
+      stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
     }
-    else if (!(is.numeric(N))){
-      stop("N must be an integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
-    }
-  }
-  if (TRUE %in% (!(is.na(standard_df)))){
-    if (length(standard_df) != 1){
-      stop("standard_df must be a boolean denoting whether to use standard method or digit analysis method for calculating degrees of freedom!")
-    }
-    else if (!(is.logical(standard_df))){
-      stop("standard_df must be a boolean denoting whether to use standard method or digit analysis method for calculating degrees of freedom!")
+    else {
+      if (!(is.numeric(N))){
+        stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
+      }
+      else if (N < 1){
+        stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
+      }
     }
   }
   if (TRUE %in% (!(is.na(rounding_patterns)))){
@@ -259,6 +256,11 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   if (TRUE %in% (!(is.na(suppress_second_division_plots)))){
     if (!(is.logical(suppress_second_division_plots))){
       stop("suppress_second_division_plots must be a boolean denoting whether to suppress plots for second divisions in all digits test!")
+    }
+  }
+  if (TRUE %in% (!(is.na(simulate)))){
+    if (!(is.logical(simulate))){
+      stop("simulate must be a boolean denoting whether to stimulate datasets to compute p-values in padding test!")
     }
   }
 }

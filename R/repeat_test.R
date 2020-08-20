@@ -61,12 +61,12 @@ find_percent_repeats = function(data, data_columns, round_digit_to_skip){
 #' Performs repeat test across \code{break_out} category.
 #'
 #' @param duplicate_matching_cols An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
-#' Default to 'all', meaning matching all columns in 'clean' slot of \code{digitdata}. Must include all columns in \code{data_columns}.
+#' Default to 'digit_columns', meaning matching all columns in 'number' slot of \code{digitdata}. Must include all columns in \code{data_columns}.
 #' @param round_digit_to_skip Whether to omit all rounding numbers in \code{data_columns} represented by numbers ending in 0 or both 0 and 5.
 #' \itemize{
 #'   \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
 #'   \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
-#'   \item If not omitting rounded numbers, pass in NA. Default is NA.
+#'   \item If not omitting rounded numbers, pass in NA. Default to NA.
 #' }
 #' @inheritParams all_digits_test
 #'
@@ -82,7 +82,7 @@ find_percent_repeats = function(data, data_columns, round_digit_to_skip){
 #' repeat_test(digitdata)
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'))
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name')
-repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='all', break_out=NA, break_out_grouping=NA, round_digit_to_skip=c(0,5), plot=TRUE){
+repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='digit_columns', break_out=NA, break_out_grouping=NA, round_digit_to_skip=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping,
@@ -90,14 +90,12 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='a
 
   #handles the data_columns = 'all' situation
   if (data_columns[1] == 'all'){
-    data_columns = colnames(digitdata@numbers)
+    data_columns = colnames(digitdata@cleaned)
   }
-
   #handles the duplicate_matching_cols = 'all' situation
-  if (duplicate_matching_cols[1] == 'all'){
-    duplicate_matching_cols = colnames(digitdata@cleaned)
+  if (duplicate_matching_cols[1] == 'digit_columns'){
+    duplicate_matching_cols = colnames(digitdata@numbers)
   }
-
   #check data_columns is subset of duplicate_matching_cols
   for (column in data_columns){
     if (!(column %in% duplicate_matching_cols)){
@@ -138,20 +136,22 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='a
   mean_percent_repeated = rowMeans(percent_repeats_table)
 
   #plot only if we break_out == have > 1 column
-  repeat_plot = NA
+  repeats_plot = NA
   if (plot && !(is.na(break_out))){
-    repeat_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats', title='Repeats Test',
+    repeats_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats',
+                          title=paste('Repeats Test \n', 'break_out = ', break_out, sep=''),
                           hline=mean_percent_repeated, hline_name='Mean Percentage Repeats')
-    print(repeat_plot)
+    dev.new()
+    print(repeats_plot)
   }
   else {
     #tell user there is no plot
-    repeat_plot = 'No plot with plot=FALSE or without break_out'
+    repeats_plot = 'No plot with plot=FALSE or without break_out'
   }
   #create a rowname
   rownames(percent_repeats_table) = 'percent repeated numbers'
   #sort by decreasing rounded percentage
   percent_repeats_table = t(sort(percent_repeats_table, decreasing = TRUE))
-  return(list(percent_repeats=percent_repeats_table, plot=repeat_plot))
+  return(list(percent_repeats=percent_repeats_table, plot=repeats_plot))
 }
 

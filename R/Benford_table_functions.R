@@ -25,19 +25,16 @@
 #' Benford_table(N)
 #' Benford_table(N, out_fp='~/filepath', save=TRUE)
 Benford_table = function(N, out_fp=NA, save=FALSE){
-
   if (save){
     if (is.na(out_fp)){
       stop('If save is TRUE, must specify out_fp!')
     }
   }
-
   if (!(is.na(out_fp))){
     if (!(save)){
       stop('If specified out_fp, save must be TRUE!')
     }
   }
-
   contingency_table = data.frame(Digits=0:9)
   for (n in 1:N){
     if (n == 1){

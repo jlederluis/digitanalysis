@@ -48,7 +48,6 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
         if (!(is.na(omit_05[1]))){
           counts_obs = counts_obs[!names(counts_obs) %in% as.character(omit_05)]
         }
-
         #get total occurances of high digit places
         high_counts_obs = sum(counts_obs[as.character(high)], na.rm = TRUE)
         low_counts_obs = sum(counts_obs, na.rm = TRUE) - high_counts_obs
@@ -74,8 +73,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
   else if (test_type == 'chisq'){
     expected_freq = rbind(high_freq_theoratical, 1-high_freq_theoratical)[1:length(high_and_low_total_counts)] #high and low digit frequency expected
     rownames(expected_freq) = c('high digits freq', 'low digits freq')
-    # high_and_low_total_counts is observed table
-    # chi square test
+    #chi square test # high_and_low_total_counts is observed table
     p_value = chi_square_gof(high_and_low_total_counts, expected_freq, freq=TRUE, suppress_low_N=FALSE, standard=TRUE)$p_value
   }
   else {
@@ -132,10 +130,8 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
   #############################################################
   #perform high low test
   result = high_low_by_digit_place(digitdata, digits_table, high, high_freq_theoratical, omit_05, skip_first_digit, test_type)
-  #return(result)
   p_value = result$p_value
   observed_high_digits_freq = result$observed_high_digits_freq
-  high_freq_theoratical = result$high_freq_theoratical #for plotting
 
   #create and update tables
   p_values = data.frame(All = p_value)
@@ -152,34 +148,28 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
     #break by category for all
     for (category_name in names(indexes_of_categories)){
 
-      print(category_name)
-
       indexes_of_category = indexes_of_categories[[category_name]]
       data_of_category = data.frame(digits_table[indexes_of_category, ])
       #when do data.frame.... col names changes from A BC to A.BC
       colnames(data_of_category) = gsub("."," ",colnames(data_of_category), fixed=TRUE)
 
       #get p_values for this category ('year')
-      result_of_category = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, omit_05, skip_first_digit)
+      result_of_category = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, omit_05, skip_first_digit, test_type)
 
       #update returning tables
       p_values[category_name] = result_of_category$p_value
       high_digits_freq_table[category_name] = result_of_category$observed_high_digits_freq
     }
   }
-  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), high_freq_theoratical=high_freq_theoratical))
+  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), high_freq_theoratical=result$high_freq_theoratical))
 }
 
-
-####
-#need ADD plot parameter
-####
 
 #' Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test
 #'
 #' @param high An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).
 #' @param test_type Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
-#' or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "binom".
+#' or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "chisq".
 #' @inheritParams all_digits_test
 #' @inheritParams sector_test
 #'
@@ -195,9 +185,8 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE, break_out='col_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
-high_low_test = function(digitdata, contingency_table=NA, data_columns='all', high=c(6,7,8,9), omit_05=c(0,5), skip_first_digit=FALSE,
-                         distribution='Benford', skip_last_digit=FALSE, break_out=NA, break_out_grouping=NA, category=NA,
-                         category_grouping=NA, plot=TRUE, test_type='binom'){
+high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05=NA, test_type='chisq', distribution='Benford', contingency_table=NA,
+                         skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
@@ -239,6 +228,7 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
     else {
       high_low_plot = hist_2D(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'All', sep='_'))
     }
+    dev.new()
     print(high_low_plot)
     plots[['All']] = high_low_plot
   }
@@ -252,15 +242,13 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
 
-      print(category_name)
-
       #create a digitdata class for this category
       digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)
 
       #perform high low test on this category
       result_of_category = single_high_low_test(digitdata_of_category, contingency_table, data_columns, high, omit_05, skip_first_digit,
                                                 skip_last_digit, category, category_grouping, test_type)
-      p_values_table[category_name, ] = result_of_category$p_values
+      p_values_table[category_name, ][colnames(result_of_category$p_values)] = result_of_category$p_values
 
       if (plot){
         high_low_plot = NA
@@ -273,10 +261,11 @@ high_low_test = function(digitdata, contingency_table=NA, data_columns='all', hi
         else {
           high_low_plot = hist_2D(result_of_category$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
         }
+        dev.new()
         print(high_low_plot)
         plots[[category_name]] = high_low_plot
       }
-    }
+    }#need fix plot title
   }
   return(list(p_values=p_values_table, plots=plots))
 }
