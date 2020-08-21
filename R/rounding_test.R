@@ -31,23 +31,22 @@ n_zeros_pattern = function(n){
 #'
 #' @return The percentage of rounded digits in input data
 compute_percent_rounded_digits = function(data, rounding_patterns) {
-  #count for total digits
-  total_digits = 0
-  #count for rounded digits
-  rounded_digits = 0
-  #sort the patterns in decreasing order
+  #total digits represented by digits that indicate length of number
+  total_digits = c()
+  #rounded digits represented by digits that indicate length of number
+  rounded_digits = c()
+  #this should be useless now
   rounding_patterns = stringi::stri_reverse(rounding_patterns[order(nchar(rounding_patterns), rounding_patterns, decreasing=TRUE)])
 
   for (col_name in colnames(data)){
     #current data column analyzing
     numbers = as.character(data[[col_name]])
-    #remove all zero entries
-    numbers = numbers[!(numbers == '0')]
-
     #reverse the data column
     numbers = stringi::stri_reverse(numbers)
-    #update total digits
-    total_digits = sum(nchar(numbers), na.rm=TRUE)
+    #current total digits
+    total_digits_curr = nchar(numbers)
+    #current rounded digits
+    rounded_digits_curr = rep(0, length(total_digits_curr))
 
     #check each pattern from longest to shortest to avoid double counting
     for (pattern in rounding_patterns){
@@ -57,24 +56,35 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
       matched_indexes = which(current_data_substrings == pattern)
       #update numbers; remove them from data so that we don't double count
       if (length(matched_indexes) > 0){
-        numbers = numbers[-matched_indexes]
+        #update rounded digits: always matches the lonegest pattern --> max
+        for (index in matched_indexes){
+          #ugly for loop but dont know how to vectorize
+          rounded_digits_curr[index] = max(rounded_digits_curr[index], nchar(pattern))
+        }
       }
-      #update total digits
-      rounded_digits = rounded_digits + length(matched_indexes) * nchar(pattern) #number of matched instances x length of the pattern
     }
+    #ensure all zero entries have rounded == 0
+    rounded_digits_curr[(numbers == '0')] = 0
+    #update
+    total_digits = c(total_digits, total_digits_curr)
+    rounded_digits = c(rounded_digits, rounded_digits_curr)
   }
-  return(rounded_digits/total_digits)
+  return(list(rounded_digits=rounded_digits, total_digits=total_digits, percent_rounded=mean(rounded_digits/total_digits)))
 }
 
 #' Performs rounding test vs uniform distribution across categories in a specified data column
 #'
-#' @inheritParams all_digits_test
 #' @param rounding_patterns The patterns to be counted as rounding digits.
 #' \itemize{
 #'   \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
-#'   \item Defaulted to c('0','00','000','0000', '00000', '000000', '5', '50', '500').
 #'   \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
 #' }
+#' @param break_out
+#' \itemize{
+#'   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+#'   \item The first division (usually x-axis) shown in plots.
+#' }
+#' @inheritParams all_digits_test
 #'
 #' @return
 #' \itemize{
@@ -88,8 +98,7 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
 #' rounding_test(digitdata, omit_05=0)
 #' rounding_test(digitdata, omit_05=NA, break_out='col_name')
 #' rounding_test(digitdata, data_columns=c('col_name1', 'col_name2'))
-rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0','00','000','0000', '00000', '000000', '5', '50', '500'),
-                         break_out=NA, break_out_grouping=NA, plot=TRUE){
+rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='all', break_out_grouping=NA, plot=TRUE){
   #check input
   input_check(digitdata=digitdata, contingency_table=NA, data_columns=data_columns, rounding_patterns=rounding_patterns,
               break_out=break_out, break_out_grouping=break_out_grouping, plot=plot)
@@ -100,25 +109,63 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   #the columns we want to analyze
   data = digitdata@numbers[data_columns]
 
-  #rounded digits for all
-  percent_rounded_all = compute_percent_rounded_digits(data, rounding_patterns)
+  #rounded digits and total digits for all to do t test
+  result_all = compute_percent_rounded_digits(data, rounding_patterns)
+  rounded_digits_list = list()
+  total_digits_list = list()
 
-  #df to store stats
-  percent_rounded_table = data.frame(All=percent_rounded_all)
+  #df to store stats for plotting
+  percent_rounded_table = data.frame(All=result_all$percent_rounded)
 
-  #break out by category
-  if (!(is.na(break_out))){
-    #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
+  #get indexes for each category
+  indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
-    #break by category for all
-    for (category_name in names(indexes_of_categories)){
-      indexes_of_category = indexes_of_categories[[category_name]]
-      data_of_category = data.frame(data[indexes_of_category, ])
-      percent_rounded_in_category = compute_percent_rounded_digits(data_of_category, rounding_patterns)
-      percent_rounded_table[category_name] = percent_rounded_in_category
-    }
+  #break by category for all
+  for (category_name in names(indexes_of_categories)){
+    indexes_of_category = indexes_of_categories[[category_name]]
+    data_of_category = data.frame(data[indexes_of_category, ])
+    result_of_category = compute_percent_rounded_digits(data_of_category, rounding_patterns)
+    rounded_digits_list[[category_name]] = result_of_category$rounded_digits
+    total_digits_list[[category_name]] = result_of_category$total_digits
+    percent_rounded_table[category_name] = result_of_category$percent_rounded
   }
+
+  #calculate p value by t test for each category
+  p_values = data.frame(matrix(nrow=1, ncol=0))
+  rownames(p_values) = 'p_value'
+
+  for (category_name in names(rounded_digits_list)){
+    category_rounded = rounded_digits_list[[category_name]]/total_digits_list[[category_name]]
+    other_rounded = unlist(rounded_digits_list[!(names(rounded_digits_list) %in% c(category_name))],
+                           use.names=FALSE) / unlist(total_digits_list[!(names(total_digits_list) %in% c(category_name))],
+                                                     use.names=FALSE) #counts in all other categories
+    #perform t test
+    # print(category_name)
+    # print(mean(category_rounded))
+    # print(mean(other_rounded))
+    p_value = t.test(category_rounded, other_rounded, alternative = "greater")$p.value
+    p_values[category_name] = p_value
+  }
+
+
+  #return(percent_rounded_all)
+
+  # #df to store stats
+  # percent_rounded_table = data.frame(All=percent_rounded_all)
+  #
+  # #break out by category
+  # if (!(is.na(break_out))){
+  #   #get indexes for each category
+  #   indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
+  #
+  #   #break by category for all
+  #   for (category_name in names(indexes_of_categories)){
+  #     indexes_of_category = indexes_of_categories[[category_name]]
+  #     data_of_category = data.frame(data[indexes_of_category, ])
+  #     percent_rounded_in_category = compute_percent_rounded_digits(data_of_category, rounding_patterns)
+  #     percent_rounded_table[category_name] = percent_rounded_in_category
+  #   }
+  # }
   #get the mean of all the values computed
   mean_percent_rounded = rowMeans(percent_rounded_table)
 
@@ -138,6 +185,6 @@ rounding_test = function(digitdata, data_columns='all', rounding_patterns=c('0',
   rownames(percent_rounded_table) = 'percent rounded digits'
   #sort by decreasing rounded percentage
   percent_rounded_table = t(sort(percent_rounded_table, decreasing = TRUE))
-  return(list(percent_rounded=percent_rounded_table, plot=rounding_plot))
+  return(list(p_values=p_values, percent_rounded=percent_rounded_table, plot=rounding_plot))
 }
 

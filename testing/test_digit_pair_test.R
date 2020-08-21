@@ -14,7 +14,7 @@
 # ##############################
 #
 # #load data input functions
-# data_columns = "BENTOT.Values"#c("ALEXP.Values")
+# data_columns = c("BENTOT.Values")
 # fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 #
 # DigitData = process_digit_data(filepath = fp, digit_columns = data_columns)

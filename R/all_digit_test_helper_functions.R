@@ -352,25 +352,6 @@ break_by_category = function(data, break_out, break_out_grouping){
 }
 
 
-#' #' Updates \code{grouping} to default if it is NA.
-#' #'
-#' #' @param grouping The grouping in \code{column}.
-#' #' @param column The column to break data on
-#' #' @inheritParams all_digits_test
-#' #'
-#' #' @return \code{grouping} that is not NA.
-#' get_grouping = function(grouping, column, digitdata){
-#'   if (is.na(grouping)){
-#'     unique_items = unique(digitdata@cleaned[column])[[1]]
-#'     grouping = list()
-#'     for (item in unique_items){
-#'       grouping[[item]] = item
-#'     }
-#'   }
-#'   return(grouping)
-#' }
-
-
 #' Create a sub-object of the \code{digitdata} object given the indexes of the rows that belong to the sub-object.
 #'
 #' @param indexes The indexes of the rows that belong to the sub-object.

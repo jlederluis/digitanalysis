@@ -16,6 +16,7 @@
 #'   \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
 #'   \code{category} will be in a separate group.
 #' }
+#' @param category_instance_analyzing The instance of the category to perform t test on.
 #' @inheritParams repeat_test
 #'
 #' @return
@@ -30,19 +31,19 @@
 #' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
 #' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 #' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
-sector_test = function(digitdata, category, category_grouping=NA, data_columns='all', duplicate_matching_cols='digit_columns',
-                       break_out=NA, break_out_grouping=NA, round_digit_to_skip=NA, plot=TRUE){
+sector_test = function(digitdata, break_out, category, category_instance_analyzing, data_columns=NA, duplicate_matching_cols='all',
+                       break_out_grouping=NA, category_grouping=NA, rounding_patterns_to_omit=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols,
-              category=category, category_grouping=category_grouping, omit_05=round_digit_to_skip, plot=plot)
+              category=category, category_grouping=category_grouping, rounding_patterns=rounding_patterns_to_omit, plot=plot)
 
   #check if the sector columns are valid
   if (is.na(match(category, colnames(digitdata@cleaned)))){
     stop('specified column to break on second division is not a column in the data!')
   }
   else{
-    if (!(is.na(category_grouping))){
+    if (!any(is.na(unlist(category_grouping)))){
       for (category_name in names(category_grouping)){
         if (NA %in% match(category_grouping[[category_name]], unique(digitdata@cleaned[[category]]))){
           print(category_name)
@@ -51,47 +52,61 @@ sector_test = function(digitdata, category, category_grouping=NA, data_columns='
       }
     }
   }
-  #initialize table to be returned
-  category_names = c()
-  if (!(is.na(break_out))){
-    category_names = names(break_by_category(digitdata@cleaned, break_out, break_out_grouping))
-  }
-  sector_repeats_table = data.frame(matrix(nrow = length(category_names)+1, ncol = 0)) # +1 (all)
+  #initialize repeats table to be returned
+  category_names = names(break_by_category(digitdata@cleaned, category, category_grouping))
+  sector_repeats_table = data.frame(matrix(nrow = length(category_names)+1, ncol = 0))
   rownames(sector_repeats_table) = c('All', category_names) #ensure each row is fixed for a category when append
 
+  #intialize p values table for t test value on
+  p_values = data.frame(matrix(nrow=1, ncol=0))
+  rownames(p_values) = category_instance_analyzing
+
+  #perform sector test on all
+  result_all = repeat_test(digitdata = digitdata, data_columns = data_columns, duplicate_matching_cols = duplicate_matching_cols,
+                           break_out = category, break_out_grouping = category_grouping, rounding_patterns_to_omit = rounding_patterns_to_omit, plot=FALSE)
+  p_value = result_all$p_values[[category_instance_analyzing]]
+  repeats_table = result_all$percent_repeats
+  #repeats_table = repeats_table[!(rownames(repeats_table) %in% c('All')), ]
+
+  #update table and p value
+  sector_repeats_table['All'] = NA
+  #return(list(a=sector_repeats_table, b=repeats_table))
+  sector_repeats_table['All'][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
+  p_values['All'] = p_value
+
   #get indexes for each category in the specified sector column
-  indexes_of_sectors = break_by_category(digitdata@cleaned, category, category_grouping) #this is a list since unequal number of entries for each category
+  indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
-  for (sector_name in names(indexes_of_sectors)){
-    print(sector_name)
-
+  for (break_out_name in names(indexes_of_categories)){
     #index of this sector
-    indexes_of_sector = indexes_of_sectors[[sector_name]]
+    indexes_of_break_out = indexes_of_categories[[break_out_name]]
 
     #create new digitdata object for each sector
-    digitdata_of_sector = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_sector)
+    digitdata_of_break_out = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_break_out)
 
     #repeats test
-    repeats_table = repeat_test(digitdata_of_sector, data_columns, duplicate_matching_cols, break_out, break_out_grouping, round_digit_to_skip, plot=FALSE)$percent_repeats
-    #update table
+    result_of_break_out = repeat_test(digitdata = digitdata_of_break_out, data_columns = data_columns, duplicate_matching_cols = duplicate_matching_cols,
+                                      break_out = category, break_out_grouping = category_grouping, rounding_patterns_to_omit = rounding_patterns_to_omit, plot=FALSE)
+    p_value = result_of_break_out$p_values[[category_instance_analyzing]]
+    repeats_table = result_of_break_out$percent_repeats
+    #repeats_table = repeats_table[!(rownames(repeats_table) %in% c('All')), ]
 
-
-    print(repeats_table)
-
-    sector_repeats_table[sector_name] = NA
-    sector_repeats_table[sector_name][rownames(repeats_table), ] = repeats_table #match the rownames by using rownames
-    # return(list(a=sector_repeats_table, b=repeats_table))
-
-    print(sector_repeats_table)
+    #update table and p value
+    sector_repeats_table[break_out_name] = NA
+    sector_repeats_table[break_out_name][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
+    p_values[break_out_name] = p_value
   }
+  #remove row for 'All' since we do not want to visualize that
+  sector_repeats_table = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]
+
   #plot
   sector_plot = NA
   if (plot){
-    sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='col', xlab=break_out, ylab='Percent Repeats',
+    sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='row', xlab=break_out, ylab='Percent Repeats',
                                     title=paste('Sector Effect Test \n', 'break_out = ', break_out, ' \ncategory = ', category, sep=''))
     dev.new()
     print(sector_plot)
   }
-  return(list(percent_repeats=sector_repeats_table, plot=sector_plot))
+  return(list(percent_repeats=sector_repeats_table, p_values=p_values, plot=sector_plot))
 }
 

@@ -5,56 +5,67 @@
 #Summer 2020
 ############################################################
 
+#' Omits the numbers that are qualified as rounded numbers specified by \code{rounding_patterns_to_omit}.
+#'
+#' @inheritParams find_percent_repeats
+#'
+#' @return \code{data} without round numbers.
+omit_rounded_numbers = function(data, data_columns, rounding_patterns_to_omit){
+  #sort the patterns in decreasing order
+  rounding_patterns_to_omit = stringi::stri_reverse(rounding_patterns_to_omit[order(nchar(rounding_patterns_to_omit), rounding_patterns_to_omit, decreasing=TRUE)])
+  #data column to omit round numbers
+  numbers = as.character(data[[data_columns]])
+  #remove all zero entries
+  numbers = numbers[!(numbers == '0')]
+  #reverse the data column
+  numbers = stringi::stri_reverse(numbers)
+
+  #check each pattern from longest to shortest to avoid double counting
+  for (pattern in rounding_patterns_to_omit){
+    #substring it so that it is of same length with the current ending pattern
+    current_data_substrings = substr(numbers, start=1, stop=nchar(pattern))
+    #find the numbers with same rounding endstrings
+    matched_indexes = which(current_data_substrings == pattern)
+    #update numbers; remove rounded rows from data
+    if (length(matched_indexes) > 0){
+      numbers = numbers[-matched_indexes]
+
+      temp_data = as.data.frame(data[-matched_indexes, ]) #OMG why do I have to do this!!!
+      colnames(temp_data) = colnames(data)
+      data = temp_data
+
+      # print(names(data))
+    }
+  }
+  return(data)
+}
+
 #' Finds the percent of repeats in the given data based on given definition of a repeat (what columns need to match)
 #'
 #' @param data The The dataframe to compute percent repeat on
 #' @inheritParams repeat_test
 #'
 #' @return The percentage of repeated numbers in input data
-find_percent_repeats = function(data, data_columns, round_digit_to_skip){
-  # #remove all rows with NA entries in numeric columns
-  # complete_data = as.data.frame(data[complete.cases(data[data_columns]), ])
-  # colnames(complete_data) = colnames(data)
-  # print(data)
-  # print(complete_data)
-  #
-  # #drop 0 entiry rows since we dont want to count 0 as repeats
-  # complete_data = as.data.frame(complete_data[rowSums(abs(complete_data[data_columns])) != 0, ])
-  # #turn rounded digits to NA if round_digit_to_skip is specified
-  # if (!(is.na(round_digit_to_skip[1]))){
-  #   #omit all entries with trailing 0 with round_digit_to_skip = 0
-  #   complete_data = as.data.frame(complete_data[rowSums(complete_data[data_columns]) %% 10 != 0, ])
-  #   if (length(round_digit_to_skip) == 2){
-  #     #also omit all entries with trailing 5 with round_digit_to_skip = c(0,5)
-  #     complete_data = as.data.frame(complete_data[rowSums(complete_data[data_columns]) %% 5 != 0, ])
-  #   }
-  # }
-
-  # for (numeric_column in data_columns){
-  #   #drop 0 entiry rows since we dont want to count 0 as repeats
-  #   data = data[data[numeric_column] != 0, ]
-  #   #turn rounded digits to NA if round_digit_to_skip is specified
-  #   if (!(is.na(round_digit_to_skip[1]))){
-  #     #omit all entries with trailing 0 with round_digit_to_skip = 0
-  #     data = data[data[numeric_column] %% 10 != 0, ]
-  #     if (length(round_digit_to_skip) == 2){
-  #       #also omit all entries with trailing 5 with round_digit_to_skip = c(0,5)
-  #       data = data[data[numeric_column] %% 5 != 0, ]
-  #     }
-  #   }
-  # }
+find_percent_repeats = function(data, data_columns, rounding_patterns_to_omit){
+  #omit rounded numbers
+  if (!any(is.na(rounding_patterns_to_omit)) && !is.na(data_columns)){
+    data = omit_rounded_numbers(data, data_columns, rounding_patterns_to_omit)
+  }
   #find repeats based on specified definition of a repeat
   unique_numbers = dim(unique(data))[1]
   total_numbers = dim(data)[1]
   num_repeats = total_numbers - unique_numbers
   percent_repeats = num_repeats / total_numbers
 
-  print('unique')
-  print(unique_numbers)
-  print('total')
-  print(total_numbers)
+  #1 = repeat, 0 = not repeat
+  repeats_count = c(rep(0, unique_numbers), rep(1, num_repeats))
 
-  return(percent_repeats)
+  # print('unique')
+  # print(unique_numbers)
+  # print('total')
+  # print(total_numbers)
+
+  return(list(repeats_count=repeats_count, percent_repeats=percent_repeats))
 }
 
 
@@ -62,11 +73,15 @@ find_percent_repeats = function(data, data_columns, round_digit_to_skip){
 #'
 #' @param duplicate_matching_cols An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
 #' Must include all columns in \code{data_columns}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.
-#' @param round_digit_to_skip Whether to omit all rounding numbers in \code{data_columns} represented by numbers ending in 0 or both 0 and 5.
+#' @param rounding_patterns_to_omit The patterns to be counted as rounding digits to skip. Defaulted to NA.
 #' \itemize{
-#'   \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
-#'   \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
-#'   \item If not omitting rounded numbers, pass in NA. Default to NA.
+#'   \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
+#'   \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
+#' }
+#' @param break_out
+#' \itemize{
+#'   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+#'   \item The first division (usually x-axis) shown in plots.
 #' }
 #' @inheritParams all_digits_test
 #'
@@ -82,55 +97,104 @@ find_percent_repeats = function(data, data_columns, round_digit_to_skip){
 #' repeat_test(digitdata)
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'))
 #' repeat_test(digitdata, duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name')
-repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='all', break_out=NA, break_out_grouping=NA, round_digit_to_skip=NA, plot=TRUE){
-
+repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching_cols='all', break_out_grouping=NA, rounding_patterns_to_omit=NA, plot=TRUE){
+  #data_columns should be the column to look at rounded digits on
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping,
-              duplicate_matching_cols=duplicate_matching_cols, plot=plot, omit_05=round_digit_to_skip)
+              duplicate_matching_cols=duplicate_matching_cols, plot=plot, rounding_patterns=rounding_patterns_to_omit)
 
-  #handles the data_columns = 'all' situation
-  data_columns = get_data_columns(digitdata, data_columns)
+  # #handles the data_columns = 'all' situation
+  # data_columns = get_data_columns(digitdata, data_columns)
+
+  if (is.na(data_columns) && !(is.na(rounding_patterns_to_omit))){
+    warning("Are you sure to not specify data_columns? rounding_patterns_to_omit omit rounded numbers in data_columns!")
+  }
+
+  if (is.na(rounding_patterns_to_omit) && !(is.na(data_columns))){
+    warning("Are you sure to not specify rounding_patterns_to_omit? Rounded numbers in data_columns are omitted based on rounding_patterns_to_omit!")
+  }
+
 
   #handles the duplicate_matching_cols = 'all' situation
   if (duplicate_matching_cols[1] == 'digit_columns'){
     duplicate_matching_cols = get_data_columns(digitdata, duplicate_matching_cols)
   }
   #check data_columns is subset of duplicate_matching_cols
-  for (column in data_columns){
-    if (!(column %in% duplicate_matching_cols)){
-      stop('The argument duplicate_matching_cols must include all column(s) where you are analyzing digit data!')
+  if (!is.na(data_columns)){
+    for (column in data_columns){
+      if (!(column %in% duplicate_matching_cols)){
+        stop('The argument duplicate_matching_cols must include all column(s) where you are analyzing digit data!')
+      }
     }
   }
 
   #the columns we want to analyze
   data = digitdata@cleaned[duplicate_matching_cols]
 
-  print('All')
+  #repeats counts for all
+  result_all = find_percent_repeats(data, data_columns, rounding_patterns_to_omit)
 
-  #percent repeats for all
-  percent_repeats_all = find_percent_repeats(data, data_columns, round_digit_to_skip)
+  #intialize a dataframe for counts of repeat vs. not repeat
+  repeats_count_all = list()
 
-  #df to store stats
-  percent_repeats_table = data.frame(All=percent_repeats_all)
+  #df to store stats for plotting
+  percent_repeats_table = data.frame(All=result_all$percent_repeats)
 
-  #break out by category
-  if (!(is.na(break_out))){
-    #get indexes for each category
-    indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
+  #return(repeats_count_all)
 
-    #break by category for all
-    for (category_name in names(indexes_of_categories)){
+  #get indexes for each category
+  indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
 
-      indexes_of_category = indexes_of_categories[[category_name]]
-      data_of_category = as.data.frame(data[indexes_of_category, ])
-
-      percent_repeats_in_category = find_percent_repeats(data_of_category, data_columns, round_digit_to_skip)
-      percent_repeats_table[category_name] = percent_repeats_in_category #a value
-
-      print(category_name)
-      #print(T %in% is.na(data_of_category[1]))
-    }
+  #break by category and find counts of repeat vs. not repeat
+  for (category_name in names(indexes_of_categories)){
+    indexes_of_category = indexes_of_categories[[category_name]]
+    data_of_category = as.data.frame(data[indexes_of_category, ])
+    colnames(data_of_category) = colnames(data) #since find_percent_repeats depends on column name
+    result_of_category = find_percent_repeats(data_of_category, data_columns, rounding_patterns_to_omit)
+    repeats_count_all[[category_name]] = result_of_category$repeats_count
+    percent_repeats_table[category_name] = result_of_category$percent_repeats
   }
+
+  #calculate p value by t test for each category
+  p_values = data.frame(matrix(nrow=1, ncol=0))
+  rownames(p_values) = 'p_value'
+  #return(repeats_count_all)
+
+  for (category_name in names(repeats_count_all)){
+    category_counts = repeats_count_all[[category_name]]
+    other_counts = unlist(repeats_count_all[!(names(repeats_count_all) %in% c(category_name))], use.names=FALSE) #counts in all other categories
+    #perform t test
+    # print(category_name)
+    # print(sum(category_counts==0))
+    # print(sum(category_counts==1))
+    # print(sum(other_counts==0))
+    # print(sum(other_counts==1))
+    if (length(category_counts) < 2){
+      p_value = NA #cannot perform t test...x too small
+    }
+    else {
+      p_value = t.test(category_counts, other_counts, alternative = "greater")$p.value
+    }
+    p_values[category_name] = p_value
+  }
+#   #break out by category
+#   if (!(is.na(break_out))){
+#     #get indexes for each category
+#     indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
+#
+#     #break by category for all
+#     for (category_name in names(indexes_of_categories)){
+#
+#       indexes_of_category = indexes_of_categories[[category_name]]
+#       data_of_category = as.data.frame(data[indexes_of_category, ])
+#
+#       percent_repeats_in_category = find_percent_repeats(data_of_category, data_columns, rounding_patterns_to_omit)
+#       percent_repeats_table[category_name] = percent_repeats_in_category #a value
+#
+#       print(category_name)
+#       #print(T %in% is.na(data_of_category[1]))
+#     }
+#   }
   #get the mean of all the values computed
   mean_percent_repeated = rowMeans(percent_repeats_table)
 
@@ -151,6 +215,6 @@ repeat_test = function(digitdata, data_columns='all', duplicate_matching_cols='a
   rownames(percent_repeats_table) = 'percent repeated numbers'
   #sort by decreasing rounded percentage
   percent_repeats_table = t(sort(percent_repeats_table, decreasing = TRUE))
-  return(list(percent_repeats=percent_repeats_table, plot=repeats_plot))
+  return(list(p_values=p_values, percent_repeats=percent_repeats_table, plot=repeats_plot))
 }
 

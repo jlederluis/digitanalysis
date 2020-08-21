@@ -141,8 +141,8 @@ make_cleaned_data = function(raw_data, digit_columns){
     #rounding
     cleaned_data[[col_name]] = as.integer(cleaned_data[[col_name]])
   }
-  #drop rows with NaNs in all numeric data column
-  cleaned_data = as.data.frame(cleaned_data[complete.cases(cleaned_data[digit_columns]), ])
+  #drop rows with all! NaNs in all! numeric data column
+  cleaned_data = as.data.frame(cleaned_data[rowSums(is.na(cleaned_data[digit_columns])) != length(digit_columns), ])
 
   return(cleaned_data)
 }
@@ -221,7 +221,7 @@ process_digit_data = function(filepath=NA, digit_columns=NA, filetype='csv', del
   right_aligned_column_names = c('1s', '10s', '100s', '1k', '10k', '100k', '1m', '10m', '100m', '1b', '10b', '100b', '1t')
   ############important###############
 
-  if (is.na(digit_columns)){
+  if (any(is.na(digit_columns))){
     stop('digit_columns cannot be NA. Must analyze something!')
   }
 
