@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###digit pair test functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Digit Pair test functions in this file
 ############################################################
 
 #' Find the frequency of terminal digit pairs occuring in the data being analzyed
@@ -138,7 +139,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
   digit_pair_plot = NA
   if (plot && !(is.na(break_out))){
     digit_pair_plot = hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='Percent Digit Pairs',
-                              title=paste('Digit Pairs Test \n', 'break_out = ', break_out, sep=''),
+                              title=paste('Digit Pairs Test \n', 'Broken out by ', break_out, sep=''),
                               hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution') #-1 since we want uniform distribution without 'all'
     dev.new()
     print(digit_pair_plot)

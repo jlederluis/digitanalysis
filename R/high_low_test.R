@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###high to low digit test functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# High to Low Digit Test functions in this file
 ############################################################
 
 #' Computes weighted average probability of high digits across all digit places.
@@ -222,15 +223,15 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
     if (nrow(result$high_digits_freq_table) != 1){
       #3D plot
       hist_3d(result$high_digits_freq_table, digitdata, xlab=category, ylab='Digit Places', zlab='High Digits Frequency',
-              title=paste('High Low Test', 'All', sep='_'), theta=55, phi=16, save=FALSE) #3D histograms
-      high_low_plot = hist_2D_variables(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'All', sep='_'))
+              title=paste('High Low Test', 'AllBreakout', sep='_'), theta=55, phi=16, save=FALSE) #3D histograms
+      high_low_plot = hist_2D_variables(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
     }
     else {
-      high_low_plot = hist_2D(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'All', sep='_'))
+      high_low_plot = hist_2D(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
     }
     dev.new()
     print(high_low_plot)
-    plots[['All']] = high_low_plot
+    plots[['AllBreakout']] = high_low_plot
   }
 
   #perform high low test on all break out categories
@@ -267,6 +268,6 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       }
     }#need fix plot title  ##################
   }
-  return(list(p_values=p_values_table, plots=plots))
+  return(list(p_values=p_values_table, statistical_test=test_type, plots=plots))
 }
 

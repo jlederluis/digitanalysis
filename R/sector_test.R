@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###repeat test functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Sector Test functions in this file
 ############################################################
 
 #' Performs sector test to analyze uneven distribution of percent repeats across sectors (supposed to be uniform).
@@ -103,7 +104,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   sector_plot = NA
   if (plot){
     sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='row', xlab=break_out, ylab='Percent Repeats',
-                                    title=paste('Sector Effect Test \n', 'break_out = ', break_out, ' \ncategory = ', category, sep=''))
+                                    title=paste('Sector Effect Test \n', 'Broken out by ', break_out, ' \ncategory = ', category, sep=''))
     dev.new()
     print(sector_plot)
   }

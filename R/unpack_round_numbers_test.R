@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###unpack round numbers test functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Unpack Round Numbers Test functions in this file
 ############################################################
 
 #' Get the indexes of round and unround entries in the specified column in \code{digitdata}

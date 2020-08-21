@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###helper functions for digit test functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Helper functions for digit test functions in this files
 ############################################################
 
 ############################################################################################################

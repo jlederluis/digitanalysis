@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###repeat test functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Repeat Test functions in this file
 ############################################################
 
 #' Omits the numbers that are qualified as rounded numbers specified by \code{rounding_patterns_to_omit}.
@@ -52,7 +53,7 @@ find_percent_repeats = function(data, data_columns, rounding_patterns_to_omit){
     data = omit_rounded_numbers(data, data_columns, rounding_patterns_to_omit)
   }
   #find repeats based on specified definition of a repeat
-  unique_numbers = dim(unique(data))[1]
+  unique_numbers = dim(unique(data))[1]   #this shit is having some issues on single column shit for some fucking reason!
   total_numbers = dim(data)[1]
   num_repeats = total_numbers - unique_numbers
   percent_repeats = num_repeats / total_numbers
@@ -138,7 +139,7 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
   repeats_count_all = list()
 
   #df to store stats for plotting
-  percent_repeats_table = data.frame(All=result_all$percent_repeats)
+  percent_repeats_table = data.frame(AllBreakout=result_all$percent_repeats)
 
   #return(repeats_count_all)
 
@@ -202,7 +203,7 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
   repeats_plot = NA
   if (plot && !(is.na(break_out))){
     repeats_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats',
-                          title=paste('Repeats Test \n', 'break_out = ', break_out, sep=''),
+                          title=paste('Repeats Test \n', 'Broken out by ', break_out, sep=''),
                           hline=mean_percent_repeated, hline_name='Mean Percentage Repeats')
     dev.new()
     print(repeats_plot)

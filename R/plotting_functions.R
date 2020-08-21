@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###plotting helper functions
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Plotting helper functions
 ############################################################
 
 #' Stackoverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}
@@ -30,7 +31,7 @@ number_ticks <- function(n) {function(limits) pretty(limits, n)}
 #' @param width The width of the bars. Defaulted to 0.5.
 #'
 #' @return A ggplot instance.
-hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='2D Histogram', hline=NA, hline_name='', abline=NA, width=0.5){
+hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='2D Barplot', hline=NA, hline_name='', abline=NA, width=0.5){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
@@ -73,7 +74,7 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
 #' @inheritParams hist_2D
 #'
 #' @return A ggplot instance.
-hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='Multi-variable 2D Histogram', abline=NA){
+hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='Multi-variable 2D Barplot', abline=NA){
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
@@ -163,7 +164,7 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
-hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Bar Plot', theta=55, phi=16, save=FALSE){
+hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, save=FALSE){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
 
@@ -259,7 +260,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   if (length(digit_places) == 1){
     test_type = 'Single Digit Test'
     aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
-    plots_list[['aggregate histogram']] = aggregate_hist
+    plots_list[['aggregate_barplot']] = aggregate_hist
     dev.new()
     print(aggregate_hist)
   }
@@ -271,8 +272,8 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
       hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n(Round Numbers) \n', title, sep='')) #3D histogram
       multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n(Round Numbers) \n', title, sep='')) #multiple 2D histograms
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n(Round Numbers) \n', title, sep='')) #plot aggregate histogram across digit place
-      plots_list[['multiple_histograms']] = multiple_hist
-      plots_list[['aggregate histogram']] = aggregate_hist
+      plots_list[['digitplace_barplot']] = multiple_hist
+      plots_list[['aggregate_barplot']] = aggregate_hist
 
       dev.new()
       print(aggregate_hist)
@@ -286,8 +287,8 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
       dev.off()
       multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n(Unround Numbers) \n', title, sep='')) #multiple 2D histograms
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n(Unround Numbers) \n', title, sep='')) #plot aggregate histogram across digit place
-      plots_list[['multiple_histograms']] = multiple_hist
-      plots_list[['aggregate histogram']] = aggregate_hist
+      plots_list[['digitplace_barplot']] = multiple_hist
+      plots_list[['aggregate_barplot']] = aggregate_hist
 
       dev.new()
       print(aggregate_hist)
@@ -303,8 +304,8 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep='')) #3D histogram
     multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n', title, sep='')) #plot aggregate histogram across digit place
-    plots_list[['multiple_histograms']] = multiple_hist
-    plots_list[['aggregate histogram']] = aggregate_hist
+    plots_list[['digitplace_barplot']] = multiple_hist
+    plots_list[['aggregate_barplot']] = aggregate_hist
 
     dev.new()
     plot(multiple_hist)

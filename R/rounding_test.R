@@ -1,8 +1,9 @@
 # ############################################################
-# #Functions for digit analysis R package
-# ###rounding test functions in this file
-# #Wenjun Chang
-# #Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Rounding Test functions in this file
 # ############################################################
 
 #' Gives an array of strings of zeros from length 1 to n.
@@ -172,7 +173,8 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   #plot only if we break_out == have > 1 column
   rounding_plot = NA
   if (plot && !(is.na(break_out))){
-    rounding_plot = hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='Percent Rounding', title='Rounding Test',
+    rounding_plot = hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='Percent Rounding',
+                            title=paste('Rounding Test \n', 'Broken out by ', break_out, sep=''),
                             hline=mean_percent_rounded, hline_name='Mean Percentage Rounding')
     dev.new()
     print(rounding_plot)

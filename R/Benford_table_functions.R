@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###Benford table create, save, and load function according to Benford's Law in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Benford table create, save, and load function according to Benford's Law in this file
 ############################################################
 
 

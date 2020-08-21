@@ -1,10 +1,10 @@
 ############################################################
-#Functions for digit analysis R package
-###Data input functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Data input functions in this file
 ############################################################
-
 
 ############################################################
 #Class function

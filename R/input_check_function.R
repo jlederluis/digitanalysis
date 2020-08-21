@@ -1,9 +1,12 @@
 ############################################################
-#Functions for digit analysis R package
-###input check function in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Input check function in this file
 ############################################################
+
+#add
 
 #' Asserts the input to user accessible functions in this package are of correct type and form.
 #'

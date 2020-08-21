@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###padding test functions in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Padding Test functions in this file
 ############################################################
 
 #' Obtains Benford mean in each digit place after specifying omitting 0 and 5 or not
@@ -180,7 +181,7 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
 #' @inheritParams padding_test
 #'
 #' @return A table of observed mean for the dataset \code{data}
-get_observed_mean = function(data, num_digits, max_length){
+get_observed_mean = function(data, num_digits, max_length, omit_05){
   if (num_digits > length(data)){
     stop('the number of digits desired to evaluate is greater than the max length number in the dataset')
   }
@@ -340,7 +341,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
   expected_mean = lst$expected_mean
   rownames(expected_mean) = 'All'
 
-  observed_mean = get_observed_mean(combined_data, num_digits, max_length)
+  observed_mean = get_observed_mean(combined_data, num_digits, max_length, omit_05)
   rownames(observed_mean) = 'All'
 
   #get the difference in expected and observed mean in each digit position
@@ -380,7 +381,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
       lst = get_expected_mean(digitdata, combined_data_of_category, Benford_mean, max_length, num_digits, omit_05)
       freq_table=lst$freq_table
       expected_mean[category_name, ] = lst$expected_mean
-      observed_mean[category_name, ] = get_observed_mean(combined_data_of_category, num_digits, max_length)
+      observed_mean[category_name, ] = get_observed_mean(combined_data_of_category, num_digits, max_length, omit_05)
 
       #get the difference in expected and observed mean in each digit position
       diff_in_mean[category_name, ]  = observed_mean[category_name, ] - expected_mean[category_name, ]
@@ -462,19 +463,19 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
   #perform padding test on all data
   result = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping, simulate)
   #return(result)
-  padding_test_results[['All']] = result
+  padding_test_results[['AllBreakout']] = result
 
   if (plot){
     #2D histogram
     padding_plot = NA
     if (is.na(category)){
-      padding_plot = hist_2D(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'break_out = ', 'All', sep=''))
+      padding_plot = hist_2D(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', 'AllBreakout', sep=''))
     }
     #Multi-variable 2D histogram
     else {
-      padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'break_out = ', 'All', sep=''))
+      padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', 'AllBreakout', sep=''))
     }
-    padding_test_results[['All']][['plot']] = padding_plot
+    padding_test_results[['AllBreakout']][['plot']] = padding_plot
     dev.new()
     print(padding_plot)
   }
@@ -502,11 +503,11 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
         padding_plot = NA
         #2D histogram
         if (is.na(category)){
-          padding_plot = hist_2D(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'break_out = ', break_out_name, sep=''))
+          padding_plot = hist_2D(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', break_out_name, sep=''))
         }
         #Multi-variable 2D histogram
         else {
-          padding_plot = hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'break_out = ', break_out_name, sep=''))
+          padding_plot = hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', break_out_name,  sep=''))
         }
         padding_test_results[[break_out_name]][['plot']] = padding_plot
         dev.new()

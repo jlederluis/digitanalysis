@@ -1,8 +1,9 @@
 ############################################################
-#Functions for digit analysis R package
-###all digits test main function in this file
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# All Digits Test main function in this file
 ############################################################
 
 #' Helper function for \code{all_digits_test} to perform a single all digits test.
@@ -54,8 +55,8 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   #plot
   if (plot){
     all_digits_plot = plot_all_digit_test(digitdata, result$observed_table, result$expected_table, digit_places,
-                                          title=paste('break_out = ', subset_name, '\ncategory = ', 'All', sep=''))
-    all_digit_test_plots[['All']] = all_digits_plot
+                                          title=paste('Broken out by ', subset_name, ', ', 'AllCategory', sep=''))
+    all_digit_test_plots[['AllCategory']] = all_digits_plot
   }
 
   #break on category if specified #do not plot for these
@@ -81,7 +82,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
       if (plot){
         if (!suppress_second_division_plots){
           plot_in_category = plot_all_digit_test(digitdata, result_in_category$observed_table, result_in_category$expected_table, digit_places,
-                                                 title=paste('break_out = ', subset_name, '\ncategory = ', category_name, sep=''))
+                                                 title=paste('Broken out by ', subset_name, ', ', category_name, sep=''))
           all_digit_test_plots[[category_name]] = plot_in_category
         }
       }
@@ -201,7 +202,7 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   }
   #perform digit test for all
   result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
-                                      category, category_grouping, skip_last_digit, suppress_low_N, subset_name='All',
+                                      category, category_grouping, skip_last_digit, suppress_low_N, subset_name='AllBreakout',
                                       plot=plot, suppress_second_division_plots=suppress_second_division_plots)
   #return(result_all)
   p_values_all = result_all$p_values
@@ -213,7 +214,7 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   p_values['All', ] = p_values_all
 
   #plots to return
-  plots = list(All = plots_all)
+  plots = list(AllBreakout = plots_all)
 
   if (suppress_first_division_plots){
     plot = FALSE #do not plot for the for loop
