@@ -1,7 +1,9 @@
 ############################################################
-#Testing for unpack unround column tests
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Testing for unpack unround column tests
 ############################################################
 
 #############prelim############
@@ -49,4 +51,6 @@ result$p_values
 #result$plots$All
 # order = c('Mandera', 'Isiolo', 'Baringo', 'Ijara', 'Wajir', 'Garissa', 'Samburu', 'Marsabit', 'Moyale', 'Turkana', 'Tana', 'all')
 # result[order]
-#
+
+
+

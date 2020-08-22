@@ -1,7 +1,9 @@
 ############################################################
-#Testing all 10 Tests in (Ensingmer & Leder-Luis, 2020)
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Testing the 10 Tests in (Ensingmer & Leder-Luis, 2020)
 ############################################################
 
 #clear workspace

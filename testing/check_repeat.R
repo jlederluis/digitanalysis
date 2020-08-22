@@ -1,5 +1,10 @@
-
-
+############################################################
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Check to see if t test stats is reproduced exactly as in repeats test
+############################################################
 
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv'
 data = read.csv(fp)

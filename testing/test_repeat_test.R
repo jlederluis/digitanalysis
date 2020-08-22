@@ -1,7 +1,9 @@
 ############################################################
-#Testing for repeat test
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Testing for repeat test
 ############################################################
 
 #############prelim############

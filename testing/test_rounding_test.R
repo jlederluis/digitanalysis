@@ -1,7 +1,9 @@
 ############################################################
-#Testing for digit pair test
-#Wenjun Chang
-#Summer 2020
+# DigitAnalysis R Package
+# github.com/jlederluis/digitanalysis
+# Jetson Leder-Luis and Jean Ensminger
+# Research assistant: Wenjun Chang
+# Testing for digit pair test
 ############################################################
 
 #############prelim############
