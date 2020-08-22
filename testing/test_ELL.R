@@ -22,7 +22,7 @@ UNPACK_DATA = process_digit_data(filepath = fp, digit_columns = c("BENM", "BENF"
 
 #All digits test except first with expenditure
 ADT_ALEXP = all_digits_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
-                            suppress_first_division_plots=TRUE, plot=F)
+                            suppress_first_division_plots=F, plot=T)
 
 #First digit test with expenditure
 first_digit = all_digits_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', digit_places = 1, omit_05 = 0, break_out='DIST', suppress_first_division_plots=TRUE, plot=T)
@@ -51,10 +51,10 @@ high_low = high_low_test(digitdata = ALEXP, omit_05 = c(0,5), skip_first_digit=T
 
 #Unpack rounded numbers test with participants
 unpack = unpack_round_numbers_test(digitdata = UNPACK_DATA, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
-                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=TRUE, plot=F)
+                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=F, plot=T)
 
 #Padding test with expenditure
-padding = padding_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SECTOR',
+padding = padding_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category=NA,
                        category_grouping=list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE")),
-                       simulate=T, plot=F)
+                       simulate=F, plot=F)
 

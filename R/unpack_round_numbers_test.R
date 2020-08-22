@@ -90,16 +90,39 @@ unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_
   unround_digitdata@raw = data.frame('unround')
 
   #perform all digit tests for each digitdata object
-  round_p_values = all_digits_test(digitdata=round_digitdata, contingency_table=contingency_table, data_columns=analysis_columns, digit_places=digit_places,
+  round_result = all_digits_test(digitdata=round_digitdata, contingency_table=contingency_table, data_columns=analysis_columns, digit_places=digit_places,
                                    skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, break_out_grouping=break_out_grouping, category=category,
                                    category_grouping=category_grouping, distribution=distribution, plot=plot, skip_last_digit=skip_last_digit, suppress_low_N=suppress_low_N,
                                    suppress_first_division_plots=suppress_first_division_plots, suppress_second_division_plots=suppress_second_division_plots)
-  unround_p_values = all_digits_test(digitdata=unround_digitdata, contingency_table=contingency_table, data_columns=analysis_columns, digit_places=digit_places,
+  unround_result = all_digits_test(digitdata=unround_digitdata, contingency_table=contingency_table, data_columns=analysis_columns, digit_places=digit_places,
                                      skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, break_out_grouping=break_out_grouping, category=category,
                                      category_grouping=category_grouping, distribution=distribution, plot=plot, skip_last_digit=skip_last_digit, suppress_low_N=suppress_low_N,
                                      suppress_first_division_plots=suppress_first_division_plots, suppress_second_division_plots=suppress_second_division_plots)
+
+  merged_plots = list()
+  #we should have at least plot for All
+  if (plot){
+    for (break_out_name in names(round_result$plots)){
+      for (category_name in names(round_result$plots[[break_out_name]])){
+        if (is.na(category)){
+          #2 ggplot instance
+          round_plot = round_result$plots[[break_out_name]][[category_name]]$aggregate_barplot
+          unround_plot = unround_result$plots[[break_out_name]][[category_name]]$aggregate_barplot
+          merged_plot = plot_multiple_hist2d(list(round=round_plot, unround=unround_plot))
+          merged_plots[[break_out_name]] = merged_plot
+
+          dev.new()
+          plot(merged_plot)
+        }
+      }
+    }
+  }
+  returning_plots = 'No plot with plot=FALSE or without break_out'
+  if (plot){
+    returning_plots = list(merged=merged_plots, round=round_result$plots, unround=unround_result$plots)
+  }
   #merge the results
   #p_values = rbind(round_p_values, unround_p_values)
   #rownames(p_values) = c('round', 'unround')
-  return(list(round=round_p_values, unround=unround_p_values))
+  return(list(round=round_result$p_values, unround=unround_result$p_values, plots=returning_plots))
 }

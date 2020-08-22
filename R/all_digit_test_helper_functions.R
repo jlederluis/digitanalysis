@@ -362,7 +362,11 @@ break_by_category = function(data, break_out, break_out_grouping){
 #' @export
 make_sub_digitdata = function(digitdata, indexes){
   sub_digitdata = digitdata
-  sub_digitdata@raw = data.frame() # save memory
+  #raw is a 'round' or 'unround' for unpack rounded test
+  if (length(sub_digitdata@raw) != 1){
+    sub_digitdata@raw = data.frame(sub_digitdata@raw[indexes, ])
+    colnames(sub_digitdata@raw) = colnames(digitdata@raw)
+  }
   sub_digitdata@cleaned = data.frame(sub_digitdata@cleaned[indexes, ])
   colnames(sub_digitdata@cleaned) = colnames(digitdata@cleaned)
   sub_digitdata@numbers = data.frame(sub_digitdata@numbers[indexes, ])

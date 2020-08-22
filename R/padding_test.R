@@ -394,12 +394,14 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
         p_values[category_name, ] = get_p_value(observed_mean[category_name, ], simulated_mean_in_category, diff_in_mean[category_name, ])
       }
       ######################################################
-      if (!(TRUE %in% grepl("\\D", rownames(p_values)[-1]))){
-        #then it is numeric..sort them
-        ordered_rows = c('All', as.character(sort(as.numeric(rownames(p_values)[-1]))))
+    }
+    if (!(TRUE %in% grepl("\\D", rownames(diff_in_mean)[-1]))){
+      #then it is numeric..sort them
+      ordered_rows = c('All', as.character(sort(as.numeric(rownames(diff_in_mean)[-1]))))
+      if (p_values != "No p-values since simulate=FALSE"){
         p_values = p_values[ordered_rows, ]
-        diff_in_mean = diff_in_mean[ordered_rows, ]
       }
+      diff_in_mean = diff_in_mean[ordered_rows, ]
     }
   }
   return(list(diff_in_mean=diff_in_mean, p_values=p_values))#, expected_mean=expected_mean, observed_mean=observed_mean))
@@ -480,6 +482,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
     }
     #Multi-variable 2D histogram
     else {
+      print(result$diff_in_mean)
       padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', 'AllBreakout', sep=''))
     }
     padding_test_results[['AllBreakout']][['plot']] = padding_plot
