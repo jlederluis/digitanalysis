@@ -57,12 +57,12 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
       }
     }
   }
+  # print(sum(high_and_low_total_counts))
   #omit first digit place column if desired
   if (skip_first_digit){
     high_and_low_total_counts = high_and_low_total_counts[-1]
     high_freq_theoratical = high_freq_theoratical[-1]
   }
-
   p_value = NA
   if (test_type == 'binom'){
     #get weighted values across all digit places
@@ -145,9 +145,9 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
   if (!(is.na(category))){
     #get indexes for each category
     indexes_of_categories = break_by_category(digitdata@cleaned, category, category_grouping) #this is a list since unequal number of entries for each category
-
     #break by category for all
     for (category_name in names(indexes_of_categories)){
+      # print(category_name)
 
       indexes_of_category = indexes_of_categories[[category_name]]
       data_of_category = data.frame(digits_table[indexes_of_category, ])
@@ -244,6 +244,8 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
     #break by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
+
+      # print(category_name)
 
       #create a digitdata class for this category
       digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)

@@ -49,10 +49,10 @@ sector = sector_test(digitdata = Data, category='SECTOR', duplicate_matching_col
                      category_instance_analyzing = 'TRN', plot=T) #sector test hasnt crerate a new sector grouping col in original data
 
 #High low test with expenditure
-high_low = high_low_test(digitdata = ALEXP, omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=F)
+high_low = high_low_test(digitdata = Data, omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=F)
 
 #Unpack rounded numbers test with participants
-unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
+unpack = unpack_round_numbers_test(digitdata = ALEXP, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
                                    skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=T, plot=T)
 
 #Padding test with expenditure
