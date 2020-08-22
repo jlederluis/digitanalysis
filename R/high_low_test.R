@@ -80,9 +80,10 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
   else {
     stop('test_type can only be either "chisq" or "binom"!')
   }
-
+  sample_sizes = t(as.data.frame(t(colSums(high_and_low_total_counts))))
+  print(sample_sizes)
   observed_high_digits_freq = data.frame(t(high_and_low_total_counts[1, ] / colSums(high_and_low_total_counts)))
-  return(list(p_value=format_p_values(p_value), observed_high_digits_freq=observed_high_digits_freq, high_freq_theoratical=high_freq_theoratical))
+  return(list(p_value=format_p_values(p_value), observed_high_digits_freq=observed_high_digits_freq, sample_sizes=sample_sizes, high_freq_theoratical=high_freq_theoratical))
 }
 
 #' Perform a single high low test. Helper function for \code{high_low_test}.
@@ -133,13 +134,18 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
   result = high_low_by_digit_place(digitdata, digits_table, high, high_freq_theoratical, omit_05, skip_first_digit, test_type)
   p_value = result$p_value
   observed_high_digits_freq = result$observed_high_digits_freq
+  sample_sizes = result$sample_sizes
 
   #create and update tables
   p_values = data.frame(All = p_value)
 
-  high_digits_freq_table = data.frame(matrix(nrow = nrow(observed_high_digits_freq), ncol = 0))
+  high_digits_freq_table = data.frame(matrix(nrow = nrow(observed_high_digits_freq), ncol = 0)) #for plotting
   rownames(high_digits_freq_table) = rownames(observed_high_digits_freq)
   high_digits_freq_table['All'] = observed_high_digits_freq
+
+  sample_sizes_table = data.frame(matrix(nrow = nrow(sample_sizes), ncol = 0)) #for plotting
+  rownames(sample_sizes_table) = rownames(sample_sizes)
+  sample_sizes_table['All'] = sample_sizes
 
   #perform a 'year effect' high low test break by category
   if (!(is.na(category))){
@@ -160,14 +166,18 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
       #update returning tables
       p_values[category_name] = result_of_category$p_value
       high_digits_freq_table[category_name] = result_of_category$observed_high_digits_freq
+      sample_sizes_table[category_name] = result_of_category$sample_sizes
+      print(high_digits_freq_table)
+      print(sample_sizes_table)
     }
+
     if (!(TRUE %in% grepl("\\D", colnames(p_values)[-1]))){
       #then it is numeric..sort them
       ordered_columns = c('All', as.character(sort(as.numeric(colnames(p_values)[-1]))))
       p_values = p_values[ordered_columns]
     }
   }
-  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), high_freq_theoratical=result$high_freq_theoratical))
+  return(list(p_values=p_values, high_digits_freq_table=high_digits_freq_table, sample_sizes_table=sample_sizes_table, high_freq_theoratical=result$high_freq_theoratical))
 }
 
 
@@ -219,22 +229,23 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
   colnames(p_values_table) = colnames(result$p_values)
   p_values_table['All', ] = result$p_values
 
-  plots = list()
-  if (plot){
-    high_low_plot = NA
-    if (nrow(result$high_digits_freq_table) != 1){
-      #3D plot
-      hist_3d(result$high_digits_freq_table, digitdata, xlab=category, ylab='Digit Places', zlab='High Digits Frequency',
-              title=paste('High Low Test', 'AllBreakout', sep='_'), theta=55, phi=16, save=FALSE) #3D histograms
-      high_low_plot = hist_2D_variables(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
-    }
-    else {
-      high_low_plot = hist_2D(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
-    }
-    dev.new()
-    print(high_low_plot)
-    plots[['AllBreakout']] = high_low_plot
-  }
+  # plots = list()
+  # if (plot){
+  #   high_low_plot = NA
+  #
+  #   rowSums(result$sample_sizes_table)
+  #
+  #   if (nrow(result$high_digits_freq_table) != 1){
+  #     #3D plot
+  #     high_low_plot = hist_2D_variables(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
+  #   }
+  #   else {
+  #     high_low_plot = hist_2D(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
+  #   }
+  #   dev.new()
+  #   print(high_low_plot)
+  #   plots[['AllBreakout']] = high_low_plot
+  # }
 
   #perform high low test on all break out categories
   if (!(is.na(break_out))){
@@ -255,21 +266,21 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
                                                 skip_last_digit, category, category_grouping, test_type)
       p_values_table[category_name, ][colnames(result_of_category$p_values)] = result_of_category$p_values
 
-      if (plot){
-        high_low_plot = NA
-        if (nrow(result_of_category$high_digits_freq_table) != 1){
-          #3D plot
-          hist_3d(result_of_category$high_digits_freq_table, digitdata, xlab=category, ylab='Digit Places', zlab='High Digits Frequency',
-                  title=paste('High Low Test', break_out, sep='_'), theta=55, phi=16, save=FALSE) #3D histograms
-          high_low_plot = hist_2D_variables(result_of_category$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
-        }
-        else {
-          high_low_plot = hist_2D(result_of_category$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
-        }
-        dev.new()
-        print(high_low_plot)
-        plots[[category_name]] = high_low_plot
-      }
+    #   if (plot){
+    #     high_low_plot = NA
+    #     if (nrow(result_of_category$high_digits_freq_table) != 1){
+    #       #3D plot
+    #       hist_3d(result_of_category$high_digits_freq_table, digitdata, xlab=category, ylab='Digit Places', zlab='High Digits Frequency',
+    #               title=paste('High Low Test', break_out, sep='_'), theta=55, phi=16, save=FALSE) #3D histograms
+    #       high_low_plot = hist_2D_variables(result_of_category$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
+    #     }
+    #     else {
+    #       high_low_plot = hist_2D(result_of_category$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
+    #     }
+    #     dev.new()
+    #     print(high_low_plot)
+    #     plots[[category_name]] = high_low_plot
+    #   }
     }#need fix plot title  ##################
 
     if (!(TRUE %in% grepl("\\D", rownames(p_values_table)[-1]))){
