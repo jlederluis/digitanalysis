@@ -48,6 +48,9 @@ omit_rounded_numbers = function(data, data_columns, rounding_patterns_to_omit){
 #'
 #' @return The percentage of repeated numbers in input data
 find_percent_repeats = function(data, data_columns, rounding_patterns_to_omit){
+  #first of first omit NA entries in data_column!!!
+  data = data[!is.na(data[data_columns]), ]
+  #return(data)
   #omit rounded numbers
   if (!any(is.na(rounding_patterns_to_omit)) && !is.na(data_columns)){
     data = omit_rounded_numbers(data, data_columns, rounding_patterns_to_omit)
@@ -134,6 +137,7 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
 
   #repeats counts for all
   result_all = find_percent_repeats(data, data_columns, rounding_patterns_to_omit)
+  #return(data)
 
   #intialize a dataframe for counts of repeat vs. not repeat
   repeats_count_all = list()

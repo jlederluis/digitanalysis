@@ -61,8 +61,10 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
       single_align_df[[column_names[i]]] = original_df[[column_names[i]]]
     }
   }
-  #remove all NA columns #happening cuz of testing
+  #remove all NA columns
   single_align_df = single_align_df[colSums(!is.na(single_align_df)) > 0]
+  # #remove all NA rows
+  # single_align_df = single_align_df[rowSums(!is.na(single_align_df)) > 0, ]
   return(single_align_df)
 }
 
@@ -238,7 +240,7 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
       if (grepl(paste('',digit_place_names[j]), colnames(usable_data)[i], fixed=TRUE)){
         #it is a column for digit place j
         #get the table for frequency count for column i
-        occurances = table(usable_data[,i])
+        occurances = table(usable_data[,i], useNA = 'no')
         #update it to column j of observation table
         #this occurances can be a null table
         if (!(is.null(occurances))){
@@ -384,7 +386,7 @@ make_sub_digitdata = function(digitdata, indexes){
 #'
 #' @return p-value with better formatting
 format_p_values = function(p_value){
-  if (p_value < 0.001){
+  if (!is.na(p_value) && p_value < 0.001){
     p_value = format(p_value, scientific = TRUE)
   }
   return(p_value)

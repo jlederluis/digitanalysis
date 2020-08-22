@@ -80,6 +80,9 @@ chi_square_gof = function(observed_table, expected_table, freq=TRUE, suppress_lo
   #that needs to be removed
   zero_columns = which(colSums(observed_table) == 0)
   if (length(zero_columns) > 0){
+    if (length(zero_columns) == ncol(observed_table)){ ####this happens when shit like a messed up category happens and there is literally no observation
+      return(list(p_value=NA, expected_table=expected_table, observed_table=observed_table)) # p value is NA
+    }
     #remove zero columns and recompute df if necessary when getting the p values
     observed_table = observed_table[-zero_columns]
     expected_table = expected_table[-zero_columns]
@@ -95,7 +98,7 @@ chi_square_gof = function(observed_table, expected_table, freq=TRUE, suppress_lo
     if (freq){
       #turn freq into numbers
       for (i in 1:length(expected_table)){
-        expected_table[, i] = expected_table[, i] *sum(observed_table[, i])
+        expected_table[, i] = expected_table[, i] * sum(observed_table[, i])
       }
     }
   }

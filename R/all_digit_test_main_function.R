@@ -35,7 +35,6 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   }
   #get usable data
   usable_data = parse_digit_places(digitdata, digits_table, digit_places)
-
   #parse only needed parts of contingency table
   contingency_table = parse_contigency_table(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05)
 
@@ -54,8 +53,12 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 
   #plot
   if (plot){
+    sub_subset_name = ''
+    if (!is.na(category)){
+      sub_subset_name = paste(', All ', category, sep='')
+    }
     all_digits_plot = plot_all_digit_test(digitdata, result$observed_table, result$expected_table, digit_places,
-                                          title=paste('Broken out by ', subset_name, ', ', 'AllCategory', sep=''))
+                                          title=paste(subset_name, sub_subset_name, sep=''))
     all_digit_test_plots[['AllCategory']] = all_digits_plot
   }
 
@@ -82,7 +85,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
       if (plot){
         if (!suppress_second_division_plots){
           plot_in_category = plot_all_digit_test(digitdata, result_in_category$observed_table, result_in_category$expected_table, digit_places,
-                                                 title=paste('Broken out by ', subset_name, ', ', category_name, sep=''))
+                                                 title=paste(subset_name, ', ', category_name, sep=''))
           all_digit_test_plots[[category_name]] = plot_in_category
         }
       }
@@ -206,8 +209,12 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
     suppress_second_division_plots = TRUE
   }
   #perform digit test for all
+  subset_name = ''
+  if (!is.na(break_out)){
+    subset_name = paste('All ', break_out, sep='')
+  }
   result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
-                                      category, category_grouping, skip_last_digit, suppress_low_N, subset_name='AllBreakout',
+                                      category, category_grouping, skip_last_digit, suppress_low_N, subset_name=subset_name,
                                       plot=plot, suppress_second_division_plots=suppress_second_division_plots)
   #return(result_all)
   p_values_all = result_all$p_values

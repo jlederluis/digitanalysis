@@ -56,7 +56,11 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   #initialize repeats table to be returned
   category_names = names(break_by_category(digitdata@cleaned, category, category_grouping))
   sector_repeats_table = data.frame(matrix(nrow = length(category_names)+1, ncol = 0))
-  rownames(sector_repeats_table) = c('All', category_names) #ensure each row is fixed for a category when append
+  rownames(sector_repeats_table) = c('AllBreakout', category_names) #ensure each row is fixed for a category when append
+  #order rownames if they are numbers
+  if (!(TRUE %in% grepl("\\D", category_names))){
+    rownames(sector_repeats_table) = c('AllBreakout', as.character(sort(as.numeric(colnames(p_values)))))
+  }
 
   #intialize p values table for t test value on
   p_values = data.frame(matrix(nrow=1, ncol=0))
@@ -90,15 +94,15 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
                                       break_out = category, break_out_grouping = category_grouping, rounding_patterns_to_omit = rounding_patterns_to_omit, plot=FALSE)
     p_value = result_of_break_out$p_values[[category_instance_analyzing]]
     repeats_table = result_of_break_out$percent_repeats
-    #repeats_table = repeats_table[!(rownames(repeats_table) %in% c('All')), ]
+    #repeats_table = t(repeats_table[!(rownames(repeats_table) %in% c('AllBreakout')), ])
 
     #update table and p value
     sector_repeats_table[break_out_name] = NA
     sector_repeats_table[break_out_name][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
     p_values[break_out_name] = format_p_values(p_value)
   }
-  #remove row for 'All' since we do not want to visualize that
-  sector_repeats_table = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]
+  # #remove row for 'All' since we do not want to visualize that
+  # sector_repeats_table = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]
 
   #plot
   sector_plot = NA

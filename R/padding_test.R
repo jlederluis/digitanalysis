@@ -12,7 +12,7 @@
 #'
 #' @return A table for Benford mean in each digit place after removing 0 and/or 5 if desired
 #' @export
-get_benford_mean = function(contingency_table, omit_05=c(0,5)){
+get_benford_mean = function(contingency_table, omit_05=NA){
   #create a table for the mean of benford distribution in each digit place
   names = colnames(contingency_table)[!(colnames(contingency_table) %in% c("X", "Digits"))]
   Benford_mean = data.frame(matrix(nrow = 1, ncol = length(names)))
@@ -442,11 +442,12 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name', category='category_name', category_grouping=list(...))
 padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=5, N=10000, simulate=TRUE, omit_05=NA,
                         break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, distribution='Benford',
-                        contingency_table=NA, plot=TRUE){
+                        contingency_table=NA, suppress_first_division_plots=NA, plot=TRUE){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, omit_05=omit_05,
               break_out=break_out, break_out_grouping=break_out_grouping, max_length=max_length, num_digits=num_digits,
-              N=N, category=category, category_grouping=category_grouping, plot=plot, simulate=simulate)
+              N=N, category=category, category_grouping=category_grouping, plot=plot, simulate=simulate,
+              suppress_first_division_plots=suppress_first_division_plots)
 
   #deal with contingency table and distribution situation
   if (TRUE %in% ((is.na(contingency_table)))){
@@ -477,19 +478,26 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
   if (plot){
     #2D histogram
     padding_plot = NA
+    subtitle = ''
+    if (!is.na(break_out)){
+      subtitle = paste('All ', break_out, sep='')
+    }
     if (is.na(category)){
-      padding_plot = hist_2D(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', 'AllBreakout', sep=''))
+      padding_plot = hist_2D(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', subtitle, sep=''))
     }
     #Multi-variable 2D histogram
     else {
-      print(result$diff_in_mean)
-      padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', 'AllBreakout', sep=''))
+      padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', subtitle, sep=''))
     }
     padding_test_results[['AllBreakout']][['plot']] = padding_plot
     dev.new()
     print(padding_plot)
   }
 
+  #trivial plotting arg
+  if (suppress_first_division_plots){
+    plot = FALSE #dont plot for break out
+  }
   #perform padding test on all break out categories
   if (!(is.na(break_out))){
     #get indexes for each category
@@ -525,6 +533,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       }
     }
   }
+  print("")
   print(paste('Minimum possible p-value =', 1/N))
   return(padding_test_results)
 }

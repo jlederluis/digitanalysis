@@ -21,28 +21,30 @@ ADT_PARTICIPANTS = process_digit_data(filepath = fp, digit_columns =  c("BENM", 
 UNPACK_DATA = process_digit_data(filepath = fp, digit_columns = c("BENM", "BENF", "BENTOT.Values"))
 
 #All digits test except first with expenditure
-ADT_ALEXP = all_digits_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
-                            suppress_first_division_plots=F, plot=T)
+ADT_ALEXP = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST', category = 'YEAR',
+                            suppress_first_division_plots=TRUE, plot=F)
 
 #First digit test with expenditure
-first_digit = all_digits_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', digit_places = 1, omit_05 = 0, break_out='DIST', suppress_first_division_plots=TRUE, plot=T)
+first_digit = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', digit_places = 1, omit_05 = 0, break_out='DIST',
+                              suppress_first_division_plots=TRUE, plot=T)
 
 #All digits test except first with participants
-ADT_BEN = all_digits_test(digitdata = ADT_PARTICIPANTS, data_columns = c("BENM", "BENF"), skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
+ADT_BEN = all_digits_test(digitdata = Data, data_columns = c("BENM", "BENF"), skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
                           suppress_first_division_plots=TRUE, plot=F)
 
 #Digit pair test with participants
-digit_pair = digit_pairs_test(digitdata = BENTOT, data_columns = 'BENTOT.Values', omit_05 = 0, break_out='DIST', plot=T)
+digit_pair = digit_pairs_test(digitdata = Data, data_columns = 'BENTOT.Values', omit_05 = 0, break_out='DIST', plot=T)
 
 #Rounding test with expenditure
-rounding = rounding_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', break_out='DIST', plot=T, rounding_patterns = c('0','00','000','0000', '00000', '000000', '5', '50', '500'))
+rounding = rounding_test(digitdata = Data, data_columns = 'ALEXP.Values', break_out='DIST',
+                         rounding_patterns = c('0','00','000','0000', '00000', '000000', '5', '50', '500'), plot=T)
 
 #Repeat test with expenditure
-repeats = repeat_test(digitdata = ALEXP, duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
+repeats = repeat_test(digitdata = Data, duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
                       break_out='DIST', data_columns = 'ALEXP.Values', rounding_patterns_to_omit=c('000'), plot=T)
 
 #Sector test with expenditure
-sector = sector_test(digitdata = ALEXP, category='SECTOR', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
+sector = sector_test(digitdata = Data, category='SECTOR', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
                      break_out='DIST', rounding_patterns_to_omit = '000', data_columns = 'ALEXP.Values',
                      category_instance_analyzing = 'TRN', plot=T) #sector test hasnt crerate a new sector grouping col in original data
 
@@ -50,11 +52,11 @@ sector = sector_test(digitdata = ALEXP, category='SECTOR', duplicate_matching_co
 high_low = high_low_test(digitdata = ALEXP, omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=F)
 
 #Unpack rounded numbers test with participants
-unpack = unpack_round_numbers_test(digitdata = UNPACK_DATA, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
-                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=F, plot=T)
+unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
+                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=T, plot=T)
 
 #Padding test with expenditure
-padding = padding_test(digitdata = ALEXP, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category=NA,
+padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SECTOR',
                        category_grouping=list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE")),
-                       simulate=F, plot=F)
+                       simulate=F, suppress_first_division_plots=TRUE, plot=T)
 

@@ -70,6 +70,10 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
     total_digits = c(total_digits, total_digits_curr)
     rounded_digits = c(rounded_digits, rounded_digits_curr)
   }
+  #might have NA entries
+  NA_indexes = which(is.na(total_digits))
+  total_digits = total_digits[-NA_indexes]
+  rounded_digits = rounded_digits[-NA_indexes]
   return(list(rounded_digits=rounded_digits, total_digits=total_digits, percent_rounded=mean(rounded_digits/total_digits)))
 }
 
@@ -134,6 +138,8 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   #calculate p value by t test for each category
   p_values = data.frame(matrix(nrow=1, ncol=0))
   rownames(p_values) = 'p_value'
+
+  #return(list(a=rounded_digits_list, b=total_digits_list))
 
   for (category_name in names(rounded_digits_list)){
     category_rounded = rounded_digits_list[[category_name]]/total_digits_list[[category_name]]

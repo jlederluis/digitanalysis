@@ -45,7 +45,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
       if (grepl(digitdata@left_aligned_column_names[i], name, fixed = TRUE)){
         #i is the digit place of this column
         #get frequency of each digit in each digit place
-        counts_obs = table(digits_table[name])
+        counts_obs = table(digits_table[name], useNA = 'no')
         if (!(is.na(omit_05[1]))){
           counts_obs = counts_obs[!names(counts_obs) %in% as.character(omit_05)]
         }
@@ -193,7 +193,6 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
 high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05=NA, test_type='chisq', distribution='Benford', contingency_table=NA,
                          skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, plot=TRUE){
-
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
               omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, break_out_grouping=break_out_grouping,
@@ -214,7 +213,6 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
     }
   }
-
   #perform high low test on all data
   result = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category, category_grouping, test_type)
   p_values_table = data.frame(matrix(nrow = 0, ncol = ncol(result$p_values)))
@@ -222,7 +220,6 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
   p_values_table['All', ] = result$p_values
 
   plots = list()
-
   if (plot){
     high_low_plot = NA
     if (nrow(result$high_digits_freq_table) != 1){
