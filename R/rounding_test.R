@@ -141,13 +141,20 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
                            use.names=FALSE) / unlist(total_digits_list[!(names(total_digits_list) %in% c(category_name))],
                                                      use.names=FALSE) #counts in all other categories
     #perform t test
-    # print(category_name)
-    # print(mean(category_rounded))
-    # print(mean(other_rounded))
+    print(category_name)
+    print(mean(category_rounded))
+    print(length(category_rounded))
+    print(mean(other_rounded))
+    print(length(other_rounded))
     p_value = t.test(category_rounded, other_rounded, alternative = "greater")$p.value
-    p_values[category_name] = p_value
+    p_values[category_name] = format_p_values(p_value)
   }
-
+  if (!(TRUE %in% grepl("\\D", colnames(p_values)))){
+    #then it is numeric..sort them
+    ordered_cols = c('All', as.character(sort(as.numeric(colnames(p_values)))))
+    p_values = p_values[ordered_cols, ]
+    percent_repeats_table = percent_repeats_table[c('All', ordered_cols), ]
+  }
 
   #return(percent_rounded_all)
 
@@ -167,15 +174,12 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   #     percent_rounded_table[category_name] = percent_rounded_in_category
   #   }
   # }
-  #get the mean of all the values computed
-  mean_percent_rounded = rowMeans(percent_rounded_table)
 
   #plot only if we break_out == have > 1 column
   rounding_plot = NA
   if (plot && !(is.na(break_out))){
     rounding_plot = hist_2D(percent_rounded_table, data_style='row', xlab=break_out, ylab='Percent Rounding',
-                            title=paste('Rounding Test \n', 'Broken out by ', break_out, sep=''),
-                            hline=mean_percent_rounded, hline_name='Mean Percentage Rounding')
+                            title=paste('Rounding Test \n', 'Broken out by ', break_out, sep=''))
     dev.new()
     print(rounding_plot)
   }

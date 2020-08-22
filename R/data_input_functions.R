@@ -27,6 +27,27 @@ DigitAnalysis = setClass('DigitAnalysis', slots = c(raw="data.frame", cleaned="d
                                                     numbers="data.frame", left_aligned="data.frame",
                                                     right_aligned="data.frame", left_aligned_column_names='character',
                                                     right_aligned_column_names='character', max='numeric'))
+#set some methods for DigitAnalysis only
+setMethod(f = 'show',
+          signature = 'DigitAnalysis',
+          definition = function(object){
+            print("An object of class 'DigitAnalysis'")
+            print('Slots:')
+            print(slotNames(object))
+          })
+
+#classof = function(x) {return("DigitAnalysis")}
+#method.skeleton("class", "DigitAnalysis")
+# setGeneric("class",
+#            function(x) {
+#              return("DigitAnalysis")
+#            })
+# setMethod(f = 'class',
+#           signature = c("DigitAnalysis"),
+#           definition = function(x) {
+#             class = 'DigitAnalysis'
+#             class
+#           })
 
 
 ############################################################
@@ -227,11 +248,17 @@ process_digit_data = function(filepath=NA, digit_columns=NA, filetype='csv', del
 
   ########################creation of all sub-objects########################
 
+  print('Reading from file...') #for user
+
   raw_data = make_raw_data(filepath, filetype, delim, raw_df)
+
+  print('Cleaning data...') #for user
 
   cleaned_data = make_cleaned_data(raw_data, digit_columns)
 
   numeric_data = make_numeric_data(cleaned_data, digit_columns)
+
+  print('Digitizing columns...') #for user
 
   left_aligned_data = make_aligned_data(cleaned_data, digit_columns, naming_method=left_aligned_column_names, align_direction='left')
 

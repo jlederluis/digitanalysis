@@ -82,7 +82,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
   }
 
   observed_high_digits_freq = data.frame(t(high_and_low_total_counts[1, ] / colSums(high_and_low_total_counts)))
-  return(list(p_value=p_value, observed_high_digits_freq=observed_high_digits_freq, high_freq_theoratical=high_freq_theoratical))
+  return(list(p_value=format_p_values(p_value), observed_high_digits_freq=observed_high_digits_freq, high_freq_theoratical=high_freq_theoratical))
 }
 
 #' Perform a single high low test. Helper function for \code{high_low_test}.
@@ -160,6 +160,11 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
       #update returning tables
       p_values[category_name] = result_of_category$p_value
       high_digits_freq_table[category_name] = result_of_category$observed_high_digits_freq
+    }
+    if (!(TRUE %in% grepl("\\D", colnames(p_values)[-1]))){
+      #then it is numeric..sort them
+      ordered_columns = c('All', as.character(sort(as.numeric(colnames(p_values)[-1]))))
+      p_values = p_values[ordered_columns]
     }
   }
   return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), high_freq_theoratical=result$high_freq_theoratical))
@@ -267,7 +272,14 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
         plots[[category_name]] = high_low_plot
       }
     }#need fix plot title  ##################
+
+    if (!(TRUE %in% grepl("\\D", rownames(p_values_table)[-1]))){
+      #then it is numeric..sort them
+      ordered_rows = c('All', as.character(sort(as.numeric(rownames(p_values_table)[-1]))))
+      p_values_table = p_values_table[ordered_rows, ]
+    }
   }
+
   return(list(p_values=p_values_table, statistical_test=test_type, plots=plots))
 }
 

@@ -176,7 +176,13 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
     else {
       p_value = t.test(category_counts, other_counts, alternative = "greater")$p.value
     }
-    p_values[category_name] = p_value
+    p_values[category_name] = format_p_values(p_value)
+  }
+  if (!(TRUE %in% grepl("\\D", colnames(p_values)))){
+    #then it is numeric..sort them
+    ordered_cols = c('All', as.character(sort(as.numeric(colnames(p_values)))))
+    p_values = p_values[ordered_cols, ]
+    percent_repeats_table = percent_repeats_table[c('All', ordered_cols), ]
   }
 #   #break out by category
 #   if (!(is.na(break_out))){
@@ -196,15 +202,12 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
 #       #print(T %in% is.na(data_of_category[1]))
 #     }
 #   }
-  #get the mean of all the values computed
-  mean_percent_repeated = rowMeans(percent_repeats_table)
 
   #plot only if we break_out == have > 1 column
   repeats_plot = NA
   if (plot && !(is.na(break_out))){
     repeats_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats',
-                          title=paste('Repeats Test \n', 'Broken out by ', break_out, sep=''),
-                          hline=mean_percent_repeated, hline_name='Mean Percentage Repeats')
+                          title=paste('Repeats Test \n', 'Broken out by ', break_out, sep=''))
     dev.new()
     print(repeats_plot)
   }

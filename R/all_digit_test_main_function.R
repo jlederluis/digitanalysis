@@ -87,6 +87,11 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
         }
       }
     }
+    if (!(TRUE %in% grepl("\\D", colnames(p_values)[-1]))){
+      #then it is numeric..sort them
+      ordered_cols = c('All', as.character(sort(as.numeric(colnames(p_values)[-1]))))
+      p_values = p_values[ordered_cols]
+    }
   }
   if (length(all_digit_test_plots) == 0){
     all_digit_test_plots = 'No plots since plot=FALSE'
@@ -237,6 +242,11 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
 
       p_values[category_name, ] = p_values_of_category
       plots[[category_name]] = plots_of_category
+    }
+    if (!(TRUE %in% grepl("\\D", rownames(p_values)[-1]))){
+      #then it is numeric..sort them
+      ordered_rows = c('All', as.character(sort(as.numeric(rownames(p_values)[-1]))))
+      p_values = p_values[ordered_rows, ]
     }
   }
   return(list(p_values=p_values, plots=plots))

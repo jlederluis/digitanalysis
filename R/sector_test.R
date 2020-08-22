@@ -73,7 +73,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   sector_repeats_table['All'] = NA
   #return(list(a=sector_repeats_table, b=repeats_table))
   sector_repeats_table['All'][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
-  p_values['All'] = p_value
+  p_values['All'] = format_p_values(p_value)
 
   #get indexes for each category in the specified sector column
   indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
@@ -95,7 +95,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
     #update table and p value
     sector_repeats_table[break_out_name] = NA
     sector_repeats_table[break_out_name][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
-    p_values[break_out_name] = p_value
+    p_values[break_out_name] = format_p_values(p_value)
   }
   #remove row for 'All' since we do not want to visualize that
   sector_repeats_table = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]

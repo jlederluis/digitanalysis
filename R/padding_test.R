@@ -307,6 +307,7 @@ get_p_value = function(observed_mean, simulated_mean, diff_in_mean){
         p_values[i] = 1/length(simulated_mean[,i])
       }
     }
+    p_values[i] = format_p_values(p_values[i])
   }
   return(p_values)
 }
@@ -393,6 +394,12 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
         p_values[category_name, ] = get_p_value(observed_mean[category_name, ], simulated_mean_in_category, diff_in_mean[category_name, ])
       }
       ######################################################
+      if (!(TRUE %in% grepl("\\D", rownames(p_values)[-1]))){
+        #then it is numeric..sort them
+        ordered_rows = c('All', as.character(sort(as.numeric(rownames(p_values)[-1]))))
+        p_values = p_values[ordered_rows, ]
+        diff_in_mean = diff_in_mean[ordered_rows, ]
+      }
     }
   }
   return(list(diff_in_mean=diff_in_mean, p_values=p_values))#, expected_mean=expected_mean, observed_mean=observed_mean))

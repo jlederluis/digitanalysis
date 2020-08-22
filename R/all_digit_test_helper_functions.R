@@ -374,3 +374,14 @@ make_sub_digitdata = function(digitdata, indexes){
   return(sub_digitdata)
 }
 
+#' Display p-value as decimals when p-value >= 0.001, and as scientific when p-value < 0.001.
+#'
+#' @param p_value The p-value computed
+#'
+#' @return p-value with better formatting
+format_p_values = function(p_value){
+  if (p_value < 0.001){
+    p_value = format(p_value, scientific = TRUE)
+  }
+  return(p_value)
+}

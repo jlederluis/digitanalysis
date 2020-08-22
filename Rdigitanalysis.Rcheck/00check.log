@@ -1,0 +1,193 @@
+* using log directory 'C:/Users/happy/OneDrive - California Institute of Technology/Desktop/digitanalysis/Rdigitanalysis.Rcheck'
+* using R version 4.0.2 (2020-06-22)
+* using platform: x86_64-w64-mingw32 (64-bit)
+* using session charset: ISO8859-1
+* using options '--no-manual --as-cran'
+* checking for file 'Rdigitanalysis/DESCRIPTION' ... OK
+* checking extension type ... Package
+* this is package 'Rdigitanalysis' version '0.1.0'
+* package encoding: UTF-8
+* checking package namespace information ... OK
+* checking package dependencies ... OK
+* checking if this is a source package ... OK
+* checking if there is a namespace ... OK
+* checking for executable files ... OK
+* checking for hidden files and directories ... OK
+* checking for portable file names ... OK
+* checking whether package 'Rdigitanalysis' can be installed ... OK
+* checking installed package size ... OK
+* checking package directory ... OK
+* checking for future file timestamps ... OK
+* checking DESCRIPTION meta-information ... WARNING
+Non-standard license specification:
+  Caltech/MIT
+Standardizable: FALSE
+* checking top-level files ... OK
+* checking for left-over files ... OK
+* checking index information ... OK
+* checking package subdirectories ... OK
+* checking R files for non-ASCII characters ... OK
+* checking R files for syntax errors ... OK
+* checking whether the package can be loaded ... OK
+* checking whether the package can be loaded with stated dependencies ... OK
+* checking whether the package can be unloaded cleanly ... OK
+* checking whether the namespace can be loaded with stated dependencies ... OK
+* checking whether the namespace can be unloaded cleanly ... OK
+* checking loading without being on the library search path ... OK
+* checking dependencies in R code ... WARNING
+'::' or ':::' imports not declared from:
+  'dplyr' 'readxl'
+'library' or 'require' calls not declared from:
+  'ggplot2' 'gridExtra'
+'library' or 'require' calls in package code:
+  'ggplot2' 'gridExtra'
+  Please use :: or requireNamespace() instead.
+  See section 'Suggested packages' in the 'Writing R Extensions' manual.
+package 'methods' is used but not declared
+* checking S3 generic/method consistency ... OK
+* checking replacement functions ... OK
+* checking foreign function calls ... OK
+* checking R code for possible problems ... NOTE
+Benford_table: no visible global function definition for 'write.csv'
+DigitAnalysis: no visible global function definition for 'new'
+all_digits_test: no visible global function definition for 'sprint'
+chi_square_gof: no visible global function definition for 'pchisq'
+counts_observed: no visible global function definition for
+  'complete.cases'
+digit_pairs_test: no visible global function definition for
+  'binom.test'
+get_expected_mean: no visible global function definition for
+  'complete.cases'
+get_observed_mean: no visible binding for global variable 'omit_05'
+high_low_by_digit_place: no visible global function definition for
+  'binom.test'
+hist_2D: no visible global function definition for 'ggplot'
+hist_2D: no visible global function definition for 'aes'
+hist_2D: no visible binding for global variable 'digit_places'
+hist_2D: no visible binding for global variable 'p_values'
+hist_2D: no visible global function definition for 'geom_bar'
+hist_2D: no visible global function definition for 'geom_hline'
+hist_2D_variables: no visible global function definition for 'ggplot'
+hist_2D_variables: no visible global function definition for 'aes'
+hist_2D_variables: no visible binding for global variable
+  'digit_places'
+hist_2D_variables: no visible binding for global variable 'p_values'
+hist_2D_variables: no visible binding for global variable 'category'
+hist_2D_variables: no visible global function definition for 'geom_bar'
+hist_2D_variables: no visible global function definition for
+  'position_dodge'
+hist_2D_variables: no visible global function definition for
+  'scale_x_discrete'
+load_Benford_table: no visible global function definition for
+  'read.csv'
+make_raw_data: no visible global function definition for 'read.csv'
+repeat_test: no visible binding for global variable 'sector_column'
+repeat_test: no visible binding for global variable 'sector_grouping'
+Undefined global functions or variables:
+  aes binom.test category complete.cases digit_places geom_bar
+  geom_hline ggplot new omit_05 p_values pchisq position_dodge read.csv
+  scale_x_discrete sector_column sector_grouping sprint write.csv
+Consider adding
+  importFrom("methods", "new")
+  importFrom("stats", "binom.test", "complete.cases", "pchisq")
+  importFrom("utils", "read.csv", "write.csv")
+to your NAMESPACE file (and ensure that your DESCRIPTION Imports field
+contains 'methods').
+* checking Rd files ... OK
+* checking Rd metadata ... OK
+* checking Rd line widths ... NOTE
+Rd file 'all_digits_test.Rd':
+  \examples lines wider than 100 characters:
+     all_digits_test(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=TRUE)
+     all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_di ... [TRUNCATED]
+     all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Unifo ... [TRUNCATED]
+
+Rd file 'high_low_test.Rd':
+  \examples lines wider than 100 characters:
+     high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, break_out=NA)
+     high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name')
+
+Rd file 'padding_test.Rd':
+  \examples lines wider than 100 characters:
+     padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0)
+     padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name')
+
+Rd file 'sector_test.Rd':
+  \examples lines wider than 100 characters:
+     sector_test(digitdata, sector_column='sector_name', sector_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
+     sector_test(digitdata, sector_column='sector_name', sector_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
+
+Rd file 'unpack_round_numbers_test.Rd':
+  \examples lines wider than 100 characters:
+     unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places='all' ... [TRUNCATED]
+     unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places=-1)
+     unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places=c(1,2 ... [TRUNCATED]
+
+These lines will be truncated in the PDF manual.
+* checking Rd cross-references ... OK
+* checking for missing documentation entries ... WARNING
+Undocumented code objects:
+  'benford_table' 'uniform_table'
+Undocumented data sets:
+  'benford_table' 'uniform_table'
+All user-level objects in a package should have documentation entries.
+See chapter 'Writing R documentation files' in the 'Writing R
+Extensions' manual.
+* checking for code/documentation mismatches ... OK
+* checking Rd \usage sections ... WARNING
+Undocumented arguments in documentation object 'drop_first_digit_places'
+  'align_direction'
+
+Undocumented arguments in documentation object 'drop_last_digit_places'
+  'align_direction'
+Documented arguments not in \usage in documentation object 'drop_last_digit_places':
+  'align_diretion'
+
+Undocumented arguments in documentation object 'find_percent_repeats'
+  'data'
+Documented arguments not in \usage in documentation object 'find_percent_repeats':
+  'dataThe'
+
+Undocumented arguments in documentation object 'grab_desired_aligned_columns'
+  'align_direction'
+
+Undocumented arguments in documentation object 'high_low_by_digit_place'
+  'digits_table'
+Documented arguments not in \usage in documentation object 'high_low_by_digit_place':
+  'data'
+
+Functions with \usage entries need to have the appropriate \alias
+entries, and all their arguments documented.
+The \usage entries must correspond to syntactically valid R code.
+See chapter 'Writing R documentation files' in the 'Writing R
+Extensions' manual.
+* checking Rd contents ... OK
+* checking for unstated dependencies in examples ... OK
+* checking contents of 'data' directory ... WARNING
+Files not of a type allowed in a 'data' directory:
+  'benford_table.Rdata'
+Please use e.g. 'inst/extdata' for non-R data files
+
+* checking data for non-ASCII characters ... OK
+* checking data for ASCII and uncompressed saves ... OK
+* checking examples ... ERROR
+Running examples in 'Rdigitanalysis-Ex.R' failed
+The error most likely occurred in:
+
+> base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+> ### Name: Benford_table
+> ### Title: Generates contingency table for Benford distribution (a.k.a
+> ###   expected digit frequency under Benford's Law). Columnn are digit
+> ###   place in increasing order, and rows are the digits (0 to 9) in
+> ###   increasing order
+> ### Aliases: Benford_table
+> 
+> ### ** Examples
+> 
+> Benford_table(N)
+Error in Benford_table(N) : object 'N' not found
+Execution halted
+* checking for non-standard things in the check directory ... OK
+* checking for detritus in the temp directory ... OK
+* DONE
+Status: 1 ERROR, 5 WARNINGs, 2 NOTEs

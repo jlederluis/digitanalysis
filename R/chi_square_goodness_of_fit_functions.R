@@ -104,6 +104,7 @@ chi_square_gof = function(observed_table, expected_table, freq=TRUE, suppress_lo
   #chi square test
   test_stats = sum((observed_table - expected_table)^2/expected_table, na.rm = TRUE)
   p_value = pchisq(test_stats, df = df, lower.tail = FALSE)
+  p_value = format_p_values(p_value)
   return(list(p_value=p_value, expected_table=expected_table, observed_table=observed_table))
 }
 

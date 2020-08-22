@@ -1,0 +1,110 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>R: Digit Analaysis</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="stylesheet" type="text/css" href="R.css" />
+</head><body>
+<h1> Digit Analaysis
+<img class="toplogo" src="../../../doc/html/Rlogo.svg" alt="[R logo]" />
+</h1>
+<hr/>
+<div style="text-align: center;">
+<a href="../../../doc/html/packages.html"><img class="arrow" src="../../../doc/html/left.jpg" alt="[Up]" /></a>
+<a href="../../../doc/html/index.html"><img class="arrow" src="../../../doc/html/up.jpg" alt="[Top]" /></a>
+</div><h2>Documentation for package &lsquo;Rdigitanalysis&rsquo; version 0.1.0</h2>
+
+<ul><li><a href="../DESCRIPTION">DESCRIPTION file</a>.</li>
+</ul>
+
+<h2>Help Pages</h2>
+
+
+<table width="100%">
+<tr><td style="width: 25%;"><a href="align_digits.html">align_digits</a></td>
+<td>Align the digits from the left/right of a data column and update it to the specified data frame</td></tr>
+<tr><td style="width: 25%;"><a href="all_digits_test.html">all_digits_test</a></td>
+<td>Performs all-digit-place two-way chi square test vs Benford’s Law</td></tr>
+<tr><td style="width: 25%;"><a href="Benford_stimulation.html">Benford_stimulation</a></td>
+<td>Stimulatse N Benford distribution datasets with matching digit places as the observed dataset. SHOULD I EXPORT THIS???!!!</td></tr>
+<tr><td style="width: 25%;"><a href="Benford_table.html">Benford_table</a></td>
+<td>Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law). Columnn are digit place in increasing order, and rows are the digits (0 to 9) in increasing order</td></tr>
+<tr><td style="width: 25%;"><a href="break_by_category.html">break_by_category</a></td>
+<td>Breaks the data on specfied column</td></tr>
+<tr><td style="width: 25%;"><a href="chi_square_gof.html">chi_square_gof</a></td>
+<td>Perform chi square test for goodness of fit test</td></tr>
+<tr><td style="width: 25%;"><a href="combine_by_columns.html">combine_by_columns</a></td>
+<td>Fetches the merged rows of all data columns aligned-right digits. MIGHT BE USEFUL IN ADT!</td></tr>
+<tr><td style="width: 25%;"><a href="compute_percent_rounded_digits.html">compute_percent_rounded_digits</a></td>
+<td>Compute the percent of rounded digits in a given dataframe. Removes all 0 entries before begin.</td></tr>
+<tr><td style="width: 25%;"><a href="counts_observed.html">counts_observed</a></td>
+<td>Find the frequency of terminal digit pairs occuring in the data being analzyed</td></tr>
+<tr><td style="width: 25%;"><a href="DigitAnalysis-class.html">DigitAnalysis</a></td>
+<td>The class object for RDigitAnalysis package</td></tr>
+<tr><td style="width: 25%;"><a href="DigitAnalysis-class.html">DigitAnalysis-class</a></td>
+<td>The class object for RDigitAnalysis package</td></tr>
+<tr><td style="width: 25%;"><a href="digit_pairs_test.html">digit_pairs_test</a></td>
+<td>Performs terminal digit pair binomial test vs uniform distribution (Benford’s Law)</td></tr>
+<tr><td style="width: 25%;"><a href="drop_first_digit_places.html">drop_first_digit_places</a></td>
+<td>Remove first digit from a left-aligned/right-aligned digits table</td></tr>
+<tr><td style="width: 25%;"><a href="drop_last_digit_places.html">drop_last_digit_places</a></td>
+<td>Remove last digit from a left-aligned/right-aligned digits table</td></tr>
+<tr><td style="width: 25%;"><a href="find_percent_repeats.html">find_percent_repeats</a></td>
+<td>Finds the percent of repeats in the given data based on given definition of a repeat (what columns need to match)</td></tr>
+<tr><td style="width: 25%;"><a href="get_benford_mean.html">get_benford_mean</a></td>
+<td>Obtains Benford mean in each digit place after specifying omitting 0 and 5 or not</td></tr>
+<tr><td style="width: 25%;"><a href="get_data_columns.html">get_data_columns</a></td>
+<td>Grab all data column names when data_columns = 'all'</td></tr>
+<tr><td style="width: 25%;"><a href="get_df.html">get_df</a></td>
+<td>Compute the degrees of freedom for the input chi square test table</td></tr>
+<tr><td style="width: 25%;"><a href="get_expected_mean.html">get_expected_mean</a></td>
+<td>Obtains expected mean conforming to Benford's Law from input 'data' based on the number of digits in each left-aligned digit place</td></tr>
+<tr><td style="width: 25%;"><a href="get_observed_mean.html">get_observed_mean</a></td>
+<td>Obtains the observed mean from input 'data'</td></tr>
+<tr><td style="width: 25%;"><a href="get_p_value.html">get_p_value</a></td>
+<td>Obtains p_values for comparing with Monte Carlo stimulated datasets</td></tr>
+<tr><td style="width: 25%;"><a href="get_round_unround_digitdata.html">get_round_unround_digitdata</a></td>
+<td>Creates two two copies of digitdata:         • A copy with only round entries in the specified numeric           column         • A copy with only unround entries in the specified numeric           column Helper function for 'unpack_round_numbers_test'.</td></tr>
+<tr><td style="width: 25%;"><a href="grab_desired_aligned_columns.html">grab_desired_aligned_columns</a></td>
+<td>Fetches the left-aligned/right-aligned data columns for analysis, drop the first and last digit places if desired</td></tr>
+<tr><td style="width: 25%;"><a href="high_low_by_digit_place.html">high_low_by_digit_place</a></td>
+<td>Computes the high low digit binomial test by digit place for desired data columns. Helper function for 'high_low_test'</td></tr>
+<tr><td style="width: 25%;"><a href="high_low_test.html">high_low_test</a></td>
+<td>Performs high to low digit tests vs probability of high to low digits by Benford's Law via binomial test</td></tr>
+<tr><td style="width: 25%;"><a href="input_check.html">input_check</a></td>
+<td>Asserts the input to user accessible functions in this package are of correct type and form.</td></tr>
+<tr><td style="width: 25%;"><a href="load_Benford_table.html">load_Benford_table</a></td>
+<td>Loads Benford contingency table</td></tr>
+<tr><td style="width: 25%;"><a href="make_aligned_data.html">make_aligned_data</a></td>
+<td>Create the dataframe with the left/right aligned digits of each data column to be analyzed-&gt;'left_aligned'/'right_aligned' of the class</td></tr>
+<tr><td style="width: 25%;"><a href="make_class.html">make_class</a></td>
+<td>Create an object instance for 'DigitAnalysis'. Parse and clean the data for digit analysis.</td></tr>
+<tr><td style="width: 25%;"><a href="make_cleaned_data.html">make_cleaned_data</a></td>
+<td>Clean up the numeric columns of dataframe</td></tr>
+<tr><td style="width: 25%;"><a href="make_numeric_data.html">make_numeric_data</a></td>
+<td>Create dataframe for only the numeric columns of the cleaned data</td></tr>
+<tr><td style="width: 25%;"><a href="make_raw_data.html">make_raw_data</a></td>
+<td>Load raw dataframe from file or from passed-in dataframe</td></tr>
+<tr><td style="width: 25%;"><a href="max_length.html">max_length</a></td>
+<td>Find the length of the largest number in a data column</td></tr>
+<tr><td style="width: 25%;"><a href="obtain_observation.html">obtain_observation</a></td>
+<td>Parse cleaned digits table from 'parse_digit_places' to obtain observation table for chi square test</td></tr>
+<tr><td style="width: 25%;"><a href="padding_test.html">padding_test</a></td>
+<td>Performs padding test vs stimulations of Benford conforming datasets via percentile</td></tr>
+<tr><td style="width: 25%;"><a href="parse_contigency_table.html">parse_contigency_table</a></td>
+<td>Parse the contigency table to have exclusively the desired digits and digit places</td></tr>
+<tr><td style="width: 25%;"><a href="parse_digit_places.html">parse_digit_places</a></td>
+<td>Obtain exclusively the desired digit places for left aligned digits table</td></tr>
+<tr><td style="width: 25%;"><a href="repeat_test.html">repeat_test</a></td>
+<td>Performs repeat test or sector effect test</td></tr>
+<tr><td style="width: 25%;"><a href="rounding_test.html">rounding_test</a></td>
+<td>Performs rounding test vs uniform distribution across categories in a specified data column</td></tr>
+<tr><td style="width: 25%;"><a href="sector_test.html">sector_test</a></td>
+<td>Performs sector test to analyze uneven distribution of percent repeats across sectors (supposed to be uniform). A wrapper function for 'repeat_test'.</td></tr>
+<tr><td style="width: 25%;"><a href="single_column_aligned.html">single_column_aligned</a></td>
+<td>Fetches the left/right aligned table for a single numeric data column</td></tr>
+<tr><td style="width: 25%;"><a href="unpacking_round_number_split.html">unpacking_round_number_split</a></td>
+<td>Get the indexes of round and unround entries in the specified column in 'digitdata'</td></tr>
+<tr><td style="width: 25%;"><a href="unpack_round_numbers_test.html">unpack_round_numbers_test</a></td>
+<td>Performs unpacking unround number test by performing all-digit place two-way chi square test vs Benford’s Law. A wrapper function for 'all_digit_test'.</td></tr>
+</table>
+</body></html>

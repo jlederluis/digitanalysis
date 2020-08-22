@@ -116,7 +116,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
   p_value = binom.test(x=counts, p = p, alternative = 'l')$p.value ##############has to specify p = p !!!!!!
 
   #dataframe of p values to return
-  p_values = data.frame(All=p_value)
+  p_values = data.frame(All=format_p_values(p_value))
 
   #freq of digit pairs for plotting
   freq_digit_pairs = data.frame(All=counts[1]/sum(counts))
@@ -131,8 +131,14 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
       counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, indexes_of_category)
 
       p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = 'l')$p.value ############
-      p_values[category_name] = p_value_in_category #p-value
+      p_values[category_name] = format_p_values(p_value_in_category) #p-value
       freq_digit_pairs[category_name] = counts_in_category[1]/sum(counts_in_category) #for plotting
+    }
+    if (!(TRUE %in% grepl("\\D", colnames(p_values)[-1]))){
+      #then it is numeric..sort them
+      ordered_cols = c('All', as.character(sort(as.numeric(colnames(p_values)[-1]))))
+      p_values = p_values[ordered_cols]
+      freq_digit_pairs = freq_digit_pairs[ordered_cols]
     }
   }
   #plot only if we break_out == have > 1 column

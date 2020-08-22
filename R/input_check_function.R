@@ -20,7 +20,7 @@
 #' @param distribution Defaulted to NA. Pass in to check if it is a valid input.
 #' @param plot Defaulted to NA. Pass in to check if it is a valid input.
 #' @param skip_last_digit Defaulted to NA. Pass in to check if it is a valid input.
-#' @param unpacking_rounding_column Defaulted to NA. Pass in to check if it is a valid input.
+#' @param rounding_split_column Defaulted to NA. Pass in to check if it is a valid input.
 #' @param min_length Defaulted to NA. Pass in to check if it is a valid input.
 #' @param duplicate_matching_cols Defaulted to NA. Pass in to check if it is a valid input.
 #' @param category Defaulted to NA. Pass in to check if it is a valid input.
@@ -35,7 +35,7 @@
 #'
 #' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
-                       break_out_grouping=NA, distribution=NA, plot=NA, skip_last_digit=NA, unpacking_rounding_column=NA, min_length=NA,
+                       break_out_grouping=NA, distribution=NA, plot=NA, skip_last_digit=NA, rounding_split_column=NA, min_length=NA,
                        duplicate_matching_cols=NA, category=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA,
                        standard_df=NA, rounding_patterns=NA, suppress_low_N=NA, suppress_first_division_plots=NA,
                        suppress_second_division_plots=NA, simulate=NA) {
@@ -54,7 +54,7 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
 
   #data_columns must be either 'all', a single column name, or an array of column names desired to analyze
   if (TRUE %in% (!(is.na(data_columns)))){
-    if (data_columns != 'all'){
+    if (any(data_columns != 'all')){
       if (!(is.character(data_columns))){
         stop("data_columns must be either 'all', a single column name, or an array of column names desired to analyze!")
       }
@@ -64,7 +64,7 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   #check digit_places
   if (TRUE %in% (!(is.na(digit_places)))){
     #digit_places must be either 'all', a single digit place integer, or an array of digit places desired to analyze
-    if (digit_places != 'all'){
+    if (any(digit_places != 'all')){
       if (!(is.numeric(digit_places))){
         stop("digit_places must be either 'all', a single digit place integer, or an array of digit places desired to analyze!")
       }
@@ -160,10 +160,10 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
   }
 
-  #unpacking_rounding_column must be a string specifying a column name in the data
-  if (TRUE %in% (!(is.na(unpacking_rounding_column)))){
-    if (!(is.character(unpacking_rounding_column))){
-      stop('unpacking_rounding_column must be a string specifying a column name in the data!')
+  #rounding_split_column must be a string specifying a column name in the data
+  if (TRUE %in% (!(is.na(rounding_split_column)))){
+    if (!(is.character(rounding_split_column))){
+      stop('rounding_split_column must be a string specifying a column name in the data!')
     }
   }
 
