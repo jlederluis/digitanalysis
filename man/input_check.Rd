@@ -16,7 +16,7 @@ input_check(
   distribution = NA,
   plot = NA,
   skip_last_digit = NA,
-  unpacking_rounding_column = NA,
+  rounding_split_column = NA,
   min_length = NA,
   duplicate_matching_cols = NA,
   category = NA,
@@ -54,7 +54,7 @@ input_check(
 
 \item{skip_last_digit}{Defaulted to NA. Pass in to check if it is a valid input.}
 
-\item{unpacking_rounding_column}{Defaulted to NA. Pass in to check if it is a valid input.}
+\item{rounding_split_column}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{min_length}{Defaulted to NA. Pass in to check if it is a valid input.}
 

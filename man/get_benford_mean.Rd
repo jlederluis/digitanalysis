@@ -4,7 +4,7 @@
 \alias{get_benford_mean}
 \title{Obtains Benford mean in each digit place after specifying omitting 0 and 5 or not}
 \usage{
-get_benford_mean(contingency_table, omit_05 = c(0, 5))
+get_benford_mean(contingency_table, omit_05 = NA)
 }
 \arguments{
 \item{contingency_table}{The user-input probability table of arbitrary distribution. Overwrites \code{distribution} if not NA.

@@ -6,9 +6,9 @@
 \usage{
 rounding_test(
   digitdata,
+  rounding_patterns,
+  break_out,
   data_columns = "all",
-  rounding_patterns = c("0", "00", "000", "0000", "00000", "000000", "5", "50", "500"),
-  break_out = NA,
   break_out_grouping = NA,
   plot = TRUE
 )
@@ -16,21 +16,19 @@ rounding_test(
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
-an array of column names, as characters; a single column name, as character.}
-
 \item{rounding_patterns}{The patterns to be counted as rounding digits.
 \itemize{
   \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
-  \item Defaulted to c('0','00','000','0000', '00000', '000000', '5', '50', '500').
   \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
 }}
 
 \item{break_out}{\itemize{
   \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
   \item The first division (usually x-axis) shown in plots.
-  \item Default to NA.
 }}
+
+\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
+an array of column names, as characters; a single column name, as character.}
 
 \item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
 \itemize{

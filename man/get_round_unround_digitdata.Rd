@@ -9,12 +9,12 @@
 }
 Helper function for \code{unpack_round_numbers_test}.}
 \usage{
-get_round_unround_digitdata(digitdata, unpacking_rounding_column)
+get_round_unround_digitdata(digitdata, rounding_split_column)
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{unpacking_rounding_column}{The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.}
+\item{rounding_split_column}{The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.}
 }
 \value{
 A list with two DigitAnalysis objects: round_digitdata and unround_digitdata

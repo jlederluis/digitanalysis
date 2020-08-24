@@ -7,8 +7,8 @@ A wrapper function for \code{all_digit_test}.}
 \usage{
 unpack_round_numbers_test(
   digitdata,
-  unpacking_rounding_column,
-  data_columns = "all",
+  rounding_split_column,
+  analysis_columns = "all",
   digit_places = "all",
   break_out = NA,
   break_out_grouping = NA,
@@ -28,9 +28,9 @@ unpack_round_numbers_test(
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{unpacking_rounding_column}{The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.}
+\item{rounding_split_column}{The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.}
 
-\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
+\item{analysis_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
 
 \item{digit_places}{The indexes of left-aligned digit places to analyze. There are three options:
@@ -98,7 +98,7 @@ Performs unpacking unround number test by performing all-digit place two-way chi
 A wrapper function for \code{all_digit_test}.
 }
 \examples{
-unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places='all')
-unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places=-1)
-unpack_round_numbers_test(digitdata, contingency_table, unpacking_rounding_column='Column Name', data_columns='all', digit_places=c(1,2,3), omit_05=NA)
+unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places='all')
+unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places=-1)
+unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places=c(1,2,3), omit_05=NA)
 }

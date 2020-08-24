@@ -7,40 +7,34 @@ A wrapper function for \code{repeat_test}.}
 \usage{
 sector_test(
   digitdata,
+  break_out,
   category,
-  category_grouping = NA,
-  data_columns = "all",
-  duplicate_matching_cols = "digit_columns",
-  break_out = NA,
+  category_instance_analyzing,
+  data_columns = NA,
+  duplicate_matching_cols = "all",
   break_out_grouping = NA,
-  round_digit_to_skip = NA,
+  category_grouping = NA,
+  rounding_patterns_to_omit = NA,
   plot = TRUE
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+}}
+
 \item{category}{The column for splitting the data into sectors for separate analysis. The second division (usually variables) shown in plots.}
 
-\item{category_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{category} is not NA.
-\itemize{
-  \item Each the names of the elements in the list is the category name
-  \item Each array contains the values belonging to that category
-  \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
-  \code{category} will be in a separate group.
-}}
+\item{category_instance_analyzing}{The instance of the category to perform t test on.}
 
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
 
 \item{duplicate_matching_cols}{An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
 Must include all columns in \code{data_columns}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.}
-
-\item{break_out}{\itemize{
-  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
-  \item The first division (usually x-axis) shown in plots.
-  \item Default to NA.
-}}
 
 \item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
 \itemize{
@@ -50,11 +44,18 @@ Must include all columns in \code{data_columns}. Default to 'all', meaning match
   \code{break_out} will be in a separate group.
 }}
 
-\item{round_digit_to_skip}{Whether to omit all rounding numbers in \code{data_columns} represented by numbers ending in 0 or both 0 and 5.
+\item{category_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{category} is not NA.
 \itemize{
-  \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
-  \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
-  \item If not omitting rounded numbers, pass in NA. Default to NA.
+  \item Each the names of the elements in the list is the category name
+  \item Each array contains the values belonging to that category
+  \item If it is remain as NA as default, while \code{category} is not NA, then \code{category_grouping} will default to every individual item in
+  \code{category} will be in a separate group.
+}}
+
+\item{rounding_patterns_to_omit}{The patterns to be counted as rounding digits to skip. Defaulted to NA.
+\itemize{
+  \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
+  \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}

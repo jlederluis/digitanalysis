@@ -289,7 +289,8 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       p_values_table = p_values_table[ordered_rows, ]
     }
   }
+  plot=NA
 
-  return(list(p_values=p_values_table, statistical_test=test_type, plots=plots))
+  return(list(p_values=p_values_table, statistical_test=test_type))#, plots=plots))
 }
 

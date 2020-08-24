@@ -9,7 +9,7 @@ hist_2D(
   data_style = "row",
   xlab = "Digits",
   ylab = "Frequency",
-  title = "2D Histogram",
+  title = "2D Barplot",
   hline = NA,
   hline_name = "",
   abline = NA,

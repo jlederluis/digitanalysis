@@ -4,12 +4,12 @@
 \alias{unpacking_round_number_split}
 \title{Get the indexes of round and unround entries in the specified column in \code{digitdata}}
 \usage{
-unpacking_round_number_split(digitdata, unpacking_rounding_column)
+unpacking_round_number_split(digitdata, rounding_split_column)
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
-\item{unpacking_rounding_column}{The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.}
+\item{rounding_split_column}{The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.}
 }
 \value{
 Indexes of rounded entries in the specified column

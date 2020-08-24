@@ -10,7 +10,7 @@ hist_3d(
   xlab = "Digits",
   ylab = "Digit Places",
   zlab = "Frequency",
-  title = "3D Bar Plot",
+  title = "3D Barplot",
   theta = 55,
   phi = 16,
   save = FALSE

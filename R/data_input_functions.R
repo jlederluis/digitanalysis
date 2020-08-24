@@ -270,6 +270,8 @@ process_digit_data = function(filepath=NA, digit_columns=NA, filetype='csv', del
 
   DigitData = DigitAnalysis(raw=raw_data, cleaned=cleaned_data, numbers=numeric_data, left_aligned=left_aligned_data, right_aligned=right_aligned_data,
                             left_aligned_column_names=left_aligned_column_names, right_aligned_column_names=right_aligned_column_names, max=0)
+
+  print('Complete!') #for user
   return(DigitData)
 }
 

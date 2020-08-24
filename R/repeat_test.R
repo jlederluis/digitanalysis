@@ -111,11 +111,11 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
   # data_columns = get_data_columns(digitdata, data_columns)
 
   if (is.na(data_columns) && !(is.na(rounding_patterns_to_omit))){
-    warning("Are you sure to not specify data_columns? rounding_patterns_to_omit omit rounded numbers in data_columns!")
+    warning("data_columns was left blank. Repeats are not corrected for rounding!")
   }
 
   if (is.na(rounding_patterns_to_omit) && !(is.na(data_columns))){
-    warning("Are you sure to not specify rounding_patterns_to_omit? Rounded numbers in data_columns are omitted based on rounding_patterns_to_omit!")
+    warning("rounding_patterns_to_omit was left blank. Repeats are not corrected for rounding!")
   }
 
 

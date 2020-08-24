@@ -4,7 +4,7 @@
 \alias{get_observed_mean}
 \title{Obtains the observed mean from input \code{data}}
 \usage{
-get_observed_mean(data, num_digits, max_length)
+get_observed_mean(data, num_digits, max_length, omit_05)
 }
 \arguments{
 \item{data}{A dataframe of right-aligned digits table, preferably from \code{combine_by_columns}}
@@ -12,6 +12,8 @@ get_observed_mean(data, num_digits, max_length)
 \item{num_digits}{The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.}
 
 \item{max_length}{The length of the longest numbers considered. Defaulted to 8.}
+
+\item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 }
 \value{
 A table of observed mean for the dataset \code{data}

@@ -6,28 +6,27 @@
 \usage{
 repeat_test(
   digitdata,
-  data_columns = "all",
+  break_out,
+  data_columns = NA,
   duplicate_matching_cols = "all",
-  break_out = NA,
   break_out_grouping = NA,
-  round_digit_to_skip = NA,
+  rounding_patterns_to_omit = NA,
   plot = TRUE
 )
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
+\item{break_out}{\itemize{
+  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
+  \item The first division (usually x-axis) shown in plots.
+}}
+
 \item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
 an array of column names, as characters; a single column name, as character.}
 
 \item{duplicate_matching_cols}{An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
 Must include all columns in \code{data_columns}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.}
-
-\item{break_out}{\itemize{
-  \item The data column (non-numeric!) to split up the dataset based on different categories in the column if specified as an character.
-  \item The first division (usually x-axis) shown in plots.
-  \item Default to NA.
-}}
 
 \item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
 \itemize{
@@ -37,11 +36,10 @@ Must include all columns in \code{data_columns}. Default to 'all', meaning match
   \code{break_out} will be in a separate group.
 }}
 
-\item{round_digit_to_skip}{Whether to omit all rounding numbers in \code{data_columns} represented by numbers ending in 0 or both 0 and 5.
+\item{rounding_patterns_to_omit}{The patterns to be counted as rounding digits to skip. Defaulted to NA.
 \itemize{
-  \item If omitting rounded numbers as numbers ending in both 0 and 5, pass in c(0,5) or c(5,0)
-  \item If omitting rounded numbers as numbers ending in only 0 pass in 0 or c(0)
-  \item If not omitting rounded numbers, pass in NA. Default to NA.
+  \item An array of characters such as c('0','00','000','5','50','500', '75', '25').
+  \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
