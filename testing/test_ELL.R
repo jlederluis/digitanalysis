@@ -64,6 +64,12 @@ unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENT
 
 #Padding test with expenditure
 padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
-                       simulate=F, suppress_first_division_plots=TRUE, plot=F)
+                       simulate=F, suppress_first_division_plots=TRUE, plot=T)
 
+
+
+library(digitanalysis)
+#filepath
+fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
+replicate_EEL_10_tests(fp)
 

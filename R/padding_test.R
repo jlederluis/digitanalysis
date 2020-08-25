@@ -539,7 +539,9 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       }
     }
   }
-  print('Complete!')
+  if (simulate){
+    print('Complete!')
+  }
   print(paste('Minimum possible p-value =', 1/N))
   return(padding_test_results)
 }

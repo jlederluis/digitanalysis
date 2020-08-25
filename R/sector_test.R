@@ -105,7 +105,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   # sector_repeats_table = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]
 
   #plot
-  sector_plot = NA
+  sector_plot = 'No plot with plot=FALSE'
   if (plot){
     sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='row', xlab=break_out, ylab='Percent Repeats',
                                     title=paste('Sector Effect Test \n', 'Broken out by ', break_out, ' \ncategory = ', category, sep=''))
