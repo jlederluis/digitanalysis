@@ -40,7 +40,7 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
   colnames(plotting_data) = c('x', 'y') #ensure col name are correct
 
   #2d plot
-  requireNamespace("ggplot2")
+  require("ggplot2")
   hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
     geom_bar(stat="identity", width=width) + xlab(xlab) + ylab(ylab) + ggtitle(title) + scale_x_discrete(limits=rownames(data)) +
     scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0)), limits = c(min(0, 1.1 * min(data)), 1.1 * max(data))) + theme_bw() +
@@ -91,9 +91,7 @@ hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Freque
 
   #stacked 2d barplot with multiple groups
   #use position=position_dodge()
-  #requireNamespace("ggplot2")
-  loadNamespace("ggplot2")
-  #library(ggplot2)
+  require("ggplot2")
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
     scale_fill_grey(start=0.7, end=0.1) + xlab(xlab) + ylab(ylab) + ggtitle(title) +
@@ -136,9 +134,7 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
   for (i in 1:length(observed_table)){
     curr_digit_place = colnames(observed_table)[i]
     #create ggplot object for abline distribution
-    #requireNamespace("ggplot2")
-    loadNamespace("ggplot2")
-    #library(ggplot2)
+    require("ggplot2")
     dist_line = geom_line(data = data.frame(x=rownames(expected_table), y=expected_table[[i]]), aes(x = x, y = y, group=1, linetype='Expected Distribution'), color='red', lwd=1)
     hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(curr_digit_place, ' \n', name, sep=''), abline=dist_line)
     plot_list[[curr_digit_place]] = hist_digit_place_i

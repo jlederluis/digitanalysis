@@ -30,7 +30,7 @@ Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.
 
 #All digits test except first with expenditure
 ADT_ALEXP = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
-                            suppress_first_division_plots=TRUE, plot=F)
+                            suppress_first_division_plots=TRUE, plot=T)
 
 #First digit test with expenditure
 first_digit = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', digit_places = 1, omit_05 = 0, break_out='DIST',
@@ -54,7 +54,7 @@ repeats = repeat_test(digitdata = Data, duplicate_matching_cols=c("ALEXP.Values"
 #Sector test with expenditure
 sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
                      break_out='DIST', rounding_patterns_to_omit = '000', data_columns = 'ALEXP.Values',
-                     category_instance_analyzing = 'TRN_TRV_VEH', plot=F)
+                     category_instance_analyzing = 'TRN_TRV_VEH', plot=T, remove_all_category_visualize = T)
 
 #High low test with expenditure
 high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=F)

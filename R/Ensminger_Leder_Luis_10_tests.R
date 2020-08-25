@@ -17,9 +17,9 @@
 #' @export
 #'
 #' @examples
-#' replicate_EEL_10_tests(fp=filepath)
-#' replicate_EEL_10_tests(raw_df=dataframe)
-replicate_EEL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
+#' replicate_ELL_10_tests(fp=filepath)
+#' replicate_ELL_10_tests(raw_df=dataframe)
+replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
   #data
   Data = NA
   if (!is.na(fp)){

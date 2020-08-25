@@ -133,5 +133,5 @@ unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_
   #merge the results
   #p_values = rbind(round_p_values, unround_p_values)
   #rownames(p_values) = c('round', 'unround')
-  return(list(round=round_result$p_values, unround=unround_result$p_values, plots=returning_plots))
+  return(list(p_values=list(round=round_result$p_values, unround=unround_result$p_values), plots=returning_plots))
 }

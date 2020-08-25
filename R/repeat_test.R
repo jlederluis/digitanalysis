@@ -143,7 +143,7 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
   repeats_count_all = list()
 
   #df to store stats for plotting
-  percent_repeats_table = data.frame(AllBreakout=result_all$percent_repeats)
+  percent_repeats_table = data.frame(All=result_all$percent_repeats)
 
   #return(repeats_count_all)
 

@@ -209,7 +209,8 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
 #' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
 high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05=NA, test_type='chisq', distribution='Benford', contingency_table=NA,
-                         skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, plot=TRUE){
+                         skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, plot=TRUE,
+                         remove_all_category_visualize=FALSE){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
               omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, break_out_grouping=break_out_grouping,
@@ -323,19 +324,24 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
 
   high_low_plot = 'No plot with plot=FALSE or without break_out'
   if (plot){
+    #remove col for 'All' if we do not want to visualize that
+    plot_data = observed_freq_table
+    if (remove_all_category_visualize){
+      plot_data = observed_freq_table[!(colnames(observed_freq_table) %in% c('All'))]
+    }
+
     if (ncol(expected_freq_table) != 1){
       #2D plot with variables
-      high_low_plot = hist_2D_variables(observed_freq_table, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
+      high_low_plot = hist_2D_variables(plot_data, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
     }
     else {
       #2D plot
       dist_line = geom_line(data = data.frame(x=rownames(expected_freq_table), y=expected_freq_table[[1]]), aes(x = x, y = y, group=1, linetype='Expected High Digits Frequency'), color='red', lwd=1)
-      high_low_plot = hist_2D(observed_freq_table, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'), abline = dist_line)
-
+      high_low_plot = hist_2D(plot_data, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'), abline = dist_line)
     }
     dev.new()
     print(high_low_plot)
   }
-  return(list(p_values=p_values_table, statistical_test=test_type, plot=high_low_plot))
+  return(list(p_values=p_values_table, percent_high_digits=observed_freq_table, statistical_test=test_type, plot=high_low_plot))
 }
 

@@ -18,6 +18,7 @@
 #'   \code{category} will be in a separate group.
 #' }
 #' @param category_instance_analyzing The instance of the category to perform t test on.
+#' @param remove_all_category_visualize TRUE or FALSE: If TRUE, remove visualization of 'All Category' dataset for plots
 #' @inheritParams repeat_test
 #'
 #' @return
@@ -33,7 +34,7 @@
 #' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
 #' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
 sector_test = function(digitdata, break_out, category, category_instance_analyzing, data_columns=NA, duplicate_matching_cols='all',
-                       break_out_grouping=NA, category_grouping=NA, rounding_patterns_to_omit=NA, plot=TRUE){
+                       break_out_grouping=NA, category_grouping=NA, rounding_patterns_to_omit=NA, plot=TRUE, remove_all_category_visualize=FALSE){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols,
@@ -56,10 +57,10 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   #initialize repeats table to be returned
   category_names = names(break_by_category(digitdata@cleaned, category, category_grouping))
   sector_repeats_table = data.frame(matrix(nrow = length(category_names)+1, ncol = 0))
-  rownames(sector_repeats_table) = c('AllBreakout', category_names) #ensure each row is fixed for a category when append
+  rownames(sector_repeats_table) = c('All', category_names) #ensure each row is fixed for a category when append
   #order rownames if they are numbers
   if (!(TRUE %in% grepl("\\D", category_names))){
-    rownames(sector_repeats_table) = c('AllBreakout', as.character(sort(as.numeric(colnames(p_values)))))
+    rownames(sector_repeats_table) = c('All', as.character(sort(as.numeric(colnames(p_values)))))
   }
 
   #intialize p values table for t test value on
@@ -101,13 +102,19 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
     sector_repeats_table[break_out_name][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
     p_values[break_out_name] = format_p_values(p_value)
   }
-  # #remove row for 'All' since we do not want to visualize that
-  # sector_repeats_table = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]
+  #remove NA rows if exist
+  sector_repeats_table = sector_repeats_table[rowSums(is.na(sector_repeats_table)) != ncol(sector_repeats_table), ]
 
   #plot
   sector_plot = 'No plot with plot=FALSE'
   if (plot){
-    sector_plot = hist_2D_variables(data.frame(sector_repeats_table), data_style='row', xlab=break_out, ylab='Percent Repeats',
+    #remove row for 'All' if we do not want to visualize that
+    plot_data = sector_repeats_table
+    if (remove_all_category_visualize){
+      plot_data = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]
+    }
+
+    sector_plot = hist_2D_variables(data.frame(plot_data), data_style='row', xlab=break_out, ylab='Percent Repeats',
                                     title=paste('Sector Effect Test \n', 'Broken out by ', break_out, ' \ncategory = ', category, sep=''))
     dev.new()
     print(sector_plot)
