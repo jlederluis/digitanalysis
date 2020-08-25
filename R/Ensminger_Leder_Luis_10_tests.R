@@ -15,7 +15,11 @@
 #'
 #' @return The test statistics table and the plots for Ensingmer & Leder-Luis 10 Tests
 #' @export
-replicate_EEL_10_tests = function(fp, raw_df, plot=TRUE){
+#'
+#' @examples
+#' replicate_EEL_10_tests(fp=filepath)
+#' replicate_EEL_10_tests(raw_df=dataframe)
+replicate_EEL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
   #data
   Data = NA
   if (!is.na(fp)){
@@ -23,7 +27,7 @@ replicate_EEL_10_tests = function(fp, raw_df, plot=TRUE){
     D$SectorGroup <- D$SECTOR
     unique(D$SECTOR)
     D$SectorGroup[D$SectorGroup == "TRN" | D$SectorGroup == "TRAVEL" | D$SectorGroup == "VEHICLES"] <- "TRN_TRV_VEH"
-    D <- D[D$SECTOR != "MICRO", ]
+    # D <- D[D$SECTOR != "MICRO", ]
     Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.Values", "BENM", "BENF"))
   }
   else {

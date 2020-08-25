@@ -36,7 +36,7 @@ drop_disqualified_columns = function(observed_table, expected_table, freq=TRUE){
   if (ncol(expected_table) == 0){
     warning('Chi square test not performed: all digit place(s) have sample size below 5. To proceed anyway, set suppress_low_N = FALSE.')
     # stop('cannot proceed to perform chi square test because all digit places have at least one expecetd value < 5,
-    #      which violates the principle of chi square test!')
+    #      which violates the principle of chi square test')
   }
   return(list(observed_table=observed_table, expected_table=expected_table))
 }

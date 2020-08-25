@@ -42,13 +42,13 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
 
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){
-    stop("digitdata must be an object in the class DigitAnalysis! data need to be preprocessed into the DigitAnalysis format, use function make_class()!")
+    stop("digitdata must be an object in the class DigitAnalysis! data need to be preprocessed into the DigitAnalysis format, use function make_class()")
   }
 
   #contingency_table must be a dataframe
   if (TRUE %in% (!(is.na(contingency_table)))){
     if (!(is.data.frame(contingency_table))){
-      stop("contingency_table must be a dataframe!")
+      stop("contingency_table must be a dataframe")
     }
   }
 
@@ -56,7 +56,7 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   if (TRUE %in% (!(is.na(data_columns)))){
     if (any(data_columns != 'all')){
       if (!(is.character(data_columns))){
-        stop("data_columns must be either 'all', a single column name, or an array of column names desired to analyze!")
+        stop("data_columns must be either 'all', a single column name, or an array of column names desired to analyze")
       }
     }
   }
@@ -66,12 +66,12 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     #digit_places must be either 'all', a single digit place integer, or an array of digit places desired to analyze
     if (any(digit_places != 'all')){
       if (!(is.numeric(digit_places))){
-        stop("digit_places must be either 'all', a single digit place integer, or an array of digit places desired to analyze!")
+        stop("digit_places must be either 'all', a single digit place integer, or an array of digit places desired to analyze")
       }
       #multiple digit places test cannot have -1 as part of the array
       if (length(digit_places) > 1){
         if (!is.na(match(-1, digit_places))){
-          stop('multiple digits test cannot have last digit as part of the digit places input!')
+          stop('multiple digits test cannot have last digit as part of the digit places input')
         }
       }
     }
@@ -79,7 +79,7 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     if (TRUE %in% (!(is.na(skip_first_digit)))){
       if (skip_first_digit){
         if (!is.na(match(1, digit_places))){
-          stop('digit_places and skip_first_digit contradicts, both looking and not looking at the first digit place!')
+          stop('digit_places and skip_first_digit contradicts, both looking and not looking at the first digit place')
         }
       }
     }
@@ -88,7 +88,7 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   #skip_first_digit must be a boolean: TRUE or FALSE
   if (TRUE %in% (!(is.na(skip_first_digit)))){
     if (!(is.logical(skip_first_digit))){
-      stop('skip_first_digit must be a boolean: TRUE or FALSE!')
+      stop('skip_first_digit must be a boolean: TRUE or FALSE')
     }
   }
 
@@ -118,42 +118,42 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   #break_out must be a string specifying a column name in the data
   if (TRUE %in% (!(is.na(break_out)))){
     if (!(is.character(break_out))){
-      stop('break_out must be a string specifying a column name in the data!')
+      stop('break_out must be a string specifying a column name in the data')
     }
   }
 
   #break_out_grouping must be a list specifying the columns for grouping the first division of data to split upon
   if (TRUE %in% (!(is.na(break_out_grouping)))){
     if (!(is.list(break_out_grouping))){
-      stop('break_out_grouping must be a list specifying the columns for grouping the first division of data to split upon!')
+      stop('break_out_grouping must be a list specifying the columns for grouping the first division of data to split upon')
     }
   }
 
   #distribution must be either 'Benford' or 'Uniform'
   if (TRUE %in% (!(is.na(distribution)))){
     if (!(distribution %in% c('Benford', 'Uniform', 'benford', 'uniform'))){
-      stop("distribution must be either 'Benford' or 'Uniform', case insensitive!")
+      stop("distribution must be either 'Benford' or 'Uniform', case insensitive")
     }
   }
 
   #plot must be a boolean: TRUE or FALSE
   if (TRUE %in% (!(is.na(plot)))){
     if (!(is.logical(plot))){
-      stop('plot must be a boolean: TRUE or FALSE!')
+      stop('plot must be a boolean: TRUE or FALSE')
     }
   }
 
   #skip_last_digit must be a boolean: TRUE or FALSE
   if (TRUE %in% (!(is.na(skip_last_digit)))){
     if (!(is.logical(skip_last_digit))){
-      stop('skip_last_digit must be a boolean: TRUE or FALSE!')
+      stop('skip_last_digit must be a boolean: TRUE or FALSE')
     }
     #if doing last digit test, should not skip_last_digit
     if (TRUE %in% (!(is.na(digit_places)))){
       if (length(digit_places) == 1){
         if (digit_places == -1){
           if (skip_last_digit){
-            stop('skip_last_digit while doing a last digit test: contradiction!')
+            stop('skip_last_digit while doing a last digit test: contradiction')
           }
         }
       }
@@ -163,17 +163,17 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   #rounding_split_column must be a string specifying a column name in the data
   if (TRUE %in% (!(is.na(rounding_split_column)))){
     if (!(is.character(rounding_split_column))){
-      stop('rounding_split_column must be a string specifying a column name in the data!')
+      stop('rounding_split_column must be a string specifying a column name in the data')
     }
   }
 
   #min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test
   if (TRUE %in% (!(is.na(min_length)))){
     if (length(min_length) != 1){
-      stop("min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test!")
+      stop("min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test")
     }
     else if (!(is.numeric(min_length))){
-      stop("min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test!")
+      stop("min_length must be an integer >= 2 denoting the minimum length of the numbers to be analyzed in digit pair test")
     }
   }
 
@@ -181,7 +181,7 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   if (TRUE %in% (!(is.na(duplicate_matching_cols)))){
     if (duplicate_matching_cols[1] != 'all'){
       if (!(is.character(duplicate_matching_cols))){
-        stop("duplicate_matching_cols must be a single column name or an array of column names to define a exact duplicate!")
+        stop("duplicate_matching_cols must be a single column name or an array of column names to define a exact duplicate")
       }
     }
   }
@@ -189,81 +189,81 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
   #category must be a string specifying a column name in the data
   if (TRUE %in% (!(is.na(category)))){
     if (!(is.character(category))){
-      stop('category must be a string specifying a column name in the data!')
+      stop('category must be a string specifying a column name in the data')
     }
   }
 
   #category_grouping must be a list specifying the columns in each sector intended to split upon second division
   if (TRUE %in% (!(is.na(category_grouping)))){
     if (!(is.list(category_grouping))){
-      stop('category_grouping must be a list specifying the columns in each sector intended to split upon second division!')
+      stop('category_grouping must be a list specifying the columns in each sector intended to split upon second division')
     }
   }
 
   #high must be a single digit place integer or an array of digit places specifying the digits that are classified as high digits
   if (TRUE %in% (!(is.na(high)))){
     if (!(is.numeric(high))){
-      stop("high must be a single digit place integer or an array of digit places specifying the digits that are classified as high digits!")
+      stop("high must be a single digit place integer or an array of digit places specifying the digits that are classified as high digits")
     }
   }
 
   #max_length must be an integer denoting the maximum length of the numbers to be analyzed in padding test
   if (TRUE %in% (!(is.na(max_length)))){
     if (length(max_length) != 1){
-      stop("max_length must be an integer denoting the maximum length of the numbers to be analyzed in padding test!")
+      stop("max_length must be an integer denoting the maximum length of the numbers to be analyzed in padding test")
     }
     else if (!(is.numeric(max_length))){
-      stop("max_length must be an integer denoting the maximum length of the numbers to be analyzed in padding test!")
+      stop("max_length must be an integer denoting the maximum length of the numbers to be analyzed in padding test")
     }
   }
 
   #num_digits must be an integer denoting the number of digits from the right to be to be analyzed in padding test
   if (TRUE %in% (!(is.na(num_digits)))){
     if (length(num_digits) != 1){
-      stop("num_digits must be an integer denoting the number of digits from the right to be to be analyzed in padding test!")
+      stop("num_digits must be an integer denoting the number of digits from the right to be to be analyzed in padding test")
     }
     else if (!(is.numeric(num_digits))){
-      stop("num_digits must be an integer denoting the number of digits from the right to be to be analyzed in padding test!")
+      stop("num_digits must be an integer denoting the number of digits from the right to be to be analyzed in padding test")
     }
   }
 
   #N must be an integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test
   if (TRUE %in% (!(is.na(N)))){
     if (length(N) != 1){
-      stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
+      stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test")
     }
     else {
       if (!(is.numeric(N))){
-        stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
+        stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test")
       }
       else if (N < 1){
-        stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test!")
+        stop("N must be a positive integer denoting the number of datasets to be stimulated from Monte Carlo Process in padding test")
       }
     }
   }
   if (TRUE %in% (!(is.na(rounding_patterns)))){
     if (!(is.character(rounding_patterns))){
-      stop("rounding_patterns must be an array of characters denoting the endstring patterns that should be considered as rounding!")
+      stop("rounding_patterns must be an array of characters denoting the endstring patterns that should be considered as rounding")
     }
   }
   if (TRUE %in% (!(is.na(suppress_low_N)))){
     if (!(is.logical(suppress_low_N))){
-      stop("suppress_low_N must be a boolean denoting whether to suppress columns with entries < 5 in expected table for chi square test in all digit test!")
+      stop("suppress_low_N must be a boolean denoting whether to suppress columns with entries < 5 in expected table for chi square test in all digit test")
     }
   }
   if (TRUE %in% (!(is.na(suppress_first_division_plots)))){
     if (!(is.logical(suppress_first_division_plots))){
-      stop("suppress_first_division_plots must be a boolean denoting whether to suppress plots for first and second divisions in all digit test!")
+      stop("suppress_first_division_plots must be a boolean denoting whether to suppress plots for first and second divisions in all digit test")
     }
   }
   if (TRUE %in% (!(is.na(suppress_second_division_plots)))){
     if (!(is.logical(suppress_second_division_plots))){
-      stop("suppress_second_division_plots must be a boolean denoting whether to suppress plots for second divisions in all digits test!")
+      stop("suppress_second_division_plots must be a boolean denoting whether to suppress plots for second divisions in all digits test")
     }
   }
   if (TRUE %in% (!(is.na(simulate)))){
     if (!(is.logical(simulate))){
-      stop("simulate must be a boolean denoting whether to stimulate datasets to compute p-values in padding test!")
+      stop("simulate must be a boolean denoting whether to stimulate datasets to compute p-values in padding test")
     }
   }
 }
@@ -275,5 +275,5 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
 #            message("A warning occured:\n", w)
 #          },
 #          finally = {
-#            message("Finally done!")
+#            message("Finally done")
 #          })

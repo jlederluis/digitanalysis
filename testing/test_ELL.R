@@ -22,7 +22,7 @@ D <- read.csv(fp, stringsAsFactors = FALSE)
 D$SectorGroup <- D$SECTOR
 unique(D$SECTOR)
 D$SectorGroup[D$SectorGroup == "TRN" | D$SectorGroup == "TRAVEL" | D$SectorGroup == "VEHICLES"] <- "TRN_TRV_VEH"
-D <- D[D$SECTOR != "MICRO", ]
+# D <- D[D$SECTOR != "MICRO", ]
 #data
 Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.Values", "BENM", "BENF"))
 

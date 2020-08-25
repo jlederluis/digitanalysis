@@ -48,7 +48,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
       for (category_name in names(category_grouping)){
         if (NA %in% match(category_grouping[[category_name]], unique(digitdata@cleaned[[category]]))){
           print(category_name)
-          stop('specified category is not a category in the column break on second division!')
+          stop('specified category is not a category in the column break on second division')
         }
       }
     }

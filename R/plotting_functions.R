@@ -248,7 +248,7 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
   if (abs(sum(freq_digit_place) - 1) > 0.001){
     print(name)
     print(sum(freq_digit_place)-1)
-    stop('freq_digit_place must sum to 1 to be a weight vector!')
+    stop('freq_digit_place must sum to 1 to be a weight vector')
   }
   aggregate_expected = data.frame(matrix(nrow=0, ncol=1))
   colnames(aggregate_expected) = 'Aggregate Expected Frequency'
