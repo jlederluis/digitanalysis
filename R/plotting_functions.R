@@ -91,7 +91,9 @@ hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Freque
 
   #stacked 2d barplot with multiple groups
   #use position=position_dodge()
-  requireNamespace("ggplot2")
+  #requireNamespace("ggplot2")
+  loadNamespace("ggplot2")
+  #library(ggplot2)
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
     scale_fill_grey(start=0.7, end=0.1) + xlab(xlab) + ylab(ylab) + ggtitle(title) +
@@ -134,7 +136,9 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
   for (i in 1:length(observed_table)){
     curr_digit_place = colnames(observed_table)[i]
     #create ggplot object for abline distribution
-    requireNamespace("ggplot2")
+    #requireNamespace("ggplot2")
+    loadNamespace("ggplot2")
+    #library(ggplot2)
     dist_line = geom_line(data = data.frame(x=rownames(expected_table), y=expected_table[[i]]), aes(x = x, y = y, group=1, linetype='Expected Distribution'), color='red', lwd=1)
     hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(curr_digit_place, ' \n', name, sep=''), abline=dist_line)
     plot_list[[curr_digit_place]] = hist_digit_place_i
@@ -163,26 +167,47 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
-hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, save=FALSE){
+hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, save3Dfilename='', kwargs=NA){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
 
   x = NA
+  need_better_labels = FALSE
   if (NA %in% as.numeric(rownames(data))){
     x = 1:length(rownames(data))
+    need_better_labels = TRUE
   }
   else {
     x = as.numeric(rownames(data))
   }
+
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
+
+  #some stuff for when x != min(x):max(x) to make 3d plot nice
+  for (i in 1:length(x)){
+    if (!i %in% x){
+      #new_rows = data.frame(matrix(0, ncol=ncol(z), nrow=1))
+      z_begin = as.matrix(as.data.frame(z[1:i-1, ]))
+      z_end = as.matrix(as.data.frame(z[i:nrow(z), ]))
+      z = as.matrix(rbind(rbind(z_begin, rep(0, ncol(z))), z_end))
+    }
+  }
+
+  x = min(x):max(x)
+
   #rgl::open3d()
-  bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
+  # if (!is.na(kwargs)){
+  #   if (!is.null(kwargs$axes)){
+  #
+  #   }
+  # }
+  bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-1,
                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
 
   #xticks only when the rownames are not int
-  if (NA %in% (x == as.numeric(rownames(data)))){
+  if (need_better_labels){
     xticks = rownames(data)
     xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
     text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
@@ -199,16 +224,16 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   # text(zlabel_pos$x, zlabel_pos$y, labels=zticks, adj=c(0, NA), srt=0, cex=1)
 
 
-  # if (save){
-  #   filename = paste(title, ".pdf", sep='')
-  #   pdf(file = filename)
-  #   plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
-  #                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
-  #                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
-  #   # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
-  #   # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
-  #   dev.off()
-  # }
+  if (save3Dfilename != ''){
+    filename = paste(gsub('\n', '', title), save3Dfilename, ".pdf", sep='')
+    pdf(file = filename)
+    plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
+                   ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
+                   lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
+    # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
+    # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
+    dev.off()
+  }
 }
 
 #' Plot aggregated histogram for each digit weighted average across each digit place with expected distribution.

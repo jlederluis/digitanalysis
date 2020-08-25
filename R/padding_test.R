@@ -226,9 +226,6 @@ get_observed_mean = function(data, num_digits, max_length, omit_05){
 #' @return A dataframe for the mean of each simulated dataset in every digit place
 #' @export
 Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
-  #printing for user
-  print('Begin simulation...')
-
   #sample each digit place from right according to frequency table of our observed dataset
   #initialize the returned table
   simulated_mean = data.frame(matrix(nrow = 0, ncol = length(expected_mean)))
@@ -333,7 +330,9 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
   combined_data = combine_by_columns(digitdata, data_columns, indexes=NA)
 
   #printing for user
-  print(paste("Current category:", 'All'))
+  if (simulate){
+    print(paste("Simulating sub-dataset:", 'All'))
+  }
 
   #get expected and observed mean in each digit position
   lst = get_expected_mean(digitdata, combined_data, Benford_mean, max_length, num_digits, omit_05)
@@ -369,7 +368,9 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
     for (category_name in names(indexes_of_categories)){
 
       #printing for user
-      print(paste("Current category:", category_name))
+      if (simulate){
+        print(paste("Simulating sub-dataset:", category_name))
+      }
 
       #get the index of category containing multiple groups
       indexes_of_category = indexes_of_categories[[category_name]]
@@ -468,7 +469,10 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
   padding_test_results = list()
 
   #printing for user
-  print(paste("Current dataset:", 'All'))
+  if (simulate){
+    print(paste("Simulating N =", N))
+    print(paste("Simulating dataset:", 'All'))
+  }
 
   #perform padding test on all data
   result = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping, simulate)
@@ -506,7 +510,9 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
     #break by category for all
     for (break_out_name in names(indexes_of_categories)){
       #printing for user
-      print(paste("Current dataset:", break_out_name))
+      if (simulate){
+        print(paste("Simulating dataset:", break_out_name))
+      }
 
       indexes_of_category = indexes_of_categories[[break_out_name]]
 
@@ -533,7 +539,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       }
     }
   }
-  print("")
+  print('Complete!')
   print(paste('Minimum possible p-value =', 1/N))
   return(padding_test_results)
 }

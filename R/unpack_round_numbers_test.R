@@ -108,7 +108,16 @@ unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_
           #2 ggplot instance
           round_plot = round_result$plots[[break_out_name]][[category_name]]$aggregate_barplot
           unround_plot = unround_result$plots[[break_out_name]][[category_name]]$aggregate_barplot
-          merged_plot = plot_multiple_hist2d(list(round=round_plot, unround=unround_plot))
+
+          #find max and min y
+          ylim_round = ggplot_build(round_plot)$layout$panel_scales_y[[1]]$range$range
+          ylim_unround = ggplot_build(unround_plot)$layout$panel_scales_y[[1]]$range$range
+          max_y = max(ylim_round[2], ylim_unround[2])
+          min_y = min(ylim_round[1], ylim_unround[1])
+          merged_plot = plot_multiple_hist2d(list(round=round_plot + scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0)),
+                                                                                        limits = c(min(0, 1.1 * min_y), 1.1 * max_y)),
+                                                  unround=unround_plot + scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0)),
+                                                                                             limits = c(min(0, 1.1 * min_y), 1.1 * max_y))))
           merged_plots[[break_out_name]] = merged_plot
 
           dev.new()

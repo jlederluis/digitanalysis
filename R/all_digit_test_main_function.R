@@ -97,7 +97,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
     }
   }
   if (length(all_digit_test_plots) == 0){
-    all_digit_test_plots = 'No plots since plot=FALSE'
+    all_digit_test_plots = paste(subset_name, 'plots suppressed since plot=FALSE or suppress_first_division_plots=TRUE')
   }
   return(list(p_values=p_values, plots=all_digit_test_plots))
 }

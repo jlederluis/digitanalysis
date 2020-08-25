@@ -386,8 +386,9 @@ make_sub_digitdata = function(digitdata, indexes){
 #'
 #' @return p-value with better formatting
 format_p_values = function(p_value){
+  p_value = format(p_value, digits = 4)
   if (!is.na(p_value) && p_value < 0.001){
-    p_value = format(p_value, scientific = TRUE)
+    p_value = format(p_value, scientific = TRUE, digits = 4)
   }
   return(p_value)
 }

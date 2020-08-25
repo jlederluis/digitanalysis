@@ -32,10 +32,11 @@ drop_disqualified_columns = function(observed_table, expected_table, freq=TRUE){
     expected_table = expected_table[-disqualified_columns]
     observed_table = observed_table[-disqualified_columns]
   }
-  #stop if all columns have entries < 5, cannot perform chi square test
+  #warning if all columns have entries < 5, cannot perform chi square test
   if (ncol(expected_table) == 0){
-    stop('cannot proceed to perform chi square test because all digit places have at least one expecetd value < 5,
-         which violates the principle of chi square test!')
+    warning('Chi square test not performed: all digit place(s) have sample size below 5. To proceed anyway, set suppress_low_N = FALSE.')
+    # stop('cannot proceed to perform chi square test because all digit places have at least one expecetd value < 5,
+    #      which violates the principle of chi square test!')
   }
   return(list(observed_table=observed_table, expected_table=expected_table))
 }
@@ -90,6 +91,10 @@ chi_square_gof = function(observed_table, expected_table, freq=TRUE, suppress_lo
   #suppress columns in expected table if at least one cell in that column has expected value < 5
   if (suppress_low_N){
     tables_lst = drop_disqualified_columns(observed_table, expected_table, freq=freq)
+    #if all columns have entries < 5, cannot perform chi square test; return immediately
+    if (ncol(tables_lst$expected_table) == 0){
+      return(list(p_value=NA, expected_table=expected_table, observed_table=observed_table))
+    }
     observed_table = tables_lst$observed_table
     expected_table = tables_lst$expected_table
   }

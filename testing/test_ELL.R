@@ -60,14 +60,10 @@ high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_0
 
 #Unpack rounded numbers test with participants
 unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
-                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=T, plot=F)
+                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=TRUE, plot=F)
 
 #Padding test with expenditure
-padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SECTOR',
-                       category_grouping=list(Training_and_Transport=c("TRN", "TRAVEL", "VEHICLES"), Civil_Works=c("CW"), Goods_and_Equipment=c("GE")),
+padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
                        simulate=F, suppress_first_division_plots=TRUE, plot=F)
 
-
-# last_digit = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', digit_places = -1, omit_05 = 0, break_out='DIST',
-#                              suppress_first_division_plots=TRUE, plot=F)
 
