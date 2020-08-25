@@ -12,6 +12,7 @@ rm(list = ls())
 gc()
 #load stuff
 devtools::install_github("https://github.com/jlederluis/digitanalysis", force = TRUE)
+
 library(digitanalysis)
 #filepath
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
@@ -68,8 +69,7 @@ padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_leng
 
 
 
-library(digitanalysis)
 #filepath
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
-replicate_EEL_10_tests(fp)
+digitanalysis::replicate_EEL_10_tests(fp)
 

@@ -14,6 +14,7 @@
 #' @param plot TRUE or FALSE: If generate plot or not. Default to TRUE, might have bugs if set to FALSE lmao.
 #'
 #' @return The test statistics table and the plots for Ensingmer & Leder-Luis 10 Tests
+#' @export
 replicate_EEL_10_tests = function(fp, raw_df, plot=TRUE){
   #data
   Data = NA
@@ -58,11 +59,11 @@ replicate_EEL_10_tests = function(fp, raw_df, plot=TRUE){
                        category_instance_analyzing = 'TRN_TRV_VEH', plot=plot)
 
   #High low test with expenditure
-  high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST')#, category='YEAR', plot=T)
+  high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=plot)
 
   #Unpack rounded numbers test with participants
   unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
-                                     skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=TRUE, plot=F)
+                                     skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=TRUE, plot=plot)
 
   #Padding test with expenditure
   padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
@@ -95,6 +96,7 @@ replicate_EEL_10_tests = function(fp, raw_df, plot=TRUE){
   return(list(test_stats=result_table, plots=plots))
 }
 
+# result = replicate_EEL_10_tests(fp)
 
 
 
