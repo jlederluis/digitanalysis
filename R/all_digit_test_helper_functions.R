@@ -365,62 +365,6 @@ parse_contingency_table = function(digitdata, contingency_table, digit_places, s
 }
 
 
-#' #' Gets expected and observed table for data columns for last digit test
-#' #'
-#' #' @inheritParams all_digits_test
-#' #'
-#' #' @return A list with
-#' #' \itemize{
-#' #'   \item \code{observed_table} The observed table for last digit test
-#' #'   \item \code{expected_table} The expected table for last digit test
-#' #' }
-#' grab_data_last_digit_test = function(digitdata, data_columns, omit_05){
-#'
-#'   #last digit test
-#'
-#'   digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
-#'   #handle the data_columns = 'all' situation
-#'   data_columns = get_data_columns(digitdata, data_columns)
-#'   #digits_table-->usable data
-#'   for (col_name in data_columns){
-#'     single_column_digits = single_column_aligned(digitdata, col_name, align_direction='right')
-#'     digits_table = cbind(digits_table, single_column_digits[ncol(single_column_digits)])
-#'   }
-#'
-#'   #get observation
-#'   #create a table for collecting observations for n=max digit places, upper bound
-#'   observation_table = data.frame(matrix(0, nrow=10, ncol=1))
-#'   #name the columns
-#'   colnames(observation_table) = '1s'
-#'   #name the rows
-#'   rownames(observation_table) = 0:9
-#'   for (i in 1:length(usable_data)){
-#'     occurances = table(usable_data[i], useNA = 'no')
-#'     #update it to column j of observation table
-#'     #this occurances can be a null table
-#'     if (!(is.null(occurances))){
-#'       for (name in names(occurances)){
-#'         digit = as.integer(name)
-#'         #digit + 1 since index starts from 1 and digit starts from 0
-#'         observation_table[digit+1, j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)    ######can simplify
-#'       }
-#'     }
-#'   }
-#'   #get expected table
-#'   if (digit_places[1] == -1){
-#'     data("uniform_table")
-#'     last_digit_expected = uniform_table[1]
-#'     colnames(last_digit_expected) = 'Last Digit Place'
-#'   }
-#'   #omit 05
-#'   if (!is.na(omit_05)){
-#'     observation_table = observation_table[!rownames(observation_table) %in% as.character(omit_05), ]
-#'     last_digit_expected = last_digit_expected[!rownames(last_digit_expected) %in% as.character(omit_05), ]
-#'   }
-#'   return(list(observed_table=observation_table, expected_table=last_digit_expected))
-#' }
-
-
 ############################################################################################################
 #additional funnctions satisfying advanced user options for the analysis
 ############################################################################################################

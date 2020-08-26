@@ -6,10 +6,6 @@
 # Testing the 10 Tests in (Ensingmer & Leder-Luis, 2020)
 ############################################################
 
-#clear workspace
-rm(list = ls())
-#free up R memory
-gc()
 #load stuff
 devtools::install_github("https://github.com/jlederluis/digitanalysis", force = TRUE)
 
@@ -67,9 +63,9 @@ unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENT
 padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
                        simulate=F, suppress_first_division_plots=TRUE, plot=F)
 
-# #Last digit test except first with expenditure
-# last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns = 'ALEXP.Values', omit_05 = c(0,5), break_out='DIST',
-#                              suppress_first_division_plots=TRUE, plot=F)
+#Last digit test except first with expenditure
+last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns = 'ALEXP.Values', omit_05 = c(0,5), break_out='DIST',
+                             suppress_first_division_plots=TRUE, plot=F)
 
 #all tests worked
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
