@@ -5,10 +5,10 @@
 \title{Computes weighted average probability of high digits across all digit places.
 Helper function for \code{high_low_by_digit_place}.}
 \usage{
-calculate_weighted_p(high_and_low_total_counts, high_freq_theoratical)
+calculate_weighted_p(high_and_low_total_counts, high_freq_theoretical)
 }
 \arguments{
-\item{high_freq_theoratical}{A table for theoratical high digit frequency in each digit place.}
+\item{high_freq_theoretical}{A table for theoratical high digit frequency in each digit place.}
 }
 \value{
 Weighted average probability of high digits across all digit places.

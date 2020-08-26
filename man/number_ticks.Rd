@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting_functions.R
 \name{number_ticks}
 \alias{number_ticks}
-\title{Stackoverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}}
+\title{StackOverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}}
 \usage{
 number_ticks(n)
 }
@@ -13,5 +13,5 @@ number_ticks(n)
 Nothing is returned.
 }
 \description{
-Stackoverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}
+StackOverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}
 }

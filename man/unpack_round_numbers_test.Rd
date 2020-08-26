@@ -2,7 +2,7 @@
 % Please edit documentation in R/unpack_round_numbers_test.R
 \name{unpack_round_numbers_test}
 \alias{unpack_round_numbers_test}
-\title{Performs unpacking unround number test by performing all-digit place two-way chi square test vs Benford’s Law.
+\title{Performs unpack rounded number test by performing all-digit place two-way chi square test vs Benford’s Law.
 A wrapper function for \code{all_digit_test}.}
 \usage{
 unpack_round_numbers_test(
@@ -94,7 +94,7 @@ If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
 A dataframe of p values on rounded and unrounded digits (also by category if break_out is specified)
 }
 \description{
-Performs unpacking unround number test by performing all-digit place two-way chi square test vs Benford’s Law.
+Performs unpack rounded number test by performing all-digit place two-way chi square test vs Benford’s Law.
 A wrapper function for \code{all_digit_test}.
 }
 \examples{

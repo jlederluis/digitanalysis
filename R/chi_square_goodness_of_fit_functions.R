@@ -12,7 +12,7 @@
 #'
 #' @inheritParams chi_square_gof
 #'
-#' @return A list with mofidied \code{observed_table} and \code{expected_table}
+#' @return A list with modified \code{observed_table} and \code{expected_table}
 drop_disqualified_columns = function(observed_table, expected_table, freq=TRUE){
   if (freq){
     #turn freq into numbers

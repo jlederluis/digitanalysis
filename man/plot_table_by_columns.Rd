@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting_functions.R
 \name{plot_table_by_columns}
 \alias{plot_table_by_columns}
-\title{Plot 2D histogram on digits freqency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}}
+\title{Plot 2D histogram on digits frequency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}}
 \usage{
 plot_table_by_columns(observed_table, expected_table, name = "", save = FALSE)
 }
@@ -13,5 +13,5 @@ plot_table_by_columns(observed_table, expected_table, name = "", save = FALSE)
 A figure with each data column's value plotted against rownames
 }
 \description{
-Plot 2D histogram on digits freqency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}
+Plot 2D histogram on digits frequency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}
 }

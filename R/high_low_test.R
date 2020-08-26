@@ -12,14 +12,14 @@
 #' @inheritParams high_low_by_digit_place
 #'
 #' @return Weighted average probability of high digits across all digit places.
-calculate_weighted_p = function(high_and_low_total_counts, high_freq_theoratical){
+calculate_weighted_p = function(high_and_low_total_counts, high_freq_theoretical){
   #ensure same dimension
-  if (length(high_and_low_total_counts) != length(high_freq_theoratical)){
-    stop('high_and_low_total_counts and high_freq_theoratical must have same number of columns!')
+  if (length(high_and_low_total_counts) != length(high_freq_theoretical)){
+    stop('high_and_low_total_counts and high_freq_theoretical must have same number of columns!')
   }
   #get weighted average probability of high digits
   digit_place_weights = colSums(high_and_low_total_counts) / sum(high_and_low_total_counts)
-  weighted_p = sum(digit_place_weights * high_freq_theoratical, na.rm=TRUE)
+  weighted_p = sum(digit_place_weights * high_freq_theoretical, na.rm=TRUE)
   return(weighted_p)
 }
 
@@ -28,11 +28,11 @@ calculate_weighted_p = function(high_and_low_total_counts, high_freq_theoratical
 #' Helper function for \code{high_low_test}
 #'
 #' @param data A digits table for some data columns, preferably returned by \code{grab_desired_aligned_columns}
-#' @param high_freq_theoratical A table for theoratical high digit frequency in each digit place.
+#' @param high_freq_theoretical A table for theoratical high digit frequency in each digit place.
 #' @inheritParams high_low_test
 #'
 #' @return A table of p_values for input \code{data} by digit place
-high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theoratical, omit_05, skip_first_digit, test_type='binom'){
+high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theoretical, omit_05, skip_first_digit, test_type='binom'){
   #intialize a table for storing total high and low digits counts for each digit place
   high_and_low_total_counts = data.frame(matrix(0, nrow = 2, ncol = digitdata@max))
   #name col and row for debug purpose
@@ -61,18 +61,18 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
   #omit first digit place column if desired
   if (skip_first_digit){
     high_and_low_total_counts = high_and_low_total_counts[-1]
-    high_freq_theoratical = high_freq_theoratical[-1]
+    high_freq_theoretical = high_freq_theoretical[-1]
   }
   p_value = NA
   if (test_type == 'binom'){
     #get weighted values across all digit places
-    weighted_p = calculate_weighted_p(high_and_low_total_counts, high_freq_theoratical[1:length(high_and_low_total_counts)])
+    weighted_p = calculate_weighted_p(high_and_low_total_counts, high_freq_theoretical[1:length(high_and_low_total_counts)])
     total_high_low_count = c(rowSums(high_and_low_total_counts)[1], rowSums(high_and_low_total_counts)[2])
     #binomial test
     p_value = binom.test(total_high_low_count, p = weighted_p, alternative = 'g')$p.value #################
   }
   else if (test_type == 'chisq'){
-    expected_freq = rbind(high_freq_theoratical, 1-high_freq_theoratical)[1:length(high_and_low_total_counts)] #high and low digit frequency expected
+    expected_freq = rbind(high_freq_theoretical, 1-high_freq_theoretical)[1:length(high_and_low_total_counts)] #high and low digit frequency expected
     rownames(expected_freq) = c('high digits freq', 'low digits freq')
     #chi square test # high_and_low_total_counts is observed table
     p_value = chi_square_gof(high_and_low_total_counts, expected_freq, freq=TRUE, suppress_low_N=FALSE)$p_value
@@ -83,7 +83,7 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
   sample_sizes = t(as.data.frame(t(colSums(high_and_low_total_counts))))
   # print(sample_sizes)
   observed_high_digits_freq = data.frame(t(high_and_low_total_counts[1, ] / colSums(high_and_low_total_counts)))
-  return(list(p_value=format_p_values(p_value), observed_high_digits_freq=observed_high_digits_freq, sample_sizes=sample_sizes, high_freq_theoratical=high_freq_theoratical))
+  return(list(p_value=format_p_values(p_value), observed_high_digits_freq=observed_high_digits_freq, sample_sizes=sample_sizes, high_freq_theoretical=high_freq_theoretical))
 }
 
 #' Perform a single high low test. Helper function for \code{high_low_test}.
@@ -102,23 +102,23 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
   #############################################################
   #get table for the theoratical high to low freqency in each digit place
   #drop X and Digits column of contingency table
-  high_freq_theoratical = contingency_table[!(colnames(contingency_table) %in% c('X', 'Digits'))]
-  rownames(high_freq_theoratical) = 0:9
+  high_freq_theoretical = contingency_table[!(colnames(contingency_table) %in% c('X', 'Digits'))]
+  rownames(high_freq_theoretical) = 0:9
 
   #drop 0 and/or 5
   if (!(is.na(omit_05[1]))){
-    high_freq_theoratical = high_freq_theoratical[-(omit_05+1), ]  ### +1 since omit_05 is digits begins with 0, while indexes begins with 1
+    high_freq_theoretical = high_freq_theoretical[-(omit_05+1), ]  ### +1 since omit_05 is digits begins with 0, while indexes begins with 1
 
     #normalize the columns after (if) dropping 0 and/or 5
-    for (name in colnames(high_freq_theoratical)){
+    for (name in colnames(high_freq_theoretical)){
       #renormialize
-      high_freq_theoratical[name] = high_freq_theoratical[name] / sum(high_freq_theoratical[name])
+      high_freq_theoretical[name] = high_freq_theoretical[name] / sum(high_freq_theoretical[name])
     }
   }
   #get the frequency for high digits in each digit place
-  high_freq_theoratical = data.frame(t(colSums(high_freq_theoratical[as.character(high), ])))
-  colnames(high_freq_theoratical) = gsub(".", " ", colnames(high_freq_theoratical), fixed=TRUE)
-  rownames(high_freq_theoratical) = 'high digits freq'
+  high_freq_theoretical = data.frame(t(colSums(high_freq_theoretical[as.character(high), ])))
+  colnames(high_freq_theoretical) = gsub(".", " ", colnames(high_freq_theoretical), fixed=TRUE)
+  rownames(high_freq_theoretical) = 'high digits freq'
 
   #############################################################
   #handle the data_columns = 'all' situation
@@ -131,7 +131,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 
   #############################################################
   #perform high low test
-  result = high_low_by_digit_place(digitdata, digits_table, high, high_freq_theoratical, omit_05, skip_first_digit, test_type)
+  result = high_low_by_digit_place(digitdata, digits_table, high, high_freq_theoretical, omit_05, skip_first_digit, test_type)
   p_value = result$p_value
   observed_high_digits_freq = result$observed_high_digits_freq
   sample_sizes = result$sample_sizes
@@ -161,7 +161,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
       colnames(data_of_category) = gsub("."," ",colnames(data_of_category), fixed=TRUE)
 
       #get p_values for this category ('year')
-      result_of_category = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoratical, omit_05, skip_first_digit, test_type)
+      result_of_category = high_low_by_digit_place(digitdata, data_of_category, high, high_freq_theoretical, omit_05, skip_first_digit, test_type)
 
       #update returning tables
       p_values[category_name] = result_of_category$p_value
@@ -181,9 +181,9 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
   #compute aggregate expected and observed frequency for high digits
   for (category in colnames(high_digits_freq_table)){
     aggregated_observed_high_freq[category] = sum(high_digits_freq_table[[category]] * sample_sizes_table[[category]] / sum(sample_sizes_table[[category]], na.rm = TRUE), na.rm = TRUE)
-    aggregated_expected_high_freq[category] = sum(result$high_freq_theoratical[1:nrow(high_digits_freq_table)] * sample_sizes_table[[category]] / sum(sample_sizes_table[[category]], na.rm = TRUE), na.rm = TRUE)
+    aggregated_expected_high_freq[category] = sum(result$high_freq_theoretical[1:nrow(high_digits_freq_table)] * sample_sizes_table[[category]] / sum(sample_sizes_table[[category]], na.rm = TRUE), na.rm = TRUE)
   }
-  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), sample_sizes_table=t(sample_sizes_table), high_freq_theoratical=result$high_freq_theoratical,
+  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), sample_sizes_table=t(sample_sizes_table), high_freq_theoretical=result$high_freq_theoretical,
               aggregated_observed_high_freq=aggregated_observed_high_freq, aggregated_expected_high_freq=aggregated_expected_high_freq))
 }
 

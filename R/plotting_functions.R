@@ -6,7 +6,7 @@
 # Plotting helper functions
 ############################################################
 
-#' Stackoverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}
+#' StackOverflow method to specify number of ticks for \code{ggplot::scale_y_continuous()}
 #'
 #' @param n Number of ticks desired
 #'
@@ -67,7 +67,7 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
 }
 
 
-#' Plot 2d histogram with multiple varibales as specified by typically the \code{break_out} in digit tests.
+#' Plot 2d histogram with multiple variables as specified by typically the \code{break_out} in digit tests.
 #' If \code{data} is row style, rownames would be the categories, and colnames would be x values.
 #'
 #' @param data The 2D dataframe to be plotted.
@@ -123,7 +123,7 @@ plot_multiple_hist2d = function(plot_list){
   return(plots)
 }
 
-#' Plot 2D histogram on digits freqency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}
+#' Plot 2D histogram on digits frequency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}
 #'
 #' @param observed_table The digits table for counts in each digits in each digit place
 #' @inheritParams hist_2D

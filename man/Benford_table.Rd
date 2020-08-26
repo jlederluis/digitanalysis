@@ -3,7 +3,7 @@
 \name{Benford_table}
 \alias{Benford_table}
 \title{Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law).
-Columnn are digit place in increasing order, and rows are the digits (0 to 9) in increasing order}
+Columns are digit place in increasing order, and rows are the digits (0 to 9) in increasing order}
 \usage{
 Benford_table(N, out_fp = NA, save = FALSE)
 }
@@ -24,7 +24,7 @@ Benford contingency table generated.
 }
 \description{
 Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law).
-Columnn are digit place in increasing order, and rows are the digits (0 to 9) in increasing order
+Columns are digit place in increasing order, and rows are the digits (0 to 9) in increasing order
 }
 \examples{
 Benford_table(N)

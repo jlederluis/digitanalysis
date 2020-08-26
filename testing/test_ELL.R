@@ -57,7 +57,7 @@ sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matchin
                      category_instance_analyzing = 'TRN_TRV_VEH', plot=T, remove_all_category_visualize = T)
 
 #High low test with expenditure
-high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=F)
+high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=T, remove_all_category_visualize = T)
 
 #Unpack rounded numbers test with participants
 unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
@@ -65,11 +65,13 @@ unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENT
 
 #Padding test with expenditure
 padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
-                       simulate=F, suppress_first_division_plots=TRUE, plot=T)
+                       simulate=F, suppress_first_division_plots=TRUE, plot=F)
 
+# #Last digit test except first with expenditure
+# last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns = 'ALEXP.Values', omit_05 = c(0,5), break_out='DIST',
+#                              suppress_first_division_plots=TRUE, plot=F)
 
-
-#filepath
+#all tests worked
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
-digitanalysis::replicate_EEL_10_tests(fp)
+ELL = digitanalysis::replicate_ELL_10_tests(fp)
 

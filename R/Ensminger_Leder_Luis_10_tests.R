@@ -22,7 +22,7 @@
 replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
   #data
   Data = NA
-  if (!is.na(fp)){
+  if (!is.na(fp) && is.na(raw_df)){
     D <- read.csv(fp, stringsAsFactors = FALSE)
     D$SectorGroup <- D$SECTOR
     unique(D$SECTOR)
@@ -30,8 +30,11 @@ replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
     # D <- D[D$SECTOR != "MICRO", ]
     Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.Values", "BENM", "BENF"))
   }
-  else {
+  else if (is.na(fp) && !is.na(raw_df)) {
     Data = process_digit_data(raw_df = raw_df, digit_columns = c('ALEXP.Values', "BENTOT.Values", "BENM", "BENF"))
+  }
+  else {
+    stop("Must specify one of fp or raw_df to perform tests.")
   }
 
   #All digits test except first with expenditure
@@ -60,10 +63,11 @@ replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
   #Sector test with expenditure
   sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
                        break_out='DIST', rounding_patterns_to_omit = '000', data_columns = 'ALEXP.Values',
-                       category_instance_analyzing = 'TRN_TRV_VEH', plot=plot)
+                       category_instance_analyzing = 'TRN_TRV_VEH', plot=plot, remove_all_category_visualize = T)
 
   #High low test with expenditure
-  high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR', plot=plot)
+  high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR',
+                           plot=plot, remove_all_category_visualize = T)
 
   #Unpack rounded numbers test with participants
   unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
@@ -72,8 +76,10 @@ replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
   #Padding test with expenditure
   padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
                          simulate=FALSE, suppress_first_division_plots=TRUE, plot=plot)
-  result_table = data.frame(matrix(nrow=0, ncol=nrow(unpack$round)))
-  colnames(result_table) = rownames(unpack$round)
+
+  #result
+  result_table = data.frame(matrix(nrow=0, ncol=nrow(ADT_ALEXP$p_values)))
+  colnames(result_table) = rownames(ADT_ALEXP$p_values)
   result_table['All Digits Test: Expenditure', ][rownames(ADT_ALEXP$p_values)] = ADT_ALEXP$p_values[rownames(ADT_ALEXP$p_values), ]
   result_table['First Digit Test: Expenditure', ][rownames(first_digit$p_values)] = first_digit$p_values[rownames(first_digit$p_values), ]
   result_table['All Digits Test: Participants', ][rownames(ADT_BEN$p_values)] = ADT_BEN$p_values[rownames(ADT_BEN$p_values), ]
@@ -82,9 +88,10 @@ replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
   result_table['Repeats Test: Expenditure', ][colnames(repeats$p_values)] = repeats$p_values[colnames(repeats$p_values)]
   result_table['Sector Test: Expenditure (TRN_TRV_VEH)', ][colnames(sector$p_values)] = sector$p_values[colnames(sector$p_values)]
   result_table['High Low Test: Expenditure (2007)', ][rownames(high_low$p_values['2007'])] = high_low$p_values['2007'][rownames(high_low$p_values['2007']), ]
-  result_table['Unpack Rounded Number Test: Participants (Round)', ][rownames(unpack$round)] = unpack$round[rownames(unpack$round), ]
+  result_table['Unpack Rounded Number Test: Participants (Round)', ][rownames(unpack$p_values$round)] = unpack$p_values$round[rownames(unpack$p_values$round), ]
   result_table['Padding Test: Expenditure', ] = NA #no simulation
 
+  #plot
   plots = list()
   plots[['All Digits Test: Expenditure']] = ADT_ALEXP$plots$AllBreakout
   plots[['First Digit Test: Expenditure']] = first_digit$plots$AllBreakout
@@ -99,8 +106,4 @@ replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
 
   return(list(test_stats=result_table, plots=plots))
 }
-
-# result = replicate_EEL_10_tests(fp)
-
-
 

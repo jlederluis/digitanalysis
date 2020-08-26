@@ -34,7 +34,7 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{N}{The number of Benford conforming datasets to simulate.
 \itemize{
-  \item 2400 seconds for N=10,000; data dimension = 4000 x 5 totla digits.
+  \item 2400 seconds for N=10,000; data dimension = 4000 x 5 total digits.
 }}
 
 \item{simulate}{TRUE or FALSE: If TRUE, will stimulate the datasets and generate p-value. If FALSE, only produces \code{diff_in_mean} and plots.
@@ -86,7 +86,7 @@ If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
   \itemize{
     \item \code{expected_mean}: the expected mean by Benford's Law
     \item \code{observed_mean}: the mean of the input data
-    \item \code{diff_in_mean}: the mean difference betweeen observed_mean and expected_mean
+    \item \code{diff_in_mean}: the mean difference between observed_mean and expected_mean
     \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
     \item \code{plot}: one ggplot instance per \code{break_out}
   }

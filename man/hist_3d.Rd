@@ -13,7 +13,8 @@ hist_3d(
   title = "3D Barplot",
   theta = 55,
   phi = 16,
-  save = FALSE
+  save3Dfilename = "",
+  kwargs = NA
 )
 }
 \arguments{

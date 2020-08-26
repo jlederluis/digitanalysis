@@ -8,7 +8,7 @@
 
 
 #' Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law).
-#' Columnn are digit place in increasing order, and rows are the digits (0 to 9) in increasing order
+#' Columns are digit place in increasing order, and rows are the digits (0 to 9) in increasing order
 #'
 #' @param N Number of digits to generate
 #' \itemize{

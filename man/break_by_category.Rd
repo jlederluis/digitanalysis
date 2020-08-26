@@ -2,7 +2,7 @@
 % Please edit documentation in R/all_digit_test_helper_functions.R
 \name{break_by_category}
 \alias{break_by_category}
-\title{Breaks the data on specfied column}
+\title{}
 \usage{
 break_by_category(data, break_out, break_out_grouping)
 }
@@ -27,5 +27,8 @@ break_by_category(data, break_out, break_out_grouping)
 A list of array of indexes in \code{data} that belongs to each category
 }
 \description{
-Breaks the data on specfied column
+#last digit test
+}
+\details{
+
 }

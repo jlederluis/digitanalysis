@@ -15,7 +15,8 @@ sector_test(
   break_out_grouping = NA,
   category_grouping = NA,
   rounding_patterns_to_omit = NA,
-  plot = TRUE
+  plot = TRUE,
+  remove_all_category_visualize = FALSE
 )
 }
 \arguments{
@@ -59,6 +60,8 @@ Must include all columns in \code{data_columns}. Default to 'all', meaning match
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+
+\item{remove_all_category_visualize}{TRUE or FALSE: If TRUE, remove visualization of 'All Category' dataset for plots}
 }
 \value{
 \itemize{

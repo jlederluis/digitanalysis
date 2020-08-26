@@ -4,9 +4,9 @@
 \name{DigitAnalysis-class}
 \alias{DigitAnalysis-class}
 \alias{DigitAnalysis}
-\title{The class object for RDigitAnalysis package}
+\title{The class object for DigitAnalysis package}
 \description{
-The class object for RDigitAnalysis package
+The class object for DigitAnalysis package
 }
 \section{Slots}{
 

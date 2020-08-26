@@ -15,7 +15,7 @@ process_digit_data(
 \arguments{
 \item{filepath}{Default to NA. If loading data using filepath, specify filepath as a string.}
 
-\item{digit_columns}{All potential datra columns to be analyzed. Defaulted to NA. Can be specified as any of
+\item{digit_columns}{All potential data columns to be analyzed. Defaulted to NA. Can be specified as any of
 \itemize{
   \item \code{digit_columns} = 'col_name'
   \item \code{digit_columns} = c('col_name')
@@ -25,7 +25,7 @@ process_digit_data(
 \item{filetype}{Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
 'excel' option supports both 'xlsx' and 'xls' format.}
 
-\item{delim}{Defaulted to ','. Can specify other delimeters as well.}
+\item{delim}{Defaulted to ','. Can specify other delimiters as well.}
 
 \item{raw_df}{Default to NA. If loading data using a dataframe. Pass in the dataframe instance.}
 }

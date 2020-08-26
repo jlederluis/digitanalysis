@@ -18,7 +18,8 @@ high_low_test(
   break_out_grouping = NA,
   category = NA,
   category_grouping = NA,
-  plot = TRUE
+  plot = TRUE,
+  remove_all_category_visualize = FALSE
 )
 }
 \arguments{
@@ -73,6 +74,8 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
 }}
 
 \item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+
+\item{remove_all_category_visualize}{TRUE or FALSE: If TRUE, remove visualization of 'All Category' dataset for plots}
 }
 \value{
 \itemize{

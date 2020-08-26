@@ -9,7 +9,8 @@ grab_desired_aligned_columns(
   data_columns,
   skip_first_digit = FALSE,
   skip_last_digit = FALSE,
-  align_direction = "left"
+  align_direction = "left",
+  digit_places = 0
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}
+
+\item{digit_places}{Only used internally for checking if it is last digit test}
 }
 \value{
 A list with

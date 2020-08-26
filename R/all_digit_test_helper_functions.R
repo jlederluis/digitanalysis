@@ -63,8 +63,6 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
   }
   #remove all NA columns
   single_align_df = single_align_df[colSums(!is.na(single_align_df)) > 0]
-  # #remove all NA rows
-  # single_align_df = single_align_df[rowSums(!is.na(single_align_df)) > 0, ]
   return(single_align_df)
 }
 
@@ -149,6 +147,7 @@ drop_first_digit_places = function(single_column_digits, align_direction='left')
 
 #' Fetches the left-aligned/right-aligned data columns for analysis, drop the first and last digit places if desired
 #'
+#' @param digit_places Only used internally for checking if it is last digit test
 #' @inheritParams single_column_aligned
 #' @inheritParams all_digits_test
 #'
@@ -157,7 +156,20 @@ drop_first_digit_places = function(single_column_digits, align_direction='left')
 #'   \item \code{digits_table} The left-aligned/right-aligned digits table for \code{data_columns}
 #'   \item \code{digitdata} The \code{DigitAnalysis} object with slot 'max' updated
 #' }
-grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digit=FALSE, skip_last_digit=FALSE, align_direction='left'){
+grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digit=FALSE, skip_last_digit=FALSE, align_direction='left', digit_places=0){
+  #last digit test
+  if (digit_places[1] == -1){
+    digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
+    #handle the data_columns = 'all' situation
+    data_columns = get_data_columns(digitdata, data_columns)
+    #digits_table-->usable data
+    for (col_name in data_columns){
+      single_column_digits = single_column_aligned(digitdata, col_name, 'right') #get rihght aligned 1s column
+      digits_table = cbind(digits_table, single_column_digits[ncol(single_column_digits)])
+    }
+    digitdata@max = 1
+    return(list('digits_table'=digits_table, 'digitdata'=digitdata))
+  }
 
   digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
 
@@ -193,6 +205,10 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digi
 #'
 #' @return Digits table with desired digit places, ready to count observation
 parse_digit_places = function(digitdata, digits_table, digit_places){
+  #last digit test...no need to parse
+  if (digit_places[1] == -1){
+    return(digits_table)
+  }
 
   #find the names of the digit places to drop
   digit_places_names = digitdata@left_aligned_column_names[-digit_places]
@@ -223,6 +239,32 @@ parse_digit_places = function(digitdata, digits_table, digit_places){
 #'
 #' @return Observation table for chi square test
 obtain_observation = function(digitdata, usable_data, digit_places, skip_first_digit, skip_last_digit, omit_05){
+  #last digit test
+  if (digit_places[1] == -1){
+    #create a table for collecting observations for n=max digit places, upper bound
+    observation_table = data.frame(matrix(0, nrow=10, ncol=1))
+    #name the rows
+    rownames(observation_table) = 0:9
+    for (i in 1:length(usable_data)){
+      occurances = table(usable_data[i], useNA = 'no')
+      #update it to column j of observation table
+      #this occurances can be a null table
+      if (!(is.null(occurances))){
+        for (name in names(occurances)){
+          digit = as.integer(name)
+          #digit + 1 since index starts from 1 and digit starts from 0
+          observation_table[digit+1, 1] = observation_table[digit+1, 1] + occurances[name] #name = str(digit)    ######can simplify
+        }
+      }
+    }
+    #omit 05
+    if (!is.na(omit_05[1])){
+      observation_table = data.frame(observation_table[!rownames(observation_table) %in% as.character(omit_05), ])
+    }
+    #name the columns
+    colnames(observation_table) = 'Last Digit'
+    return(observation_table)
+  }
 
   #create a table for collecting observations for n=max digit places, upper bound
   observation_table = data.frame(matrix(0, nrow=10, ncol=digitdata@max))
@@ -275,12 +317,24 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
   return(observation_table)
 }
 
-#' Parse the contigency table to have exclusively the desired digits and digit places
+#' Parse the contingency table to have exclusively the desired digits and digit places
 #'
 #' @inheritParams all_digits_test
 #'
-#' @return Contigency table with exclusively the desired digits and digit places
-parse_contigency_table = function(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05){
+#' @return Contingency table with exclusively the desired digits and digit places
+parse_contingency_table = function(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05){
+
+  #last digit test
+  if (digit_places[1] == -1){
+    data("uniform_table")
+    last_digit_expected = uniform_table[1]
+    if (!is.na(omit_05[1])){
+      last_digit_expected = data.frame(last_digit_expected[!rownames(last_digit_expected) %in% as.character(omit_05), ])
+    }
+    colnames(last_digit_expected) = 'Last Digit Place'
+    return(last_digit_expected)
+  }
+
   #drop the "x" and Digits column for table
   contingency_table = contingency_table[!(colnames(contingency_table) %in% c("Digits", "X"))]
 
@@ -311,12 +365,68 @@ parse_contigency_table = function(digitdata, contingency_table, digit_places, sk
 }
 
 
+#' #' Gets expected and observed table for data columns for last digit test
+#' #'
+#' #' @inheritParams all_digits_test
+#' #'
+#' #' @return A list with
+#' #' \itemize{
+#' #'   \item \code{observed_table} The observed table for last digit test
+#' #'   \item \code{expected_table} The expected table for last digit test
+#' #' }
+#' grab_data_last_digit_test = function(digitdata, data_columns, omit_05){
+#'
+#'   #last digit test
+#'
+#'   digits_table = data.frame(matrix(ncol = 0, nrow = length(digitdata@numbers[,1])))
+#'   #handle the data_columns = 'all' situation
+#'   data_columns = get_data_columns(digitdata, data_columns)
+#'   #digits_table-->usable data
+#'   for (col_name in data_columns){
+#'     single_column_digits = single_column_aligned(digitdata, col_name, align_direction='right')
+#'     digits_table = cbind(digits_table, single_column_digits[ncol(single_column_digits)])
+#'   }
+#'
+#'   #get observation
+#'   #create a table for collecting observations for n=max digit places, upper bound
+#'   observation_table = data.frame(matrix(0, nrow=10, ncol=1))
+#'   #name the columns
+#'   colnames(observation_table) = '1s'
+#'   #name the rows
+#'   rownames(observation_table) = 0:9
+#'   for (i in 1:length(usable_data)){
+#'     occurances = table(usable_data[i], useNA = 'no')
+#'     #update it to column j of observation table
+#'     #this occurances can be a null table
+#'     if (!(is.null(occurances))){
+#'       for (name in names(occurances)){
+#'         digit = as.integer(name)
+#'         #digit + 1 since index starts from 1 and digit starts from 0
+#'         observation_table[digit+1, j] = observation_table[digit+1, j] + occurances[name] #name = str(digit)    ######can simplify
+#'       }
+#'     }
+#'   }
+#'   #get expected table
+#'   if (digit_places[1] == -1){
+#'     data("uniform_table")
+#'     last_digit_expected = uniform_table[1]
+#'     colnames(last_digit_expected) = 'Last Digit Place'
+#'   }
+#'   #omit 05
+#'   if (!is.na(omit_05)){
+#'     observation_table = observation_table[!rownames(observation_table) %in% as.character(omit_05), ]
+#'     last_digit_expected = last_digit_expected[!rownames(last_digit_expected) %in% as.character(omit_05), ]
+#'   }
+#'   return(list(observed_table=observation_table, expected_table=last_digit_expected))
+#' }
+
+
 ############################################################################################################
 #additional funnctions satisfying advanced user options for the analysis
 ############################################################################################################
 
 
-#' Breaks the data on specfied column
+#' Breaks the data on specified column
 #'
 #' @param data A dataframe, preferably 'cleaned' slot for \code{DigitAnalysis} object any parsed version of it
 #' @inheritParams all_digits_test

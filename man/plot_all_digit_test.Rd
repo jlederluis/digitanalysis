@@ -19,7 +19,7 @@ plot_all_digit_test(
 
 \item{digit_places}{The indexes of left-aligned digit places to analyze. There are three options:
 \itemize{
-  \item 'all': analzye all digits. Set as default.
+  \item 'all': analyze all digits. Set as default.
   \item An numeric array: Perform multiple digit test on the digit places desired to analyze.
   \item A number: Perform single digit test on the digit place desired to analyze. If last digit test is desired, pass in -1 or c(-1).
 }}

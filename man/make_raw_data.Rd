@@ -12,7 +12,7 @@ make_raw_data(filepath = NA, filetype = "csv", delim = ",", raw_df = NA)
 \item{filetype}{Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
 'excel' option supports both 'xlsx' and 'xls' format.}
 
-\item{delim}{Defaulted to ','. Can specify other delimeters as well.}
+\item{delim}{Defaulted to ','. Can specify other delimiters as well.}
 
 \item{raw_df}{Default to NA. If loading data using a dataframe. Pass in the dataframe instance.}
 }

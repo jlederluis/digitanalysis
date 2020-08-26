@@ -10,7 +10,7 @@
 #Class function
 ############################################################
 
-#' The class object for RDigitAnalysis package
+#' The class object for DigitAnalysis package
 #'
 #' @slot raw The raw dataframe passed in with a filepath or a dataframe without without NA columns
 #' @slot cleaned The cleaned dataframe with numeric data columns truncated and turned into integers if it is previous characters
@@ -215,13 +215,13 @@ make_aligned_data = function(cleaned_data, digit_columns, naming_method, align_d
 #' Create an object instance for \code{DigitAnalysis}. Parse and clean the data for digit analysis.
 #'
 #' @param filepath Default to NA. If loading data using filepath, specify filepath as a string.
-#' @param digit_columns All potential datra columns to be analyzed. Defaulted to NA. Can be specified as any of
+#' @param digit_columns All potential data columns to be analyzed. Defaulted to NA. Can be specified as any of
 #' \itemize{
 #'   \item \code{digit_columns} = 'col_name'
 #'   \item \code{digit_columns} = c('col_name')
 #'   \item \code{digit_columns} = c('col_name1','col_name2', ...)
 #' }
-#' @param delim Defaulted to ','. Can specify other delimeters as well.
+#' @param delim Defaulted to ','. Can specify other delimiters as well.
 #' @param filetype Default to 'csv'. If loading data using filepath, specify either 'csv' or 'excel'.
 #' 'excel' option supports both 'xlsx' and 'xls' format.
 #' @param raw_df Default to NA. If loading data using a dataframe. Pass in the dataframe instance.

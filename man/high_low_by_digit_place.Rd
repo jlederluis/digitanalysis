@@ -9,7 +9,7 @@ high_low_by_digit_place(
   digitdata,
   digits_table,
   high,
-  high_freq_theoratical,
+  high_freq_theoretical,
   omit_05,
   skip_first_digit,
   test_type = "binom"
@@ -20,7 +20,7 @@ high_low_by_digit_place(
 
 \item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).}
 
-\item{high_freq_theoratical}{A table for theoratical high digit frequency in each digit place.}
+\item{high_freq_theoretical}{A table for theoratical high digit frequency in each digit place.}
 
 \item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 

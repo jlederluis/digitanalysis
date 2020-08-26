@@ -22,7 +22,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   align_direction = 'left'
 
   #get the digits of the desired data columns to be analyzed
-  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_digit, skip_last_digit, align_direction)
+  lst = grab_desired_aligned_columns(digitdata, data_columns, skip_first_digit, skip_last_digit, align_direction, digit_places)
   digitdata = lst$digitdata
   digits_table = lst$digits_table
 
@@ -33,10 +33,12 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
       digit_places = seq(2, digitdata@max)
     }
   }
+
   #get usable data
   usable_data = parse_digit_places(digitdata, digits_table, digit_places)
+
   #parse only needed parts of contingency table
-  contingency_table = parse_contigency_table(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05)
+  contingency_table = parse_contingency_table(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05)
 
   #get observation table from usable data
   observation_table = obtain_observation(digitdata, usable_data, digit_places, skip_first_digit, skip_last_digit, omit_05)
@@ -117,7 +119,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #' an array of column names, as characters; a single column name, as character.
 #' @param digit_places The indexes of left-aligned digit places to analyze. There are three options:
 #' \itemize{
-#'   \item 'all': analzye all digits. Set as default.
+#'   \item 'all': analyze all digits. Set as default.
 #'   \item An numeric array: Perform multiple digit test on the digit places desired to analyze.
 #'   \item A number: Perform single digit test on the digit place desired to analyze. If last digit test is desired, pass in -1 or c(-1).
 #' }

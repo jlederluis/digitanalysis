@@ -48,7 +48,7 @@ get_round_unround_digitdata = function(digitdata, rounding_split_column){
 }
 
 
-#' Performs unpacking unround number test by performing all-digit place two-way chi square test vs Benford’s Law.
+#' Performs unpack rounded number test by performing all-digit place two-way chi square test vs Benford’s Law.
 #' A wrapper function for \code{all_digit_test}.
 #'
 #' @param rounding_split_column The data column (numeric!) to split rounded and unrounded digits upon to perform unpacking rounding test.

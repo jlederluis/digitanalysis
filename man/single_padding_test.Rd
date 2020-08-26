@@ -35,7 +35,7 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{N}{The number of Benford conforming datasets to simulate.
 \itemize{
-  \item 2400 seconds for N=10,000; data dimension = 4000 x 5 totla digits.
+  \item 2400 seconds for N=10,000; data dimension = 4000 x 5 total digits.
 }}
 
 \item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}

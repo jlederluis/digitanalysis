@@ -6,9 +6,9 @@
 # Digit Pair test functions in this file
 ############################################################
 
-#' Find the frequency of terminal digit pairs occuring in the data being analzyed
+#' Find the frequency of terminal digit pairs occuring in the data being analyzed
 #'
-#' @param indexes The indexes of the rows to be analyzed in the data. Used to faciliate \code{break_out} option.
+#' @param indexes The indexes of the rows to be analyzed in the data. Used to facilitate \code{break_out} option.
 #' Default to NA, meaning using all rows.
 #' @inheritParams digit_pairs_test
 #'

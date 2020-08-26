@@ -2,7 +2,7 @@
 % Please edit documentation in R/digit_pair_test.R
 \name{counts_observed}
 \alias{counts_observed}
-\title{Find the frequency of terminal digit pairs occuring in the data being analzyed}
+\title{Find the frequency of terminal digit pairs occuring in the data being analyzed}
 \usage{
 counts_observed(digitdata, data_columns, omit_05, min_length, indexes = NA)
 }
@@ -16,12 +16,12 @@ an array of column names, as characters; a single column name, as character.}
 
 \item{min_length}{The minimum length of the numbers to be analyzed in digit pair test. Must be an integer >= 2. Default to 3.}
 
-\item{indexes}{The indexes of the rows to be analyzed in the data. Used to faciliate \code{break_out} option.
+\item{indexes}{The indexes of the rows to be analyzed in the data. Used to facilitate \code{break_out} option.
 Default to NA, meaning using all rows.}
 }
 \value{
 An array of [# pairs, # not pairs]
 }
 \description{
-Find the frequency of terminal digit pairs occuring in the data being analzyed
+Find the frequency of terminal digit pairs occuring in the data being analyzed
 }

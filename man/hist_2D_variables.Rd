@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting_functions.R
 \name{hist_2D_variables}
 \alias{hist_2D_variables}
-\title{Plot 2d histogram with multiple varibales as specified by typically the \code{break_out} in digit tests.
+\title{Plot 2d histogram with multiple variables as specified by typically the \code{break_out} in digit tests.
 If \code{data} is row style, rownames would be the categories, and colnames would be x values.}
 \usage{
 hist_2D_variables(
@@ -34,6 +34,6 @@ hist_2D_variables(
 A ggplot instance.
 }
 \description{
-Plot 2d histogram with multiple varibales as specified by typically the \code{break_out} in digit tests.
+Plot 2d histogram with multiple variables as specified by typically the \code{break_out} in digit tests.
 If \code{data} is row style, rownames would be the categories, and colnames would be x values.
 }

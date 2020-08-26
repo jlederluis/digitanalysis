@@ -15,7 +15,7 @@ drop_disqualified_columns(observed_table, expected_table, freq = TRUE)
 \item{freq}{TRUE or FALSE: Whether the input expected table is in decimal.}
 }
 \value{
-A list with mofidied \code{observed_table} and \code{expected_table}
+A list with modified \code{observed_table} and \code{expected_table}
 }
 \description{
 Drops disqualified columns in both expected and observed table if in expected table at least one cell
