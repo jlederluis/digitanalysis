@@ -225,7 +225,7 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   #p values to return
   p_values = data.frame(matrix(nrow = 0, ncol = ncol(p_values_all)))
   colnames(p_values) = colnames(p_values_all)
-  p_values['All', ] = p_values_all
+  p_values['All', ] = format_p_values(p_values_all)
 
   #plots to return
   plots = list(AllBreakout = plots_all)
@@ -249,7 +249,7 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
       p_values_of_category = result_of_category$p_values
       plots_of_category = result_of_category$plots
 
-      p_values[category_name, ] = p_values_of_category
+      p_values[category_name, ] = format_p_values(p_values_of_category)
       plots[[category_name]] = plots_of_category
     }
     if (!(TRUE %in% grepl("\\D", rownames(p_values)[-1]))){
