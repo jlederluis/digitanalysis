@@ -217,7 +217,7 @@ get_observed_mean = function(data, num_digits, max_length, omit_05){
 }
 
 
-#' Stimulates N Benford distribution datasets with matching digit places as the observed dataset. SHOULD I EXPORT THIS???!!!
+#' Stimulatse N Benford distribution datasets with matching digit places as the observed dataset. SHOULD I EXPORT THIS???!!!
 #'
 #' @param freq_table \code{freq_table} item returned from \code{get_expected_mean}
 #' @param expected_mean \code{expected_mean} item returned from \code{get_expected_mean}
@@ -405,8 +405,6 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
       diff_in_mean = diff_in_mean[ordered_rows, ]
     }
   }
-  # #remove NA rows if exist
-  # diff_in_mean = diff_in_mean[rowSums(is.na(diff_in_mean)) != ncol(diff_in_mean), ]
   return(list(diff_in_mean=diff_in_mean, p_values=p_values))#, expected_mean=expected_mean, observed_mean=observed_mean))
 }
 
@@ -417,7 +415,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #' @param num_digits The total number of digits aligned from the right to be analyzed. Defaulted to 5, meaning analyzing digit place 1s to 10ks.
 #' @param N The number of Benford conforming datasets to simulate.
 #' \itemize{
-#'   \item 2400 seconds for N=10,000; data dimension = 4000 x 5 total digits.
+#'   \item 2400 seconds for N=10,000; data dimension = 4000 x 5 totla digits.
 #' }
 #' @param simulate TRUE or FALSE: If TRUE, will stimulate the datasets and generate p-value. If FALSE, only produces \code{diff_in_mean} and plots.
 #' Overwrites \code{N}.
@@ -430,7 +428,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #'   \itemize{
 #'     \item \code{expected_mean}: the expected mean by Benford's Law
 #'     \item \code{observed_mean}: the mean of the input data
-#'     \item \code{diff_in_mean}: the mean difference between observed_mean and expected_mean
+#'     \item \code{diff_in_mean}: the mean difference betweeen observed_mean and expected_mean
 #'     \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
 #'     \item \code{plot}: one ggplot instance per \code{break_out}
 #'   }
@@ -541,10 +539,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       }
     }
   }
-  if (simulate){
-    print('Complete')
-  }
+  print('Complete!')
   print(paste('Minimum possible p-value =', 1/N))
   return(padding_test_results)
 }
-
