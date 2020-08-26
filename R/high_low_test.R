@@ -167,8 +167,6 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
       p_values[category_name] = result_of_category$p_value
       high_digits_freq_table[category_name] = result_of_category$observed_high_digits_freq
       sample_sizes_table[category_name] = result_of_category$sample_sizes
-      # print(high_digits_freq_table)
-      # print(sample_sizes_table)
     }
     if (!(TRUE %in% grepl("\\D", colnames(p_values)[-1]))){
       #then it is numeric..sort them
@@ -324,20 +322,27 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
 
   high_low_plot = 'No plot with plot=FALSE or without break_out'
   if (plot){
-    #remove col for 'All' if we do not want to visualize that
-    plot_data = observed_freq_table
-    if (remove_all_category_visualize){
-      plot_data = observed_freq_table[!(colnames(observed_freq_table) %in% c('All'))]
+    plot_title = 'High Low Test \n'
+    if (!is.na(break_out)){
+      plot_title = paste(plot_title, 'Broken out by ', break_out, sep='')
+      if (!is.na(category)){
+        plot_title = paste(plot_title, ', ', category, sep='')
+      }
     }
+    plot_data = observed_freq_table
 
     if (ncol(expected_freq_table) != 1){
+      #remove col for 'All' if we do not want to visualize that
+      if (remove_all_category_visualize){
+        plot_data = observed_freq_table[!(colnames(observed_freq_table) %in% c('All'))]
+      }
       #2D plot with variables
-      high_low_plot = hist_2D_variables(plot_data, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
+      high_low_plot = hist_2D_variables(plot_data, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=plot_title)
     }
     else {
       #2D plot
       dist_line = geom_line(data = data.frame(x=rownames(expected_freq_table), y=expected_freq_table[[1]]), aes(x = x, y = y, group=1, linetype='Expected High Digits Frequency'), color='red', lwd=1)
-      high_low_plot = hist_2D(plot_data, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'), abline = dist_line)
+      high_low_plot = hist_2D(plot_data, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=plot_title, abline = dist_line)
     }
     dev.new()
     print(high_low_plot)

@@ -32,11 +32,16 @@ number_ticks <- function(n) {function(limits) pretty(limits, n)}
 #'
 #' @return A ggplot instance.
 hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='2D Barplot', hline=NA, hline_name='', abline=NA, width=0.5){
+
+  print(data)
+
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
   }
+  print(data)
   plotting_data = data.frame(x=rownames(data), y=data)
+  print(plotting_data)
   colnames(plotting_data) = c('x', 'y') #ensure col name are correct
 
   #2d plot

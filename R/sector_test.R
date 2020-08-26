@@ -115,7 +115,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
     }
 
     sector_plot = hist_2D_variables(data.frame(plot_data), data_style='row', xlab=break_out, ylab='Percent Repeats',
-                                    title=paste('Sector Effect Test \n', 'Broken out by ', break_out, ' \ncategory = ', category, sep=''))
+                                    title=paste('Sector Effect Test \n', 'Broken out by ', break_out, ', ', category, sep=''))
     dev.new()
     print(sector_plot)
   }
