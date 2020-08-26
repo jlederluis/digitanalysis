@@ -405,8 +405,8 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
       diff_in_mean = diff_in_mean[ordered_rows, ]
     }
   }
-  #remove NA rows if exist
-  diff_in_mean = diff_in_mean[rowSums(is.na(diff_in_mean)) != ncol(diff_in_mean), ]
+  # #remove NA rows if exist
+  # diff_in_mean = diff_in_mean[rowSums(is.na(diff_in_mean)) != ncol(diff_in_mean), ]
   return(list(diff_in_mean=diff_in_mean, p_values=p_values))#, expected_mean=expected_mean, observed_mean=observed_mean))
 }
 
