@@ -24,6 +24,8 @@ an array of column names, as characters; a single column name, as character.}
 \item{skip_last_digit}{TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.}
 
+\item{align_direction}{'left' or 'right': specify whether left-aligned or right-aligned digits table to be returned}
+
 \item{digit_places}{Only used internally for checking if it is last digit test}
 }
 \value{

@@ -6,6 +6,20 @@
 # Benford table create, save, and load function according to Benford's Law in this file
 ############################################################
 
+#' Loads Benford contingency table
+#'
+#' @param table_fp Filepath where the developers storing the table
+#'
+#' @return The loaded Benford table
+load_Benford_table = function(table_fp){
+  contingency_table = read.csv(table_fp)
+  #get rid of '.' replacing ' ' problem when loading csv to df
+  colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
+  #name the rows from 0 to 9
+  rownames(contingency_table) = 0:9
+  return(contingency_table)
+}
+
 #' Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law).
 #' Columns are digit place in increasing order, and rows are the digits (0 to 9) in increasing order
 #'
@@ -74,20 +88,6 @@ Benford_table = function(N, out_fp=NA, save=FALSE){
   if (save) {
     write.csv(contingency_table, out_fp)
   }
-  return(contingency_table)
-}
-
-#' Loads Benford contingency table
-#'
-#' @param table_fp Filepath where the developers storing the table
-#'
-#' @return The loaded Benford table
-load_Benford_table = function(table_fp){
-  contingency_table = read.csv(table_fp)
-  #get rid of '.' replacing ' ' problem when loading csv to df
-  colnames(contingency_table) = gsub("."," ",colnames(contingency_table), fixed=TRUE)
-  #name the rows from 0 to 9
-  rownames(contingency_table) = 0:9
   return(contingency_table)
 }
 

@@ -41,7 +41,7 @@ get_benford_mean = function(contingency_table, omit_05=NA){
 #' @return Combined data for \code{data_columns} by merging rows
 #' @export
 combine_by_columns = function(digitdata, data_columns, indexes=NA){
-  data = single_column_aligned(digitdata, desired_col=data_columns[1], align_diretion='right')
+  data = single_column_aligned(digitdata, desired_col=data_columns[1], align_direction='right')
   #get subset of data if specified
   if (!(is.na(indexes[1]))){
     data = data[indexes, ]
@@ -50,7 +50,7 @@ combine_by_columns = function(digitdata, data_columns, indexes=NA){
 
   if (length(data_columns) > 1){
     for (i in 2:length(data_columns)){
-      data2 = single_column_aligned(digitdata, desired_col=data_columns[i], align_diretion='right')
+      data2 = single_column_aligned(digitdata, desired_col=data_columns[i], align_direction='right')
       colnames(data2) = rev(digitdata@right_aligned_column_names[1:length(data2)])
       #get subset of data if specified
       if (!(is.na(indexes[1]))){

@@ -10,6 +10,8 @@ plot_table_by_columns(observed_table, expected_table, name = "")
 \item{observed_table}{The digits table for observed counts in each digits in each digit place}
 
 \item{expected_table}{The digits table for expected counts in each digits in each digit place}
+
+\item{name}{The subtitle to be put on each subplot after identifying its digit place in main title}
 }
 \value{
 A figure with each data column's value plotted against rownames

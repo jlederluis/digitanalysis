@@ -17,7 +17,7 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
   occurances = data.frame(matrix(nrow = 0, ncol = 2))
 
   for (desired_col in data_columns){
-    digit_pair_table = single_column_aligned(digitdata, desired_col, align_diretion='right')
+    digit_pair_table = single_column_aligned(digitdata, desired_col, align_direction='right')
 
     #for break out, we separate into categories by indexing
     if (!(is.na(indexes[1]))){

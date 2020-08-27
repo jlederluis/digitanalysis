@@ -9,7 +9,7 @@ drop_last_digit_places(single_column_digits, align_direction = "left")
 \arguments{
 \item{single_column_digits}{left-aligned/right-aligned digits table for a single numeric column}
 
-\item{align_diretion}{'left' or 'right': specify whether left-aligned or right-aligned digits table \code{single_column_digits} is}
+\item{align_direction}{'left' or 'right': specify whether left-aligned or right-aligned digits table \code{single_column_digits} is}
 }
 \value{
 \code{single_column_digits} without last digits

@@ -4,14 +4,14 @@
 \alias{single_column_aligned}
 \title{Fetches the left/right aligned table for a single numeric data column}
 \usage{
-single_column_aligned(digitdata, desired_col, align_diretion = "left")
+single_column_aligned(digitdata, desired_col, align_direction = "left")
 }
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
 \item{desired_col}{The desired numeric data column: must be a string}
 
-\item{align_diretion}{'left' or 'right': specify whether left-aligned or right-aligned digits table to be returned}
+\item{align_direction}{'left' or 'right': specify whether left-aligned or right-aligned digits table to be returned}
 }
 \value{
 The left-aligned or right-aligned digits table desired
@@ -20,6 +20,6 @@ The left-aligned or right-aligned digits table desired
 Fetches the left/right aligned table for a single numeric data column
 }
 \examples{
-single_column_aligned(digitdata, 'col_name1', align_diretion='left')
-single_column_aligned(digitdata, 'col_name2', align_diretion='right')
+single_column_aligned(digitdata, 'col_name1', align_direction='left')
+single_column_aligned(digitdata, 'col_name2', align_direction='right')
 }

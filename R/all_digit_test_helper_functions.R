@@ -29,22 +29,22 @@ get_data_columns = function(digitdata, data_columns){
 #' Fetches the left/right aligned table for a single numeric data column
 #'
 #' @param desired_col The desired numeric data column: must be a string
-#' @param align_diretion 'left' or 'right': specify whether left-aligned or right-aligned digits table to be returned
+#' @param align_direction 'left' or 'right': specify whether left-aligned or right-aligned digits table to be returned
 #' @inheritParams all_digits_test
 #'
 #' @return The left-aligned or right-aligned digits table desired
 #' @export
 #'
 #' @examples
-#' single_column_aligned(digitdata, 'col_name1', align_diretion='left')
-#' single_column_aligned(digitdata, 'col_name2', align_diretion='right')
-single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
+#' single_column_aligned(digitdata, 'col_name1', align_direction='left')
+#' single_column_aligned(digitdata, 'col_name2', align_direction='right')
+single_column_aligned = function(digitdata, desired_col, align_direction='left'){
 
   original_df = NA
-  if (align_diretion == 'left') {
+  if (align_direction == 'left') {
     original_df = digitdata@left_aligned
   }
-  else if (align_diretion == 'right') {
+  else if (align_direction == 'right') {
     original_df = digitdata@right_aligned
   }
   else {
@@ -70,7 +70,7 @@ single_column_aligned = function(digitdata, desired_col, align_diretion='left'){
 #' Remove last digit from a left-aligned/right-aligned digits table
 #'
 #' @param single_column_digits left-aligned/right-aligned digits table for a single numeric column
-#' @param align_diretion 'left' or 'right': specify whether left-aligned or right-aligned digits table \code{single_column_digits} is
+#' @param align_direction 'left' or 'right': specify whether left-aligned or right-aligned digits table \code{single_column_digits} is
 #'
 #' @return \code{single_column_digits} without last digits
 drop_last_digit_places = function(single_column_digits, align_direction='left'){
@@ -107,11 +107,9 @@ drop_last_digit_places = function(single_column_digits, align_direction='left'){
 }
 
 
-
 #' Remove first digit from a left-aligned/right-aligned digits table
 #'
-#' @param single_column_digits left-aligned/right-aligned digits table for a single numeric column
-#' @param align_diretion 'left' or 'right': specify whether left-aligned or right-aligned digits table \code{single_column_digits} is
+#' @inheritParams drop_last_digit_places
 #'
 #' @return \code{single_column_digits} without first digits
 drop_first_digit_places = function(single_column_digits, align_direction='left'){
