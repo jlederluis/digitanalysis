@@ -13,6 +13,7 @@ hist_3d(
   title = "3D Barplot",
   theta = 55,
   phi = 16,
+  plot = TRUE,
   save3Dfilename = "",
   kwargs = NA
 )
@@ -33,6 +34,12 @@ hist_3d(
 \item{theta}{x-y (left-right) viewing angle. Defaulted to 55.}
 
 \item{phi}{xy-z (up-down) viewing angle. Defaulted to 16.}
+
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
+
+\item{save3Dfilename}{If specified, will save the 3D barplot to apdf named as the input name + break out and category specification. Defaulted to ''.}
+
+\item{kwargs}{extra parameters to pass into 3D plotting; dnt use it now, error prone! Defaulted to NA. Don't try to use it!!!!!!!!!}
 }
 \value{
 Nothing is returned. Displays a \code{plot3D} 3d plot automatically.

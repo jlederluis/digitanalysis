@@ -42,12 +42,12 @@ Must include all columns in \code{data_columns}. Default to 'all', meaning match
   \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
 }}
 
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 }
 \value{
 \itemize{
   \item A table of p-values for repeat test on each category possibly also on sector
-  \item Plots for each category if \code{plot = TRUE}
+  \item Plots for each category if \code{plot = TRUE or 'Save'}
   \item If NaN is in returned table, it means that there are no occurances of the data in that category --> 0/0 in percentage
 }
 }

@@ -73,14 +73,14 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
   \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
 }}
 
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 
 \item{remove_all_category_visualize}{TRUE or FALSE: If TRUE, remove visualization of 'All Category' dataset for plots}
 }
 \value{
 \itemize{
   \item A table of p-values for high low tests on each category
-  \item Plots for each category if \code{plot = TRUE}
+  \item Plots for each category if \code{plot = TRUE or 'Save'}
 }
 }
 \description{

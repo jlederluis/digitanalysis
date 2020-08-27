@@ -73,7 +73,7 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
   \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
 }}
 
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 
 \item{omit_05}{Whether to omit 0 or both 0 and 5. If omit both 0 and 5, pass in c(0,5) or c(5,0); if omit only 0 pass in 0 or c(0); if omit neither, pass in NA. Default to NA.}
 
@@ -85,13 +85,17 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
 \item{suppress_low_N}{TRUE or FALSE: If TRUE, suppress columns in expected table
 if at least one cell in that column has expected value < 5. Default to FALSE.}
 
-\item{suppress_first_division_plots}{TRUE or FALSE: If TRUE, suppress all plots on first and second division.
+\item{suppress_first_division_plots}{TRUE or FALSE: If TRUE, suppress the display of all plots on first and second division.
 If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
 
-\item{suppress_second_division_plots}{TRUE or FALSE: If TRUE, suppress all plots on second division.}
+\item{suppress_second_division_plots}{TRUE or FALSE: If TRUE, suppress the display of all plots on second division.}
 }
 \value{
-A dataframe of p values on rounded and unrounded digits (also by category if break_out is specified)
+\itemize{
+  \item A list of p-values for round and unround data break by \code{break_out} and \code{category} if specified
+  \item A list of merged plots, rounded data plots, and un rounded data plots break by \code{break_out} and \code{category} if specified
+  if \code{plot = TRUE or 'Save'}
+}
 }
 \description{
 Performs unpack rounded number test by performing all-digit place two-way chi square test vs Benford’s Law.

@@ -10,6 +10,7 @@ digit_pairs_test(
   omit_05 = NA,
   min_length = 3,
   break_out = NA,
+  test_alternative = "less",
   break_out_grouping = NA,
   plot = TRUE
 )
@@ -30,6 +31,12 @@ an array of column names, as characters; a single column name, as character.}
   \item Default to NA.
 }}
 
+\item{test_alternative}{The test alternative for binomial test performed.
+\itemize{
+  \item 'l' or 'less': The default; test against the alternative: less than the expected frequency
+  \item 't' or 'two.sided': Test against the alternative: more or less than the expected frequency
+}}
+
 \item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
 \itemize{
   \item Each the names of the elements in the list is the break_out name
@@ -38,12 +45,12 @@ an array of column names, as characters; a single column name, as character.}
   \code{break_out} will be in a separate group.
 }}
 
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 }
 \value{
 \itemize{
   \item A table of p-values for terminal digit pair test on each category
-  \item Plots for each category if \code{plot = TRUE}
+  \item Plots for each category if \code{plot = TRUE or 'Save'}
 }
 }
 \description{

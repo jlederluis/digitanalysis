@@ -9,7 +9,10 @@ plot_all_digit_test(
   observation_table,
   expected_table,
   digit_places,
-  title = ""
+  title = "",
+  plot = TRUE,
+  save3Dfilename = "",
+  kwargs = NA
 )
 }
 \arguments{
@@ -25,6 +28,12 @@ plot_all_digit_test(
 }}
 
 \item{title}{The title for the plot after automatically generating the name for the test: either single digit test or all digit test.}
+
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
+
+\item{save3Dfilename}{If specified, will save the 3D barplot to apdf named as the input name + break out and category specification. Defaulted to ''.}
+
+\item{kwargs}{extra parameters to pass into 3D plotting; dnt use it now, error prone! Defaulted to NA. Don't try to use it!!!!!!!!!}
 }
 \value{
 Nothing is returned. Displays plots automatically.

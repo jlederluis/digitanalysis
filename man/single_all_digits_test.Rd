@@ -17,7 +17,9 @@ single_all_digits_test(
   suppress_low_N,
   subset_name,
   plot,
-  suppress_second_division_plots
+  suppress_second_division_plots,
+  save3Dfilename,
+  kwargs
 )
 }
 \arguments{
@@ -62,9 +64,13 @@ if at least one cell in that column has expected value < 5. Default to FALSE.}
 
 \item{subset_name}{The main title to put on plots for current test.}
 
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 
-\item{suppress_second_division_plots}{TRUE or FALSE: If TRUE, suppress all plots on second division.}
+\item{suppress_second_division_plots}{TRUE or FALSE: If TRUE, suppress the display of all plots on second division.}
+
+\item{save3Dfilename}{If specified, will save the 3D barplot to apdf named as the input name + break out and category specification. Defaulted to ''.}
+
+\item{kwargs}{extra parameters to pass into 3D plotting; dnt use it now, error prone! Defaulted to NA. Don't try to use it!!!!!!!!!}
 }
 \value{
 p_values for input data possibly break by \code{category}.

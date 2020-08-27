@@ -59,14 +59,14 @@ Must include all columns in \code{data_columns}. Default to 'all', meaning match
   \item \code{n_zeros_pattern} might be helpful for generating strings of 0s.
 }}
 
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 
 \item{remove_all_category_visualize}{TRUE or FALSE: If TRUE, remove visualization of 'All Category' dataset for plots}
 }
 \value{
 \itemize{
   \item A table of p-values for repeat test by sector on each category
-  \item Plots for each break out element with variables as categories specified by \code{category_grouping} if \code{plot = TRUE}
+  \item Plots for each break out element with variables as categories specified by \code{category_grouping} if \code{plot = TRUE or 'Save'}
   \item If NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
 }
 }

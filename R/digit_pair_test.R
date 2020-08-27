@@ -86,7 +86,7 @@ freq_true = function(omit_05){
 #' @return
 #' \itemize{
 #'   \item A table of p-values for terminal digit pair test on each category
-#'   \item Plots for each category if \code{plot = TRUE or 'Save}
+#'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
 #'

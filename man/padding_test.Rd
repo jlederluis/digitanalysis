@@ -75,10 +75,10 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
   \item Check out \code{load(file = "data/benford_table.RData")} to see the format of \code{benford_table}
 }}
 
-\item{suppress_first_division_plots}{TRUE or FALSE: If TRUE, suppress all plots on first and second division.
+\item{suppress_first_division_plots}{TRUE or FALSE: If TRUE, suppress the display of all plots on first and second division.
 If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
 
-\item{plot}{TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 }
 \value{
 \itemize{
@@ -90,7 +90,7 @@ If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
     \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
     \item \code{plot}: one ggplot instance per \code{break_out}
   }
-  \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE}
+  \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE or 'Save'}
 }
 }
 \description{
