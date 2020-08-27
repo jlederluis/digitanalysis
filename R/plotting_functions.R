@@ -163,7 +163,7 @@ plot_table_by_columns = function(observed_table, expected_table, name='', save=F
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
-hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, save3Dfilename='', kwargs=NA){
+hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, plot=TRUE, save3Dfilename='', kwargs=NA){
   #assert digitdata is of correct class
   input_check(digitdata=digitdata)
 
@@ -198,16 +198,20 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   #
   #   }
   # }
-  bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-1,
-                 ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
-                 lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
 
-  #xticks only when the rownames are not int
-  if (need_better_labels){
-    xticks = rownames(data)
-    xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
-    text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
+  if (plot == TRUE){
+    bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-1,
+                           ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
+                           lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
+
+    #xticks only when the rownames are not int
+    if (need_better_labels){
+      xticks = rownames(data)
+      xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
+      text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
+    }
   }
+
   #rgl::rgl.close()
   # #yticks
   # yticks = y
@@ -218,7 +222,6 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   # zticks = seq(from=0.0, to=max(z, na.rm=TRUE)+0.01, by=round(max(z, na.rm=TRUE)/max(length(x),length(y)), digits = 1))
   # zlabel_pos = trans3d(min(x)-1, min(y)-1, zticks, bar3D)
   # text(zlabel_pos$x, zlabel_pos$y, labels=zticks, adj=c(0, NA), srt=0, cex=1)
-
 
   if (save3Dfilename != ''){
     filename = paste(gsub('\n', '', title), save3Dfilename, ".pdf", sep='')
@@ -267,7 +270,7 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is returned. Displays plots automatically.
-plot_all_digit_test = function(digitdata, observation_table, expected_table, digit_places, title=''){
+plot_all_digit_test = function(digitdata, observation_table, expected_table, digit_places, title='', plot=TRUE, save3Dfilename='', kwargs=NA){
   plots_list = list()
   test_type = NA
   freq_digit_place = data.frame(t(colSums(observation_table))) / sum(observation_table) # for aggregate histogram
@@ -281,8 +284,10 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     test_type = 'Single Digit Test'
     aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     plots_list[['aggregate_barplot']] = aggregate_hist
-    dev.new()
-    print(aggregate_hist)
+    if (plot == TRUE){
+      dev.new()
+      print(aggregate_hist)
+    }
   }
   #unpack rounded test
   else if (dim(digitdata@raw) != c(0,0) && digitdata@raw %in% c('round', 'unround')){
@@ -299,11 +304,6 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste('Unround Data \n', title, sep='')) #plot aggregate histogram across digit place
       # plots_list[['digitplace_barplot']] = multiple_hist
       plots_list[['aggregate_barplot']] = aggregate_hist
-
-      # dev.new()
-      # print(aggregate_hist)
-      # dev.new()
-      # plot(multiple_hist)
     }
     else {
       stop('shit happened in plot_all_digit_test in plotting_functions.R')
@@ -312,7 +312,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   else {
     test_type = 'All Digit Test'
     dev.new()
-    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep='')) #3D histogram
+    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep='', plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs)) #3D histogram
     multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n', title, sep='')) #plot aggregate histogram across digit place
     plots_list[['digitplace_barplot']] = multiple_hist

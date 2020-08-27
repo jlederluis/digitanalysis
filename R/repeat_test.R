@@ -92,7 +92,7 @@ find_percent_repeats = function(data, data_columns, rounding_patterns_to_omit){
 #' @return
 #' \itemize{
 #'   \item A table of p-values for repeat test on each category possibly also on sector
-#'   \item Plots for each category if \code{plot = TRUE}
+#'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #'   \item If NaN is in returned table, it means that there are no occurances of the data in that category --> 0/0 in percentage
 #' }
 #' @export
@@ -209,11 +209,13 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
 
   #plot only if we break_out == have > 1 column
   repeats_plot = NA
-  if (plot && !(is.na(break_out))){
+  if (plot != FALSE && !(is.na(break_out))){
     repeats_plot = hist_2D(percent_repeats_table, data_style='row', xlab=break_out, ylab='Percent Repeats',
                           title=paste('Repeats Test \n', 'Broken out by ', break_out, sep=''))
-    dev.new()
-    print(repeats_plot)
+    if (plot == TRUE){
+      dev.new()
+      print(repeats_plot)
+    }
   }
   else {
     #tell user there is no plot

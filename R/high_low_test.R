@@ -197,7 +197,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' @return
 #' \itemize{
 #'   \item A table of p-values for high low tests on each category
-#'   \item Plots for each category if \code{plot = TRUE}
+#'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
 #'
@@ -321,7 +321,7 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
   }
 
   high_low_plot = 'No plot with plot=FALSE or without break_out'
-  if (plot){
+  if (plot != FALSE){
     plot_title = 'High Low Test \n'
     if (!is.na(break_out)){
       plot_title = paste(plot_title, 'Broken out by ', break_out, sep='')
@@ -344,8 +344,11 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       dist_line = geom_line(data = data.frame(x=rownames(expected_freq_table), y=expected_freq_table[[1]]), aes(x = x, y = y, group=1, linetype='Expected High Digits Frequency'), color='red', lwd=1)
       high_low_plot = hist_2D(plot_data, data_style='col', xlab=break_out, ylab='High Digits Frequency', title=plot_title, abline = dist_line)
     }
-    dev.new()
-    print(high_low_plot)
+
+    if (plot == TRUE){
+      dev.new()
+      print(high_low_plot)
+    }
   }
   return(list(p_values=p_values_table, percent_high_digits=observed_freq_table, statistical_test=test_type, plot=high_low_plot))
 }

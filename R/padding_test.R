@@ -89,9 +89,16 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
   #do it for each length each time
   for (curr_length in num_digits:max_length){
     #get data of current length
+    #print(rowSums(!(is.na(data))))
+
     data_of_curr_length = data[which(rowSums(!(is.na(data))) == curr_length), ]
+
+    if (nrow(data_of_curr_length) == 0) next # do not proceed if it is empty...throw error on some computers!!!!!!!!!!!!!!!!!!!!!!!!
+
     #ensure only num_digits columns from right
     data_of_curr_length = data_of_curr_length[(ncol(data_of_curr_length)-num_digits+1):ncol(data_of_curr_length)]
+
+    #print(head(data_of_curr_length))
     #remove 0 and 5 if specified
     if (!(is.na(omit_05[1]))){
       #omit 0
@@ -367,6 +374,10 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
     #break by category for all
     for (category_name in names(indexes_of_categories)){
 
+      #print(category_name)
+
+
+
       #printing for user
       if (simulate){
         print(paste("Simulating sub-dataset:", category_name))
@@ -434,7 +445,7 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #'     \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
 #'     \item \code{plot}: one ggplot instance per \code{break_out}
 #'   }
-#'   \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE}
+#'   \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
 #'
@@ -481,7 +492,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
   #return(result)
   padding_test_results[['AllBreakout']] = result
 
-  if (plot){
+  if (plot != FALSE){
     #2D histogram
     padding_plot = NA
     subtitle = ''
@@ -496,13 +507,15 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', subtitle, sep=''))
     }
     padding_test_results[['AllBreakout']][['plot']] = padding_plot
-    dev.new()
-    print(padding_plot)
+    if (plot == TRUE){
+      dev.new()
+      print(padding_plot)
+    }
   }
 
   #trivial plotting arg
   if (suppress_first_division_plots){
-    plot = FALSE #dont plot for break out
+    plot = 'Save' #dont display plot for break out
   }
   #perform padding test on all break out categories
   if (!(is.na(break_out))){
@@ -511,6 +524,10 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
 
     #break by category for all
     for (break_out_name in names(indexes_of_categories)){
+
+
+      #print(break_out_name)
+
       #printing for user
       if (simulate){
         print(paste("Simulating dataset:", break_out_name))
@@ -525,7 +542,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       result_of_category = single_padding_test(digitdata_of_category, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping, simulate)
       padding_test_results[[break_out_name]] = result_of_category
 
-      if (plot){
+      if (plot != FALSE){
         padding_plot = NA
         #2D histogram
         if (is.na(category)){
@@ -536,8 +553,11 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
           padding_plot = hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', break_out_name,  sep=''))
         }
         padding_test_results[[break_out_name]][['plot']] = padding_plot
-        dev.new()
-        print(padding_plot)
+
+        if (plot == TRUE){
+          dev.new()
+          print(padding_plot)
+        }
       }
     }
   }

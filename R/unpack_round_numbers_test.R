@@ -62,7 +62,12 @@ get_round_unround_digitdata = function(digitdata, rounding_split_column){
 #' }
 #' @inheritParams all_digits_test
 #'
-#' @return A dataframe of p values on rounded and unrounded digits (also by category if break_out is specified)
+#' @return
+#' \itemize{
+#'   \item A list of p-values for round and unround data break by \code{break_out} and \code{category} if specified
+#'   \item A list of merged plots, rounded data plots, and un rounded data plots break by \code{break_out} and \code{category} if specified
+#'   if \code{plot = TRUE or 'Save'}
+#' }
 #' @export
 #'
 #' @examples
@@ -101,7 +106,7 @@ unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_
 
   merged_plots = list()
   #we should have at least plot for All
-  if (plot){
+  if (plot != FALSE){
     for (break_out_name in names(round_result$plots)){
       for (category_name in names(round_result$plots[[break_out_name]])){
         if (is.na(category)){
@@ -119,14 +124,15 @@ unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_
                                                   unround=unround_plot + scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0)),
                                                                                              limits = c(min(0, 1.1 * min_y), 1.1 * max_y))))
           merged_plots[[break_out_name]] = merged_plot
-
-          dev.new()
-          plot(merged_plot)
+          if (plot == TRUE){
+            dev.new()
+            plot(merged_plot)
+          }
         }
       }
     }
   }
-  returning_plots = 'No plot with plot=FALSE or without break_out'
+  returning_plots = 'No plot with plot=FALSE'
   if (plot){
     returning_plots = list(merged=merged_plots, round=round_result$plots, unround=unround_result$plots)
   }

@@ -27,49 +27,49 @@ Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.
 
 #All digits test except first with expenditure
 ADT_ALEXP = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
-                            suppress_first_division_plots=TRUE, plot=T)
+                            suppress_first_division_plots=TRUE, plot='Save')
 
 #First digit test with expenditure
 first_digit = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', digit_places = 1, omit_05 = 0, break_out='DIST',
-                              suppress_first_division_plots=TRUE, plot=T)
+                              suppress_first_division_plots=TRUE, plot='Save')
 
 #All digits test except first with participants
 ADT_BEN = all_digits_test(digitdata = Data, data_columns = c("BENM", "BENF"), skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
-                          suppress_first_division_plots=TRUE, plot=F)
+                          suppress_first_division_plots=TRUE, plot='Save')
 
 #Digit pair test with participants
-digit_pair = digit_pairs_test(digitdata = Data, data_columns = 'BENTOT.Values', omit_05 = 0, break_out='DIST', plot=F)
+digit_pair = digit_pairs_test(digitdata = Data, data_columns = 'BENTOT.Values', omit_05 = 0, break_out='DIST', test_alternative = 'l', plot='Save')
 
 #Rounding test with expenditure
 rounding = rounding_test(digitdata = Data, data_columns = 'ALEXP.Values', break_out='DIST',
-                         rounding_patterns = c('0','00','000','0000', '00000', '000000', '5', '50', '500'), plot=F)
+                         rounding_patterns = c('0','00','000','0000', '00000', '000000', '5', '50', '500'), plot='Save')
 
 #Repeat test with expenditure
 repeats = repeat_test(digitdata = Data, duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
-                      break_out='DIST', data_columns = 'ALEXP.Values', rounding_patterns_to_omit=c('000'), plot=F)
+                      break_out='DIST', data_columns = 'ALEXP.Values', rounding_patterns_to_omit=c('000'), plot='Save')
 
 #Sector test with expenditure
 sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
                      break_out='DIST', rounding_patterns_to_omit = '000', data_columns = 'ALEXP.Values',
-                     category_instance_analyzing = 'TRN_TRV_VEH', plot=T, remove_all_category_visualize = T)
+                     category_instance_analyzing = 'TRN_TRV_VEH', remove_all_category_visualize = T, plot='Save')
 
 #High low test with expenditure
 high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='YEAR',
-                         plot=T, remove_all_category_visualize = T)
+                         remove_all_category_visualize = T, plot='Save')
 
 #Unpack rounded numbers test with participants
 unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),
-                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=TRUE, plot=T)
+                                   skip_first_digit=TRUE, omit_05=c(0,5), break_out='DIST', suppress_first_division_plots=TRUE, plot='Save')
+
 
 #Padding test with expenditure
 padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
-                       simulate=F, suppress_first_division_plots=TRUE, plot=T)
+                       simulate=F, suppress_first_division_plots=TRUE, plot='Save')
 
 #Last digit test except first with expenditure
 last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns = 'ALEXP.Values', omit_05 = c(0,5), break_out='DIST',
-                             suppress_first_division_plots=TRUE, plot=F)
+                             suppress_first_division_plots=TRUE, plot='Save')
 
 #all tests worked
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
 ELL = digitanalysis::replicate_ELL_10_tests(fp)
-

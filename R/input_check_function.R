@@ -138,8 +138,8 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
 
   #plot must be a boolean: TRUE or FALSE
   if (TRUE %in% (!(is.na(plot)))){
-    if (!(is.logical(plot))){
-      stop('plot must be a boolean: TRUE or FALSE')
+    if (!(plot %in% c(TRUE, FALSE, 'Save'))){
+      stop('plot must be one of TRUE, FALSE, or "Save"')
     }
   }
 

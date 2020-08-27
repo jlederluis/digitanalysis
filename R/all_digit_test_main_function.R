@@ -13,7 +13,7 @@
 #' @return p_values for input data possibly break by \code{category}.
 single_all_digits_test = function(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05, category,
                                   category_grouping, skip_last_digit, suppress_low_N, subset_name, plot,
-                                  suppress_second_division_plots){
+                                  suppress_second_division_plots, save3Dfilename, kwargs){
 
   #######################################################################
   #parse the data
@@ -54,17 +54,17 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   all_digit_test_plots = list()
 
   #plot
-  if (plot){
+  if (plot != FALSE){
     sub_subset_name = ''
     if (!is.na(category)){
       sub_subset_name = paste(', All ', category, sep='')
     }
     all_digits_plot = plot_all_digit_test(digitdata, result$observed_table, result$expected_table, digit_places,
-                                          title=paste(subset_name, sub_subset_name, sep=''))
+                                          title=paste(subset_name, sub_subset_name, sep=''), plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs)
     all_digit_test_plots[['AllCategory']] = all_digits_plot
   }
 
-  #break on category if specified #do not plot for these
+  #break on category if specified
   if (!(is.na(category))){
     #get indexes for each category
     indexes_of_categories = break_by_category(digitdata@cleaned, category, category_grouping) #this is a list since unequal number of entries for each category
@@ -84,10 +84,10 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
       p_values[category_name] = result_in_category$p_value
 
       #plot
-      if (plot){
+      if (plot != FALSE){
         if (!suppress_second_division_plots){
           plot_in_category = plot_all_digit_test(digitdata, result_in_category$observed_table, result_in_category$expected_table, digit_places,
-                                                 title=paste(subset_name, ', ', category_name, sep=''))
+                                                 title=paste(subset_name, ', ', category_name, sep=''), plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs)
           all_digit_test_plots[[category_name]] = plot_in_category
         }
       }
@@ -99,14 +99,12 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
     }
   }
   if (length(all_digit_test_plots) == 0){
-    all_digit_test_plots = paste(subset_name, 'plots suppressed since plot=FALSE or suppress_first_division_plots=TRUE')
+    all_digit_test_plots = paste(subset_name, 'plots suppressed since plot=FALSE')
   }
   return(list(p_values=p_values, plots=all_digit_test_plots))
 }
 
 
-
-# plotting
 #' Performs all-digit-place two-way chi square test vs Benford’s Law
 #'
 #' @param digitdata A object of class \code{DigitAnalysis}.
@@ -148,19 +146,21 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #'   \item e.g. \code{category_grouping = list(group_1=c(category_1, category_2, ...), group_2=c(category_10, ...), group_3=c(...))}
 #' }
 #' @param distribution 'Benford' or 'Uniform'. Case insensitive. Specifies the distribution the chi square test is testing against. Default to 'Benford'.
-#' @param plot TRUE or FALSE: If TRUE, skip last digit place before analysis. Default to TRUE.
+#' @param plot TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.
 #' @param skip_last_digit TRUE or FALSE: If TRUE, skip last digit place before analysis, since we don't want tests to overlap. Default to FALSE.
 #' \code{skip_last_digit} should overwrite \code{digit_places} and \code{skip_first_digits}.
 #' @param suppress_low_N TRUE or FALSE: If TRUE, suppress columns in expected table
 #' if at least one cell in that column has expected value < 5. Default to FALSE.
-#' @param suppress_first_division_plots TRUE or FALSE: If TRUE, suppress all plots on first and second division.
+#' @param suppress_first_division_plots TRUE or FALSE: If TRUE, suppress the display of all plots on first and second division.
 #' If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.
-#' @param suppress_second_division_plots TRUE or FALSE: If TRUE, suppress all plots on second division.
+#' @param suppress_second_division_plots TRUE or FALSE: If TRUE, suppress the display of all plots on second division.
+#' @param save3Dfilename If specified, will save the 3D barplot to apdf named as the input name + break out and category specification. Defaulted to ''.
+#' @param kwargs extra parameters to pass into 3D plotting; dnt use it now, error prone! Defaulted to NA. Don't try to use it!!!!!!!!!
 #'
 #' @return
 #' \itemize{
 #'   \item A table of p-values for all digit tests on each category
-#'   \item Plots for each category if \code{plot = TRUE}
+#'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
 #'
@@ -170,7 +170,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
 all_digits_test = function(digitdata, data_columns='all', digit_places='all', break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA,
                            distribution='Benford', contingency_table=NA, plot=TRUE, omit_05=NA, skip_first_digit=FALSE, skip_last_digit=FALSE,
-                           suppress_low_N=FALSE, suppress_first_division_plots=FALSE, suppress_second_division_plots=TRUE){
+                           suppress_low_N=FALSE, suppress_first_division_plots=FALSE, suppress_second_division_plots=TRUE, save3Dfilename='', kwargs=NA){
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, digit_places=digit_places,
               skip_first_digit=skip_first_digit, omit_05=omit_05, break_out=break_out, break_out_grouping=break_out_grouping,
@@ -217,7 +217,8 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   }
   result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
                                       category, category_grouping, skip_last_digit, suppress_low_N, subset_name=subset_name,
-                                      plot=plot, suppress_second_division_plots=suppress_second_division_plots)
+                                      plot=plot, suppress_second_division_plots=suppress_second_division_plots,
+                                      save3Dfilename=save3Dfilename, kwargs=kwargs)
   #return(result_all)
   p_values_all = result_all$p_values
   plots_all = result_all$plots
@@ -231,7 +232,7 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   plots = list(AllBreakout = plots_all)
 
   if (suppress_first_division_plots){
-    plot = FALSE #do not plot for the for loop
+    plot = 'Save' #do not display for the for loop
   }
   #break on break out category if specified
   if (!(is.na(break_out))){
@@ -245,7 +246,8 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
 
       result_of_category = single_all_digits_test(digitdata_of_category, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
                                                   category, category_grouping, skip_last_digit, suppress_low_N, subset_name=category_name,
-                                                  plot=plot, suppress_second_division_plots=suppress_second_division_plots)
+                                                  plot=plot, suppress_second_division_plots=suppress_second_division_plots,
+                                                  save3Dfilename=save3Dfilename, kwargs=kwargs)
       p_values_of_category = result_of_category$p_values
       plots_of_category = result_of_category$plots
 

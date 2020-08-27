@@ -24,7 +24,7 @@
 #' @return
 #' \itemize{
 #'   \item A table of p-values for repeat test by sector on each category
-#'   \item Plots for each break out element with variables as categories specified by \code{category_grouping} if \code{plot = TRUE}
+#'   \item Plots for each break out element with variables as categories specified by \code{category_grouping} if \code{plot = TRUE or 'Save'}
 #'   \item If NaN is in returned table, it means that there are no occurances of the data of the sector in that category --> 0/0 in percentage
 #' }
 #' @export
@@ -107,7 +107,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
 
   #plot
   sector_plot = 'No plot with plot=FALSE'
-  if (plot){
+  if (plot != FALSE){
     #remove row for 'All' if we do not want to visualize that
     plot_data = sector_repeats_table
     if (remove_all_category_visualize){
@@ -116,8 +116,10 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
 
     sector_plot = hist_2D_variables(data.frame(plot_data), data_style='row', xlab=break_out, ylab='Percent Repeats',
                                     title=paste('Sector Effect Test \n', 'Broken out by ', break_out, ', ', category, sep=''))
-    dev.new()
-    print(sector_plot)
+    if (plot == TRUE){
+      dev.new()
+      print(sector_plot)
+    }
   }
   return(list(percent_repeats=sector_repeats_table, p_values=p_values, plot=sector_plot))
 }

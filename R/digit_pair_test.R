@@ -76,12 +76,17 @@ freq_true = function(omit_05){
 #' Performs terminal digit pair binomial test vs uniform distribution (Benford’s Law)
 #'
 #' @param min_length The minimum length of the numbers to be analyzed in digit pair test. Must be an integer >= 2. Default to 3.
+#' @param test_alternative The test alternative for binomial test performed.
+#' \itemize{
+#'   \item 'l' or 'less': The default; test against the alternative: less than the expected frequency
+#'   \item 't' or 'two.sided': Test against the alternative: more or less than the expected frequency
+#' }
 #' @inheritParams all_digits_test
 #'
 #' @return
 #' \itemize{
 #'   \item A table of p-values for terminal digit pair test on each category
-#'   \item Plots for each category if \code{plot = TRUE}
+#'   \item Plots for each category if \code{plot = TRUE or 'Save}
 #' }
 #' @export
 #'
@@ -90,7 +95,7 @@ freq_true = function(omit_05){
 #' digit_pairs_test(digitdata, data_columns=c('col_name1', 'col_name2'))
 #' digit_pairs_test(digitdata, data_columns='all', omit_05=NA, min_length=5)
 #' digit_pairs_test(digitdata, data_columns='all', omit_05=0, break_out='col_name')
-digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_length=3, break_out=NA, break_out_grouping=NA, plot=TRUE){
+digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_length=3, break_out=NA, test_alternative='less', break_out_grouping=NA, plot=TRUE){
 
   #check input
   input_check(digitdata=digitdata, data_columns=data_columns, omit_05=omit_05, break_out=break_out,
@@ -113,7 +118,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
   counts = counts_observed(digitdata, data_columns, omit_05, min_length)
 
   #get p_value from binomial test
-  p_value = binom.test(x=counts, p = p, alternative = 'l')$p.value ##############has to specify p = p !!!!!!
+  p_value = binom.test(x=counts, p = p, alternative = test_alternative)$p.value ##############has to specify p = p !!!!!!
 
   #dataframe of p values to return
   p_values = data.frame(All=format_p_values(p_value))
@@ -130,7 +135,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
       indexes_of_category = indexes_of_categories[[category_name]]
       counts_in_category = counts_observed(digitdata, data_columns, omit_05, min_length, indexes_of_category)
 
-      p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = 'l')$p.value ############
+      p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = test_alternative)$p.value ############
       p_values[category_name] = format_p_values(p_value_in_category) #p-value
       freq_digit_pairs[category_name] = counts_in_category[1]/sum(counts_in_category) #for plotting
     }
@@ -143,12 +148,14 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
   }
   #plot only if we break_out == have > 1 column
   digit_pair_plot = NA
-  if (plot && !(is.na(break_out))){
+  if (plot != FALSE && !(is.na(break_out))){
     digit_pair_plot = hist_2D(freq_digit_pairs, data_style='row', xlab=break_out, ylab='Percent Digit Pairs',
                               title=paste('Digit Pairs Test \n', 'Broken out by ', break_out, sep=''),
                               hline=1/(ncol(freq_digit_pairs)-1), hline_name='Uniform Distribution') #-1 since we want uniform distribution without 'all'
-    dev.new()
-    print(digit_pair_plot)
+    if (plot == TRUE){
+      dev.new()
+      print(digit_pair_plot)
+    }
   }
   else {
     #tell user there is no plot
