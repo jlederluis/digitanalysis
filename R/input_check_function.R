@@ -17,6 +17,7 @@
 #' @param skip_first_digit Defaulted to NA. Pass in to check if it is a valid input.
 #' @param omit_05 Defaulted to NA. Pass in to check if it is a valid input.
 #' @param break_out Defaulted to NA. Pass in to check if it is a valid input.
+#' @param break_out_grouping Defaulted to NA. Pass in to check if it is a valid input.
 #' @param distribution Defaulted to NA. Pass in to check if it is a valid input.
 #' @param plot Defaulted to NA. Pass in to check if it is a valid input.
 #' @param skip_last_digit Defaulted to NA. Pass in to check if it is a valid input.
@@ -29,16 +30,20 @@
 #' @param max_length Defaulted to NA. Pass in to check if it is a valid input.
 #' @param num_digits Defaulted to NA. Pass in to check if it is a valid input.
 #' @param N Defaulted to NA. Pass in to check if it is a valid input.
+#' @param standard_df Defaulted to NA. Pass in to check if it is a valid input.
 #' @param suppress_low_N Defaulted to NA. Pass in to check if it is a valid input.
 #' @param suppress_first_division_plots Defaulted to NA. Pass in to check if it is a valid input.
 #' @param suppress_second_division_plots Defaulted to NA. Pass in to check if it is a valid input.
+#' @param remove_all_category_visualize Defaulted to NA. Pass in to check if it is a valid input.
+#' @param rounding_patterns Defaulted to NA. Pass in to check if it is a valid input.
+#' @param simulate Defaulted to NA. Pass in to check if it is a valid input.
 #'
 #' @return Throw error with message if input is of incorrect type. Returns nothing.
 input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_places=NA, skip_first_digit=NA, omit_05=NA, break_out=NA,
                        break_out_grouping=NA, distribution=NA, plot=NA, skip_last_digit=NA, rounding_split_column=NA, min_length=NA,
                        duplicate_matching_cols=NA, category=NA, category_grouping=NA, high=NA, max_length=NA, num_digits=NA, N=NA,
                        standard_df=NA, rounding_patterns=NA, suppress_low_N=NA, suppress_first_division_plots=NA,
-                       suppress_second_division_plots=NA, simulate=NA) {
+                       suppress_second_division_plots=NA, simulate=NA, remove_all_category_visualize=NA) {
 
   #digitdata must be of class DigitAnalysis
   if (class(digitdata)[1] != 'DigitAnalysis'){

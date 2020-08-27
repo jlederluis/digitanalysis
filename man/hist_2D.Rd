@@ -36,6 +36,8 @@ hist_2D(
 
 \item{hline_name}{The title of the horizontal line added. Defaulted to ''.}
 
+\item{abline}{A \code{ggplot2::geomline()} instance that specifies the line to be addded onto the 2D barplot.}
+
 \item{width}{The width of the bars. Defaulted to 0.5.}
 }
 \value{

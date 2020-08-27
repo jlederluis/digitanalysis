@@ -71,9 +71,9 @@ get_round_unround_digitdata = function(digitdata, rounding_split_column){
 #' @export
 #'
 #' @examples
-#' unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places='all')
-#' unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places=-1)
-#' unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places=c(1,2,3), omit_05=NA)
+#' unpack_round_numbers_test(digitdata, rounding_split_column='col_name', analysis_columns=c('X', 'Y'))
+#' unpack_round_numbers_test(digitdata, rounding_split_column='col_name', digit_places=c(1,2,3), break_out='A', category='Y')
+#' unpack_round_numbers_test(digitdata, rounding_split_column='col_name', break_out='A', omit_05=c(0,5), suppress_low_N=TRUE)
 unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_columns='all', digit_places='all', break_out=NA, break_out_grouping=NA,
                                      category=NA, category_grouping=NA, distribution='Benford', contingency_table=NA, plot=TRUE, omit_05=NA,
                                      skip_first_digit=FALSE, skip_last_digit=FALSE, suppress_low_N=FALSE,

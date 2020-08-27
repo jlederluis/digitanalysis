@@ -4,10 +4,12 @@
 \alias{plot_table_by_columns}
 \title{Plot 2D histogram on digits frequency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}}
 \usage{
-plot_table_by_columns(observed_table, expected_table, name = "", save = FALSE)
+plot_table_by_columns(observed_table, expected_table, name = "")
 }
 \arguments{
-\item{observed_table}{The digits table for counts in each digits in each digit place}
+\item{observed_table}{The digits table for observed counts in each digits in each digit place}
+
+\item{expected_table}{The digits table for expected counts in each digits in each digit place}
 }
 \value{
 A figure with each data column's value plotted against rownames

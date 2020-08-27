@@ -8,6 +8,8 @@ Helper function for \code{high_low_by_digit_place}.}
 calculate_weighted_p(high_and_low_total_counts, high_freq_theoretical)
 }
 \arguments{
+\item{high_and_low_total_counts}{The total counts for high and low digits in each digit places as a data frame}
+
 \item{high_freq_theoretical}{A table for theoratical high digit frequency in each digit place.}
 }
 \value{

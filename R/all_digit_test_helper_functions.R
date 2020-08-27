@@ -107,9 +107,11 @@ drop_last_digit_places = function(single_column_digits, align_direction='left'){
 }
 
 
+
 #' Remove first digit from a left-aligned/right-aligned digits table
 #'
-#' @inheritParams drop_last_digit_places
+#' @param single_column_digits left-aligned/right-aligned digits table for a single numeric column
+#' @param align_diretion 'left' or 'right': specify whether left-aligned or right-aligned digits table \code{single_column_digits} is
 #'
 #' @return \code{single_column_digits} without first digits
 drop_first_digit_places = function(single_column_digits, align_direction='left'){
@@ -326,8 +328,8 @@ parse_contingency_table = function(digitdata, contingency_table, digit_places, s
 
   #last digit test
   if (digit_places[1] == -1){
-    data("uniform_table")
-    last_digit_expected = uniform_table[1]
+    #data("uniform_table")
+    last_digit_expected = digitanalysis::uniform_table[1]
     if (!is.na(omit_05[1])){
       last_digit_expected = data.frame(last_digit_expected[!rownames(last_digit_expected) %in% as.character(omit_05), ])
     }

@@ -281,6 +281,7 @@ Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
 #'
 #' @param observed_mean \code{observed_mean} returned from \code{get_observed_mean}
 #' @param simulated_mean \code{simulated_mean} returned from \code{Benford_simulation}
+#' @param diff_in_mean The difference in mean of \code{observed_mean} - \code{simulated_mean}
 #'
 #' @return A table of p-values for each digit place
 get_p_value = function(observed_mean, simulated_mean, diff_in_mean){
@@ -450,10 +451,10 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #' @export
 #'
 #' @examples
-#' padding_test(digitdata, contingency_table, data_columns='all', break_out='col_name')
-#' padding_test(digitdata, contingency_table, data_columns=c('col_name1', 'col_name2'), omit_05=NA)
-#' padding_test(digitdata, contingency_table, data_columns='all', max_length=7, num_digits=3, omit_05=0, category='category_name', category_grouping=list(...))
-#' padding_test(digitdata, contingency_table, data_columns='all', N=100, omit_05=NA, break_out='col_name', category='category_name', category_grouping=list(...))
+#' padding_test(digitdata, omit_05=c(0,5), simulate=FALSE)
+#' padding_test(digitdata, data_columns=c('col_name1', 'col_name2'), break_out='col_name')
+#' padding_test(digitdata, N=100, break_out='col_name', distribution='uniform', plot='Save')
+#' padding_test(digitdata, max_length=10, num_digits=3, omit_05=0, break_out='col_name', category='category_name')
 padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=5, N=10000, simulate=TRUE, omit_05=NA,
                         break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, distribution='Benford',
                         contingency_table=NA, suppress_first_division_plots=NA, plot=TRUE){
@@ -467,12 +468,12 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
   if (TRUE %in% ((is.na(contingency_table)))){
     #if contingency_table is not passed in, use distribution
     if (tolower(distribution) == 'benford'){
-      data("benford_table")
-      contingency_table = benford_table
+      #data("benford_table")
+      contingency_table = digitanalysis::benford_table
     }
     else if (tolower(distribution) == 'uniform'){
-      data("uniform_table")
-      contingency_table = uniform_table
+      #data("uniform_table")
+      contingency_table = digitanalysis::uniform_table
     }
     else {
       stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')

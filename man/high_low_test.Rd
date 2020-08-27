@@ -87,8 +87,8 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
 Performs high to low digit tests vs probability of high to low digits by Benford's Law via chi square test (default) or binomial test
 }
 \examples{
-high_low_test(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9))
-high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE, break_out='col_name')
-high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
-high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
+high_low_test(digitdata, high=c(5, 6,7,8,9))
+high_low_test(digitdata, skip_first_digit=TRUE, break_out='col_name', test_type='binom')
+high_low_test(digitdata, high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, break_out='col_name', category='category_name')
+high_low_test(digitdata, data_columns='c(col_name1, col_name2)', high=9, break_out='col_name', category='category_name', plot='Save')
 }

@@ -20,6 +20,8 @@ plot_all_digit_test(
 
 \item{observation_table}{Observation table for chi square test}
 
+\item{expected_table}{Expected table for chi square test}
+
 \item{digit_places}{The indexes of left-aligned digit places to analyze. There are three options:
 \itemize{
   \item 'all': analyze all digits. Set as default.

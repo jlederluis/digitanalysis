@@ -28,6 +28,7 @@ number_ticks <- function(n) {function(limits) pretty(limits, n)}
 #' @param title Plot title. Defaulted to '2D Histogram'.
 #' @param hline Specifies the y-intercept value if a horizontal line is desired. Defaulted to NA.
 #' @param hline_name The title of the horizontal line added. Defaulted to ''.
+#' @param abline A \code{ggplot2::geomline()} instance that specifies the line to be addded onto the 2D barplot.
 #' @param width The width of the bars. Defaulted to 0.5.
 #'
 #' @return A ggplot instance.
@@ -40,7 +41,7 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
   colnames(plotting_data) = c('x', 'y') #ensure col name are correct
 
   #2d plot
-  require("ggplot2")
+  # require("ggplot2")
   hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
     geom_bar(stat="identity", width=width) + xlab(xlab) + ylab(ylab) + ggtitle(title) + scale_x_discrete(limits=rownames(data)) +
     scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0)), limits = c(min(0, 1.1 * min(data)), 1.1 * max(data))) + theme_bw() +
@@ -91,7 +92,7 @@ hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Freque
 
   #stacked 2d barplot with multiple groups
   #use position=position_dodge()
-  require("ggplot2")
+  # require("ggplot2")
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
     scale_fill_grey(start=0.7, end=0.1) + xlab(xlab) + ylab(ylab) + ggtitle(title) +
@@ -125,16 +126,17 @@ plot_multiple_hist2d = function(plot_list){
 
 #' Plot 2D histogram on digits frequency on each digit place in a single figure using \code{hist_2D} and \code{plot_multiple_hist2d}
 #'
-#' @param observed_table The digits table for counts in each digits in each digit place
+#' @param observed_table The digits table for observed counts in each digits in each digit place
+#' @param expected_table The digits table for expected counts in each digits in each digit place
 #' @inheritParams hist_2D
 #'
 #' @return A figure with each data column's value plotted against rownames
-plot_table_by_columns = function(observed_table, expected_table, name='', save=FALSE){
+plot_table_by_columns = function(observed_table, expected_table, name=''){
   plot_list = list()
   for (i in 1:length(observed_table)){
     curr_digit_place = colnames(observed_table)[i]
     #create ggplot object for abline distribution
-    require("ggplot2")
+    # require("ggplot2")
     dist_line = geom_line(data = data.frame(x=rownames(expected_table), y=expected_table[[i]]), aes(x = x, y = y, group=1, linetype='Expected Distribution'), color='red', lwd=1)
     hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(curr_digit_place, ' \n', name, sep=''), abline=dist_line)
     plot_list[[curr_digit_place]] = hist_digit_place_i
@@ -259,7 +261,7 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
     aggregate_expected[rownames(observation_table)[i], ] = sum(freq_digit_place * expected_table[i, ])
     aggregate_observed[rownames(observation_table)[i], ] = sum(freq_digit_place * observation_table[i, ])
   }
-  aggregate_plot = plot_table_by_columns(aggregate_observed, aggregate_expected, name=name, save=FALSE)
+  aggregate_plot = plot_table_by_columns(aggregate_observed, aggregate_expected, name=name)
   return(aggregate_plot)
 }
 
@@ -267,6 +269,7 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
 #' Plots the relevant plots for obseravtion table in \code{all_digits_test}.
 #'
 #' @param observation_table Observation table for chi square test
+#' @param expected_table Expected table for chi square test
 #' @param title The title for the plot after automatically generating the name for the test: either single digit test or all digit test.
 #' @inheritParams all_digits_test
 #'

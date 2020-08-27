@@ -29,6 +29,8 @@ hist_2D_variables(
 \item{ylab}{y-axis label. Defaulted to 'frequency'.}
 
 \item{title}{Plot title. Defaulted to '2D Histogram'.}
+
+\item{abline}{A \code{ggplot2::geomline()} instance that specifies the line to be addded onto the 2D barplot.}
 }
 \value{
 A ggplot instance.

@@ -10,6 +10,8 @@ get_p_value(observed_mean, simulated_mean, diff_in_mean)
 \item{observed_mean}{\code{observed_mean} returned from \code{get_observed_mean}}
 
 \item{simulated_mean}{\code{simulated_mean} returned from \code{Benford_simulation}}
+
+\item{diff_in_mean}{The difference in mean of \code{observed_mean} - \code{simulated_mean}}
 }
 \value{
 A table of p-values for each digit place

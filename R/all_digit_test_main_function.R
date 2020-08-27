@@ -165,9 +165,9 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #' @export
 #'
 #' @examples
-#' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=TRUE)
-#' all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_digit=TRUE)
-#' all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
+#' all_digits_test(digitdata, skip_first_digit=TRUE, break_out='col_name1', category='col_name2')
+#' all_digits_test(digitdata, digit_places=-1, omit_05=c(0,5), break_out='col_name', distribution='Uniform', plot='Save')
+#' all_digits_test(digitdata, data_columns='c(col_name1, col_name2)', omit_05=0, digit_places=c(1,3,5), suppress_low_N=TRUE)
 all_digits_test = function(digitdata, data_columns='all', digit_places='all', break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA,
                            distribution='Benford', contingency_table=NA, plot=TRUE, omit_05=NA, skip_first_digit=FALSE, skip_last_digit=FALSE,
                            suppress_low_N=FALSE, suppress_first_division_plots=FALSE, suppress_second_division_plots=TRUE, save3Dfilename='', kwargs=NA){
@@ -195,12 +195,12 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   if (TRUE %in% ((is.na(contingency_table)))){
     #if contingency_table is not passed in, use distribution
     if (tolower(distribution) == 'benford'){
-      data("benford_table")
-      contingency_table = benford_table
+      #data("benford_table")
+      contingency_table = digitanalysis::benford_table
     }
     else if (tolower(distribution) == 'uniform'){
-      data("uniform_table")
-      contingency_table = uniform_table
+      #data("uniform_table")
+      contingency_table = digitanalysis::uniform_table
     }
     else {
       stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')

@@ -102,7 +102,7 @@ Performs unpack rounded number test by performing all-digit place two-way chi sq
 A wrapper function for \code{all_digit_test}.
 }
 \examples{
-unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places='all')
-unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places=-1)
-unpack_round_numbers_test(digitdata, contingency_table, rounding_split_column='Column Name', analysis_columns='all', digit_places=c(1,2,3), omit_05=NA)
+unpack_round_numbers_test(digitdata, rounding_split_column='col_name', analysis_columns=c('X', 'Y'))
+unpack_round_numbers_test(digitdata, rounding_split_column='col_name', digit_places=c(1,2,3), break_out='A', category='Y')
+unpack_round_numbers_test(digitdata, rounding_split_column='col_name', break_out='A', omit_05=c(0,5), suppress_low_N=TRUE)
 }

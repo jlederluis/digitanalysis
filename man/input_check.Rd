@@ -30,7 +30,8 @@ input_check(
   suppress_low_N = NA,
   suppress_first_division_plots = NA,
   suppress_second_division_plots = NA,
-  simulate = NA
+  simulate = NA,
+  remove_all_category_visualize = NA
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ input_check(
 \item{omit_05}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{break_out}{Defaulted to NA. Pass in to check if it is a valid input.}
+
+\item{break_out_grouping}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{distribution}{Defaulted to NA. Pass in to check if it is a valid input.}
 
@@ -72,11 +75,19 @@ input_check(
 
 \item{N}{Defaulted to NA. Pass in to check if it is a valid input.}
 
+\item{standard_df}{Defaulted to NA. Pass in to check if it is a valid input.}
+
+\item{rounding_patterns}{Defaulted to NA. Pass in to check if it is a valid input.}
+
 \item{suppress_low_N}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{suppress_first_division_plots}{Defaulted to NA. Pass in to check if it is a valid input.}
 
 \item{suppress_second_division_plots}{Defaulted to NA. Pass in to check if it is a valid input.}
+
+\item{simulate}{Defaulted to NA. Pass in to check if it is a valid input.}
+
+\item{remove_all_category_visualize}{Defaulted to NA. Pass in to check if it is a valid input.}
 }
 \value{
 Throw error with message if input is of incorrect type. Returns nothing.

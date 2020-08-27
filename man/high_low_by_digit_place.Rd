@@ -18,6 +18,8 @@ high_low_by_digit_place(
 \arguments{
 \item{digitdata}{A object of class \code{DigitAnalysis}.}
 
+\item{digits_table}{A digits table for some data columns, preferably returned by \code{grab_desired_aligned_columns}}
+
 \item{high}{An numeric array of digits or a single number that will be classified as high digits. Defaulted to c(6,7,8,9).}
 
 \item{high_freq_theoretical}{A table for theoratical high digit frequency in each digit place.}
@@ -28,11 +30,9 @@ high_low_by_digit_place(
 
 \item{test_type}{Specifies whether to perform a binomial test on high vs low digit frequency weighted averaged across digit places with "binom",
 or a chi square test on high vs. low by each digit place with "chisq". Defaulted to "chisq".}
-
-\item{data}{A digits table for some data columns, preferably returned by \code{grab_desired_aligned_columns}}
 }
 \value{
-A table of p_values for input \code{data} by digit place
+A table of p_values for input \code{digits_table} by digit place
 }
 \description{
 Computes the high low digit binomial test by digit place for desired data columns.

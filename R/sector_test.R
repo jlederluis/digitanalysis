@@ -30,9 +30,8 @@
 #' @export
 #'
 #' @examples
-#' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a'), 'sector 2'=c('b', 'c')))
-#' sector_test(digitdata, category='sector_name', category_grouping=list('sector 1'=c('a, b'), 'sector 2'=c('c', 'd')),
-#' duplicate_matching_cols=c('col_name1, col_name2'), break_out='col_name', failure_factor=3)
+#' sector_test(digitdata, break_out='column', category='sector', category_instance_analyzing='X')
+#' sector_test(digitdata, break_out='A', category='B', category_instance_analyzing='X', data_columns='Y', rounding_patterns_to_omit='00')
 sector_test = function(digitdata, break_out, category, category_instance_analyzing, data_columns=NA, duplicate_matching_cols='all',
                        break_out_grouping=NA, category_grouping=NA, rounding_patterns_to_omit=NA, plot=TRUE, remove_all_category_visualize=FALSE){
 

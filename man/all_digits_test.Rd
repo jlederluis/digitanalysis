@@ -102,7 +102,7 @@ If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
 Performs all-digit-place two-way chi square test vs Benford’s Law
 }
 \examples{
-all_digits_test(digitdata, contingency_table, data_columns='all', digit_places='all', skip_first_digit=TRUE)
-all_digits_test(digitdata, contingency_table, data_columns='c(col_name1, col_name2)', digit_places=c(1,2,3,5), omit_05=NA, skip_last_digit=TRUE)
-all_digits_test(digitdata, contingency_table, data_columns='all', digit_places=-1, omit_05=0, break_out='col_name', distribution='Uniform')
+all_digits_test(digitdata, skip_first_digit=TRUE, break_out='col_name1', category='col_name2')
+all_digits_test(digitdata, digit_places=-1, omit_05=c(0,5), break_out='col_name', distribution='Uniform', plot='Save')
+all_digits_test(digitdata, data_columns='c(col_name1, col_name2)', omit_05=0, digit_places=c(1,3,5), suppress_low_N=TRUE)
 }

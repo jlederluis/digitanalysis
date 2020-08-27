@@ -27,7 +27,7 @@ Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.
 
 #All digits test except first with expenditure
 ADT_ALEXP = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
-                            suppress_first_division_plots=F, plot=T)
+                            suppress_first_division_plots=TRUE, plot='Save')
 
 
 
@@ -75,3 +75,5 @@ last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns =
 #all tests worked
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
 ELL = digitanalysis::replicate_ELL_10_tests(fp)
+
+

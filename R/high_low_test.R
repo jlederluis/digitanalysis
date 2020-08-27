@@ -9,6 +9,7 @@
 #' Computes weighted average probability of high digits across all digit places.
 #' Helper function for \code{high_low_by_digit_place}.
 #'
+#' @param high_and_low_total_counts The total counts for high and low digits in each digit places as a data frame
 #' @inheritParams high_low_by_digit_place
 #'
 #' @return Weighted average probability of high digits across all digit places.
@@ -27,11 +28,11 @@ calculate_weighted_p = function(high_and_low_total_counts, high_freq_theoretical
 #' Computes the high low digit binomial test by digit place for desired data columns.
 #' Helper function for \code{high_low_test}
 #'
-#' @param data A digits table for some data columns, preferably returned by \code{grab_desired_aligned_columns}
+#' @param digits_table A digits table for some data columns, preferably returned by \code{grab_desired_aligned_columns}
 #' @param high_freq_theoretical A table for theoratical high digit frequency in each digit place.
 #' @inheritParams high_low_test
 #'
-#' @return A table of p_values for input \code{data} by digit place
+#' @return A table of p_values for input \code{digits_table} by digit place
 high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theoretical, omit_05, skip_first_digit, test_type='binom'){
   #intialize a table for storing total high and low digits counts for each digit place
   high_and_low_total_counts = data.frame(matrix(0, nrow = 2, ncol = digitdata@max))
@@ -202,10 +203,10 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #' @export
 #'
 #' @examples
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(6,7,8,9))
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(8,9), skip_first_digit=TRUE, break_out='col_name')
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, category='category_name')
-#' high_low_test(digitdata, contingency_table, data_columns='all', high=9, omit_05=NA, skip_last_digit=TRUE, break_out='col_name', category='category_name')
+#' high_low_test(digitdata, high=c(5, 6,7,8,9))
+#' high_low_test(digitdata, skip_first_digit=TRUE, break_out='col_name', test_type='binom')
+#' high_low_test(digitdata, high=c(5,6,9), omit_05=0, skip_last_digit=TRUE, break_out='col_name', category='category_name')
+#' high_low_test(digitdata, data_columns='c(col_name1, col_name2)', high=9, break_out='col_name', category='category_name', plot='Save')
 high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05=NA, test_type='chisq', distribution='Benford', contingency_table=NA,
                          skip_first_digit=FALSE, skip_last_digit=FALSE, break_out=NA, break_out_grouping=NA, category=NA, category_grouping=NA, plot=TRUE,
                          remove_all_category_visualize=FALSE){
@@ -218,12 +219,12 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
   if (TRUE %in% ((is.na(contingency_table)))){
     #if contingency_table is not passed in, use distribution
     if (tolower(distribution) == 'benford'){
-      data("benford_table")
-      contingency_table = benford_table
+      #data("benford_table")
+      contingency_table = digitanalysis::benford_table
     }
     else if (tolower(distribution) == 'uniform'){
-      data("uniform_table")
-      contingency_table = uniform_table
+      #data("uniform_table")
+      contingency_table = digitanalysis::uniform_table
     }
     else {
       stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')

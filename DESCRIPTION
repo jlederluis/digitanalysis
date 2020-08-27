@@ -18,4 +18,9 @@ Imports:
     gridExtra, 
     plot3D, 
     readxl, 
-    stringi
+    stringi, 
+    grDevices, 
+    graphics, 
+    methods, 
+    stats, 
+    utils

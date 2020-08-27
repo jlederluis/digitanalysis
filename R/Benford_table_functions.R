@@ -6,7 +6,6 @@
 # Benford table create, save, and load function according to Benford's Law in this file
 ############################################################
 
-
 #' Generates contingency table for Benford distribution (a.k.a expected digit frequency under Benford's Law).
 #' Columns are digit place in increasing order, and rows are the digits (0 to 9) in increasing order
 #'
