@@ -200,6 +200,7 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   # }
 
   if (plot == TRUE){
+    dev.new()
     bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-1,
                            ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                            lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
@@ -306,13 +307,12 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
       plots_list[['aggregate_barplot']] = aggregate_hist
     }
     else {
-      stop('shit happened in plot_all_digit_test in plotting_functions.R')
+      stop('FUGMA happened in plot_all_digit_test in plotting_functions.R. Do traceback() or look at plotting_functions.R (note for developer).')
     }
   }
   else {
     test_type = 'All Digit Test'
-    dev.new()
-    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep='', plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs)) #3D histogram
+    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep=''), plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs) #3D histogram
     multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n', title, sep='')) #plot aggregate histogram across digit place
     plots_list[['digitplace_barplot']] = multiple_hist

@@ -7,7 +7,7 @@
 ############################################################
 
 #load stuff
-devtools::install_github("https://github.com/jlederluis/digitanalysis", force = TRUE)
+# devtools::install_github("https://github.com/jlederluis/digitanalysis", force = TRUE)
 
 library(digitanalysis)
 #filepath
