@@ -9,9 +9,8 @@
 
 #' Replicates Ensingmer & Leder-Luis 10 Tests
 #'
-#' @param fp filepath for input data
-#' @param raw_df dataframe for input data
-#' @param plot TRUE or FALSE: If generate plot or not. Default to TRUE, might have bugs if set to FALSE lmao.
+#' @inheritParams all_digits_test
+#' @inheritParams process_digit_data
 #'
 #' @return The test statistics table and the plots for Ensingmer & Leder-Luis 10 Tests
 #' @export
@@ -58,16 +57,16 @@ replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
 
   #Repeat test with expenditure
   repeats = repeat_test(digitdata = Data, duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
-                        break_out='DIST', data_columns = 'ALEXP.Values', rounding_patterns_to_omit=c('000'), plot=plot)
+                        break_out='DIST', data_column = 'ALEXP.Values', rounding_patterns_to_omit=c('000'), plot=plot)
 
   #Sector test with expenditure
   sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
-                       break_out='DIST', rounding_patterns_to_omit = '000', data_columns = 'ALEXP.Values',
-                       category_instance_analyzing = 'TRN_TRV_VEH', plot=plot, remove_all_category_visualize = T)
+                       break_out='DIST', rounding_patterns_to_omit = '000', data_column = 'ALEXP.Values',
+                       category_instance_analyzing = 'TRN_TRV_VEH', plot=plot, remove_all_category_visualize = TRUE)
 
   #High low test with expenditure
   high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category='YEAR',
-                           plot=plot, remove_all_category_visualize = T)
+                           plot=plot, remove_all_category_visualize = TRUE)
 
   #Unpack rounded numbers test with participants
   unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENTOT.Values", analysis_columns=c("BENM", "BENF"),

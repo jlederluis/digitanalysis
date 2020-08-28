@@ -93,7 +93,9 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
 #'
 #' @return
 #' \itemize{
-#'   \item A table of p-values for rounding test on each category ordered by decreasing rounded percentage
+#'   \item A table of p values of t test for rounding test on each category
+#'   \item A table of percent rounded digits for rounding test on each category ordered by decreasing rounded percentage
+#'   \item A table of sample sizes for rounding test on each category
 #'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
@@ -134,7 +136,6 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
     total_digits_list[[category_name]] = result_of_category$total_digits
     percent_rounded_table[category_name] = result_of_category$percent_rounded
   }
-
   #calculate p value by t test for each category
   p_values = data.frame(matrix(nrow=1, ncol=0))
   rownames(p_values) = 'p_value'
@@ -143,19 +144,12 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   sample_sizes = data.frame(matrix(nrow=1, ncol=0))
   rownames(sample_sizes) = 'sample size'
 
-  #return(list(a=rounded_digits_list, b=total_digits_list))
-
   for (category_name in names(rounded_digits_list)){
     category_rounded = rounded_digits_list[[category_name]]/total_digits_list[[category_name]]
     other_rounded = unlist(rounded_digits_list[!(names(rounded_digits_list) %in% c(category_name))],
                            use.names=FALSE) / unlist(total_digits_list[!(names(total_digits_list) %in% c(category_name))],
                                                      use.names=FALSE) #counts in all other categories
     #perform t test
-    # print(category_name)
-    # print(mean(category_rounded))
-    # print(length(category_rounded))
-    # print(mean(other_rounded))
-    # print(length(other_rounded))
     p_value = t.test(category_rounded, other_rounded, alternative = "greater")$p.value
     p_values[category_name] = format_p_values(p_value)
     sample_sizes[category_name] = length(category_rounded)
@@ -167,25 +161,6 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
     p_values = p_values[ordered_cols, ]
     percent_repeats_table = percent_repeats_table[c('All', ordered_cols), ]
   }
-
-  #return(percent_rounded_all)
-
-  # #df to store stats
-  # percent_rounded_table = data.frame(All=percent_rounded_all)
-  #
-  # #break out by category
-  # if (!(is.na(break_out))){
-  #   #get indexes for each category
-  #   indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
-  #
-  #   #break by category for all
-  #   for (category_name in names(indexes_of_categories)){
-  #     indexes_of_category = indexes_of_categories[[category_name]]
-  #     data_of_category = data.frame(data[indexes_of_category, ])
-  #     percent_rounded_in_category = compute_percent_rounded_digits(data_of_category, rounding_patterns)
-  #     percent_rounded_table[category_name] = percent_rounded_in_category
-  #   }
-  # }
 
   #plot only if we break_out == have > 1 column
   rounding_plot = NA

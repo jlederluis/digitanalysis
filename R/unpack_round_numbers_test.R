@@ -65,8 +65,9 @@ get_round_unround_digitdata = function(digitdata, rounding_split_column){
 #' @return
 #' \itemize{
 #'   \item A list of p-values for round and unround data break by \code{break_out} and \code{category} if specified
+#'   \item A list of sample sizes for  round and unround data break by \code{break_out} and \code{category} if specified
 #'   \item A list of merged plots, rounded data plots, and un rounded data plots break by \code{break_out} and \code{category} if specified
-#'   if \code{plot = TRUE or 'Save'}
+#'   iff \code{plot = TRUE or 'Save'}
 #' }
 #' @export
 #'
@@ -105,7 +106,7 @@ unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_
                                      suppress_first_division_plots=suppress_first_division_plots, suppress_second_division_plots=suppress_second_division_plots)
 
   merged_plots = list()
-  #we should have  at least plot for All
+  #we should have at least plot for All
   if (plot != FALSE){
     print(paste('Ignore this warning:', "Scale for 'y' is already present. Adding another scale for 'y', which will replace the existing scale."))
     for (break_out_name in names(round_result$plots)){
@@ -138,8 +139,6 @@ unpack_round_numbers_test = function(digitdata, rounding_split_column, analysis_
     returning_plots = list(merged=merged_plots, round=round_result$plots, unround=unround_result$plots)
   }
   #merge the results
-  #p_values = rbind(round_p_values, unround_p_values)
-  #rownames(p_values) = c('round', 'unround')
   return(list(p_values=list(round=round_result$p_values, unround=unround_result$p_values),
               sample_sizes=list(round=round_result$sample_sizes, unround=unround_result$sample_sizes),
               plots=returning_plots))

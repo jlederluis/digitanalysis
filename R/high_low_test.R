@@ -58,7 +58,6 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
       }
     }
   }
-  # print(sum(high_and_low_total_counts))
   #omit first digit place column if desired
   if (skip_first_digit){
     high_and_low_total_counts = high_and_low_total_counts[-1]
@@ -82,7 +81,6 @@ high_low_by_digit_place = function(digitdata, digits_table, high, high_freq_theo
     stop('test_type can only be either "chisq" or "binom"!')
   }
   sample_sizes = t(as.data.frame(t(colSums(high_and_low_total_counts))))
-  # print(sample_sizes)
   observed_high_digits_freq = data.frame(t(high_and_low_total_counts[1, ] / colSums(high_and_low_total_counts)))
   return(list(p_value=format_p_values(p_value), observed_high_digits_freq=observed_high_digits_freq, sample_sizes=sample_sizes, high_freq_theoretical=high_freq_theoretical))
 }
@@ -154,8 +152,6 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
     indexes_of_categories = break_by_category(digitdata@cleaned, category, category_grouping) #this is a list since unequal number of entries for each category
     #break by category for all
     for (category_name in names(indexes_of_categories)){
-      # print(category_name)
-
       indexes_of_category = indexes_of_categories[[category_name]]
       data_of_category = data.frame(digits_table[indexes_of_category, ])
       #when do data.frame.... col names changes from A BC to A.BC
@@ -189,7 +185,6 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
     aggregated_observed_high_freq = aggregated_observed_high_freq[ordered_columns]
     aggregated_expected_high_freq = aggregated_expected_high_freq[ordered_columns]
   }
-  # print(as.data.frame(t(colSums(sample_sizes_table))))
   return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), sample_sizes_table=as.data.frame(t(colSums(sample_sizes_table))), high_freq_theoretical=result$high_freq_theoretical,
               aggregated_observed_high_freq=aggregated_observed_high_freq, aggregated_expected_high_freq=aggregated_expected_high_freq))
 }
@@ -205,7 +200,8 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
 #'
 #' @return
 #' \itemize{
-#'   \item A table of p-values for high low tests on each category
+#'   \item A table of p-values for high low test on each category
+#'   \item A table of sample sizes for high low test on each category
 #'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
@@ -221,17 +217,15 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
   #check input
   input_check(digitdata=digitdata, contingency_table=contingency_table, data_columns=data_columns, skip_first_digit=skip_first_digit,
               omit_05=omit_05, skip_last_digit=skip_last_digit, high=high, break_out=break_out, break_out_grouping=break_out_grouping,
-              category=category, category_grouping=category_grouping)
+              category=category, category_grouping=category_grouping, remove_all_category_visualize=remove_all_category_visualize)
 
   #deal with contingency table and distribution situation
   if (TRUE %in% ((is.na(contingency_table)))){
     #if contingency_table is not passed in, use distribution
     if (tolower(distribution) == 'benford'){
-      #data("benford_table")
       contingency_table = digitanalysis::benford_table
     }
     else if (tolower(distribution) == 'uniform'){
-      #data("uniform_table")
       contingency_table = digitanalysis::uniform_table
     }
     else {
@@ -256,24 +250,6 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
   colnames(observed_freq_table) = colnames(result$aggregated_observed_high_freq)
   colnames(expected_freq_table) = colnames(result$aggregated_expected_high_freq)
 
-  # plots = list()
-  # if (plot){
-  #   high_low_plot = NA
-  #
-  #   rowSums(result$sample_sizes_table)
-  #
-  #   if (nrow(result$high_digits_freq_table) != 1){
-  #     #3D plot
-  #     high_low_plot = hist_2D_variables(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
-  #   }
-  #   else {
-  #     high_low_plot = hist_2D(result$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', 'AllBreakout', sep='_'))
-  #   }
-  #   dev.new()
-  #   print(high_low_plot)
-  #   plots[['AllBreakout']] = high_low_plot
-  # }
-
   #perform high low test on all break out categories
   if (!(is.na(break_out))){
     #get indexes for each category
@@ -282,8 +258,6 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
     #break by category for all
     for (category_name in names(indexes_of_categories)){
       indexes_of_category = indexes_of_categories[[category_name]]
-
-      # print(category_name)
 
       #create a digitdata class for this category
       digitdata_of_category = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_category)
@@ -294,8 +268,7 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       p_values_table[category_name, ][colnames(result_of_category$p_values)] = result_of_category$p_values
       sample_sizes_table[category_name, ][colnames(result_of_category$sample_sizes_table)] = result_of_category$sample_sizes_table
 
-      #for plotting
-      #this is weird af
+      #for plotting #this is weird af!
       if (ncol(result_of_category$aggregated_observed_high_freq) == 1){
         observed_freq_table[category_name, ] = result_of_category$aggregated_observed_high_freq
         expected_freq_table[category_name, ] = result_of_category$aggregated_expected_high_freq
@@ -304,28 +277,7 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
         observed_freq_table[category_name, ][colnames(result_of_category$aggregated_observed_high_freq)] = result_of_category$aggregated_observed_high_freq
         expected_freq_table[category_name, ][colnames(result_of_category$aggregated_expected_high_freq)] = result_of_category$aggregated_expected_high_freq
       }
-
-      # return(list(a=result_of_category$aggregated_observed_high_freq, b=observed_freq_table))
-      # print(result_of_category$aggregated_observed_high_freq)
-      # print(observed_freq_table)
-
-
-    #   if (plot){
-    #     high_low_plot = NA
-    #     if (nrow(result_of_category$high_digits_freq_table) != 1){
-    #       #3D plot
-    #       hist_3d(result_of_category$high_digits_freq_table, digitdata, xlab=category, ylab='Digit Places', zlab='High Digits Frequency',
-    #               title=paste('High Low Test', break_out, sep='_'), theta=55, phi=16, save=FALSE) #3D histograms
-    #       high_low_plot = hist_2D_variables(result_of_category$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
-    #     }
-    #     else {
-    #       high_low_plot = hist_2D(result_of_category$high_digits_freq_table, data_style='row', xlab='Digit Places', ylab='High Digits Frequency', title=paste('High Low Test', category_name, sep='_'))
-    #     }
-    #     dev.new()
-    #     print(high_low_plot)
-    #     plots[[category_name]] = high_low_plot
-    #   }
-    }#need fix plot title  ##################
+    }
 
     if (!(TRUE %in% grepl("\\D", rownames(p_values_table)[-1]))){
       #then it is numeric..sort them

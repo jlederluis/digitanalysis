@@ -49,7 +49,6 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 
   #all digit test
   result = chi_square_gof(observation_table, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N)
-  #return(list(a=contingency_table, b=observation_table))
   p_values = data.frame(All=result$p_value)
   sample_sizes = data.frame(All=sum(result$observed_table, na.rm = TRUE))
   all_digit_test_plots = list()
@@ -161,8 +160,10 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 #'
 #' @return
 #' \itemize{
-#'   \item A table of p-values for all digit tests on each category
+#'   \item A table of p-values for all digit test on each category
+#'   \item A table of sample sizes for all digit test on each category
 #'   \item Plots for each category if \code{plot = TRUE or 'Save'}
+#'   \item plot3Drgl::plotrgl() is a suggested function to turn 3D plots interactive
 #' }
 #' @export
 #'
@@ -197,11 +198,9 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   if (TRUE %in% ((is.na(contingency_table)))){
     #if contingency_table is not passed in, use distribution
     if (tolower(distribution) == 'benford'){
-      #data("benford_table")
       contingency_table = digitanalysis::benford_table
     }
     else if (tolower(distribution) == 'uniform'){
-      #data("uniform_table")
       contingency_table = digitanalysis::uniform_table
     }
     else {

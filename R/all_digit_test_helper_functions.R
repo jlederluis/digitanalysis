@@ -184,7 +184,6 @@ grab_desired_aligned_columns = function(digitdata, data_columns, skip_first_digi
     if (digitdata@max < as.numeric(length(single_column_digits))){
       digitdata@max = as.numeric(length(single_column_digits))
     }
-
     #remove last digit before remove first, to avoid problems like there are 1-digit numbers!!!!!!!!
     if (skip_last_digit){
       single_column_digits = drop_last_digit_places(single_column_digits, align_direction)
@@ -209,7 +208,6 @@ parse_digit_places = function(digitdata, digits_table, digit_places){
   if (digit_places[1] == -1){
     return(digits_table)
   }
-
   #find the names of the digit places to drop
   digit_places_names = digitdata@left_aligned_column_names[-digit_places]
 
@@ -306,7 +304,6 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
     }
     #otherwise, omit_05 is NA so do nothing
   }
-
   #get the digit places we are interested in
   observation_table = observation_table[digit_places]
 
@@ -323,10 +320,8 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
 #'
 #' @return Contingency table with exclusively the desired digits and digit places
 parse_contingency_table = function(digitdata, contingency_table, digit_places, skip_first_digit, skip_last_digit, omit_05){
-
   #last digit test
   if (digit_places[1] == -1){
-    #data("uniform_table")
     last_digit_expected = digitanalysis::uniform_table[1]
     if (!is.na(omit_05[1])){
       last_digit_expected = data.frame(last_digit_expected[!rownames(last_digit_expected) %in% as.character(omit_05), ])
@@ -334,7 +329,6 @@ parse_contingency_table = function(digitdata, contingency_table, digit_places, s
     colnames(last_digit_expected) = 'Last Digit Place'
     return(last_digit_expected)
   }
-
   #drop the "x" and Digits column for table
   contingency_table = contingency_table[!(colnames(contingency_table) %in% c("Digits", "X"))]
 

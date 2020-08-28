@@ -89,16 +89,13 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
   #do it for each length each time
   for (curr_length in num_digits:max_length){
     #get data of current length
-    #print(rowSums(!(is.na(data))))
-
     data_of_curr_length = data[which(rowSums(!(is.na(data))) == curr_length), ]
 
-    if (nrow(data_of_curr_length) == 0) next # do not proceed if it is empty...throw error on some computers!!!!!!!!!!!!!!!!!!!!!!!!
+    if (nrow(data_of_curr_length) == 0) next # do not proceed if it is empty...throw error on some computers!!!!!!!
 
     #ensure only num_digits columns from right
     data_of_curr_length = data_of_curr_length[(ncol(data_of_curr_length)-num_digits+1):ncol(data_of_curr_length)]
 
-    #print(head(data_of_curr_length))
     #remove 0 and 5 if specified
     if (!(is.na(omit_05[1]))){
       #omit 0
@@ -125,60 +122,6 @@ get_expected_mean = function(digitdata, data, Benford_mean, max_length, num_digi
     expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
   }
   return(list(expected_mean=expected_mean, freq_table=freq_table))
-  # indexes_over_max_length = NA
-  # if (max_length < length(data)){
-  #   #to be removed
-  #   indexes_over_max_length = which(complete.cases(data[(length(data)-max_length):length(data)]) == TRUE)
-  # }
-  # #to use, including the ones passes max length
-  # indexes_qualified = which(complete.cases(data[(length(data)-num_digits+1):length(data)]) == TRUE)
-  #
-  # #final indexes to be used
-  # indexes_to_use = setdiff(indexes_qualified, indexes_over_max_length)
-  #
-  # #final data to be used
-  # final_data = data[indexes_to_use, ]
-  #
-  # #remove 0 and 5 in finalm data if specified
-  # if (!(is.na(omit_05[1]))){
-  #   #omit 0
-  #   final_data[final_data == 0] = NA
-  #   if (length(omit_05) == 2){
-  #     #also omit 5
-  #     final_data[final_data == 5] = NA
-  #   }
-  # }
-  # #count the number digits of each length in this dataframe
-  # freq = table(rowSums(!(is.na(final_data))))
-  # print(freq)
-  #
-  # #initialize a table to store the number of left-aligned digit place numbers in each right-aligned digit position
-  # #row means the right alighed digit position
-  # #column means how many are from nth digit place
-  # freq_table = data.frame(matrix(0, ncol = num_digits, nrow = max_length))
-  # colnames(freq_table) = num_digits:1
-  # rownames(freq_table) = digitdata@left_aligned_column_names[1:max_length]
-  #
-  # #fill out the table in a diagonal fashion
-  # for (name in names(freq)){
-  #   length = as.integer(name)
-  #   row = length - num_digits + 1
-  #   for (col in 1:num_digits){
-  #     freq_table[row, col] = freq_table[row, col] + freq[name]
-  #     row = row + 1
-  #   }
-  # }
-  # #intialize table for expected mean
-  # expected_mean = data.frame(matrix(nrow = 1, ncol = num_digits))
-  # colnames(expected_mean) = rev(digitdata@right_aligned_column_names[1:num_digits])
-  #
-  # #get the benford expacted mean for this data set in each digit place aligned right
-  # for (i in 1:num_digits){
-  #   expected_mean[i] = sum(Benford_mean[1:max_length]*freq_table[,i])/sum(freq_table[,i])
-  # }
-  # print(freq)
-  # print(freq_table)
-  # return(list(expected_mean=expected_mean, final_data=final_data, freq=freq, freq_table=freq_table))
 }
 
 
@@ -238,21 +181,11 @@ Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
   simulated_mean = data.frame(matrix(nrow = 0, ncol = length(expected_mean)))
   colnames(simulated_mean) = colnames(expected_mean)
 
-  # #debug
-  # times = c()
-  #simulate n datasets
-  # start = proc.time()
   for (n in 1:N){
     #printing for user
     if (n %% 5000 == 0){
       print(paste("Simulated", n, 'datasets...'))
-      # print(paste('Current memory:', memory.size()))
-      # print(paste('Current dataset total digits:', sum(freq_table)))
-      # print(paste('Current time:', (proc.time()-start)[[3]], 'seconds'))
-      # print("")
-      # times = c(times, (proc.time()-start)[[3]])
     }
-
     #initialize the row for this simulated set
     simulated_mean[paste('sample', as.character(n)), ] = NA
 
@@ -272,7 +205,6 @@ Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
       simulated_mean[paste('sample', as.character(n)), ][i] = mean(simulated_numbers)
     }
   }
-  #return(times)
   return(simulated_mean)
 }
 
@@ -375,10 +307,6 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
     #break by category for all
     for (category_name in names(indexes_of_categories)){
 
-      #print(category_name)
-
-
-
       #printing for user
       if (simulate){
         print(paste("Simulating sub-dataset:", category_name))
@@ -436,17 +364,12 @@ single_padding_test = function(digitdata, contingency_table, data_columns, max_l
 #' @inheritParams all_digits_test
 #' @inheritParams sector_test
 #'
-#' @return
+#' @return A list with 4 elements
 #' \itemize{
-#'   \item A list with 5 elements
-#'   \itemize{
-#'     \item \code{expected_mean}: the expected mean by Benford's Law
-#'     \item \code{observed_mean}: the mean of the input data
-#'     \item \code{diff_in_mean}: the mean difference between observed_mean and expected_mean
-#'     \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
-#'     \item \code{plot}: one ggplot instance per \code{break_out}
-#'   }
-#'   \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE or 'Save'}
+#'   \item A list of p-values from Monte Carlo Simulation on each category
+#'   \item A list of difference in mean between observed_mean and expected_mean on each category
+#'   \item A sample size value that corresponds to N if \code{simulate = TRUE}
+#'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
 #'
@@ -480,10 +403,6 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
     }
   }
 
-  # p_values =
-  # #list of results from all break out category to be returned
-  # padding_test_results = list()
-
   #printing for user
   if (simulate){
     print(paste("Simulating N =", N))
@@ -492,7 +411,6 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
 
   #perform padding test on all data
   result = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping, simulate)
-  #return(result)
 
   #p values table to return
   p_values_table = list(All=result$p_values)
@@ -533,9 +451,6 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
 
     #break by category for all
     for (break_out_name in names(indexes_of_categories)){
-
-
-      #print(break_out_name)
 
       #printing for user
       if (simulate){

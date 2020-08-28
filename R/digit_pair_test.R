@@ -25,7 +25,7 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
     }
     #remove all numbers that has length less than min_length
     digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-min_length+1):ncol(digit_pair_table)]
-    ##remove incomplete rows (with nans/length < min_length)
+    #remove incomplete rows (with nans/length < min_length)
     digit_pair_table = digit_pair_table[complete.cases(digit_pair_table), ]
     #only use last two digits
     digit_pair_table = digit_pair_table[(ncol(digit_pair_table)-1):ncol(digit_pair_table)]
@@ -86,6 +86,7 @@ freq_true = function(omit_05){
 #' @return
 #' \itemize{
 #'   \item A table of p-values for terminal digit pair test on each category
+#'   \item A table of sample sizes for terminal digit pair test on each category
 #'   \item Plots for each category if \code{plot = TRUE or 'Save'}
 #' }
 #' @export
@@ -122,10 +123,8 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
 
   #dataframe of p values to return
   p_values = data.frame(All=format_p_values(p_value))
-
   #dataframe of sample sizes to return
   sample_sizes = data.frame(All=sum(counts, na.rm = TRUE))
-
   #freq of digit pairs for plotting
   freq_digit_pairs = data.frame(All=counts[1]/sum(counts))
 

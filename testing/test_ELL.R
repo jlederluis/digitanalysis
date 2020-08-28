@@ -48,11 +48,11 @@ rounding = rounding_test(digitdata = Data, data_columns = 'ALEXP.Values', break_
 
 #Repeat test with expenditure
 repeats = repeat_test(digitdata = Data, duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
-                      break_out='DIST', data_columns = 'ALEXP.Values', rounding_patterns_to_omit='000', plot='Save')
+                      break_out='DIST', data_column = 'ALEXP.Values', rounding_patterns_to_omit='000', plot='Save')
 
 #Sector test with expenditure
 sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
-                     break_out='DIST', rounding_patterns_to_omit = '000', data_columns = 'ALEXP.Values',
+                     break_out='DIST', rounding_patterns_to_omit = '000', data_column = 'ALEXP.Values',
                      category_instance_analyzing = 'TRN_TRV_VEH', remove_all_category_visualize = T, plot='Save')
 
 #High low test with expenditure
@@ -74,6 +74,6 @@ last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns =
 
 #all tests worked
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
-ELL = digitanalysis::replicate_ELL_10_tests(fp)
+ELL = digitanalysis::replicate_ELL_10_tests(fp = fp, plot = 'Save')
 
 

@@ -41,7 +41,6 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
   colnames(plotting_data) = c('x', 'y') #ensure col name are correct
 
   #2d plot
-  # require("ggplot2")
   hist2d = ggplot(data=plotting_data, aes(x=x, y=y)) +
     geom_bar(stat="identity", width=width) + xlab(xlab) + ylab(ylab) + ggtitle(title) + scale_x_discrete(limits=rownames(data)) +
     scale_y_continuous(breaks=number_ticks(10), expand = expansion(mult = c(0, 0)), limits = c(min(0, 1.1 * min(data)), 1.1 * max(data))) + theme_bw() +
@@ -90,9 +89,7 @@ hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Freque
     plotting_data = rbind(plotting_data, single_category_data)
   }
 
-  #stacked 2d barplot with multiple groups
-  #use position=position_dodge()
-  # require("ggplot2")
+  #stacked 2d barplot with multiple groups: use position=position_dodge()
   hist2d_multiple = ggplot(data=plotting_data, aes(x=x, y=y, fill=category)) +
     geom_bar(stat="identity", position=position_dodge()) + scale_x_discrete(limits=rownames(data)) +
     scale_fill_grey(start=0.7, end=0.1) + xlab(xlab) + ylab(ylab) + ggtitle(title) +
@@ -120,7 +117,6 @@ hist_2D_variables = function(data, data_style='row', xlab='Digits', ylab='Freque
 #' @return A plot instance with all plots in one single figure
 plot_multiple_hist2d = function(plot_list){
   plots = gridExtra::arrangeGrob(grobs = plot_list, nrow = floor(sqrt(length(plot_list))))
-  #plots = gridExtra::do.call("grid.arrange", c(plot_list, nrow = floor(sqrt(length(plot_list)))))
   return(plots)
 }
 
@@ -137,7 +133,6 @@ plot_table_by_columns = function(observed_table, expected_table, name=''){
   for (i in 1:length(observed_table)){
     curr_digit_place = colnames(observed_table)[i]
     #create ggplot object for abline distribution
-    # require("ggplot2")
     dist_line = geom_line(data = data.frame(x=rownames(expected_table), y=expected_table[[i]]), aes(x = x, y = y, group=1, linetype='Expected Distribution'), color='red', lwd=1)
     hist_digit_place_i = hist_2D(observed_table[i], data_style='col', xlab='Digits', ylab='Frequency', title=paste(curr_digit_place, ' \n', name, sep=''), abline=dist_line)
     plot_list[[curr_digit_place]] = hist_digit_place_i
@@ -148,10 +143,6 @@ plot_table_by_columns = function(observed_table, expected_table, name=''){
     }
   }
   plots = plot_multiple_hist2d(plot_list)
-  # if (save){
-  #   filename = paste(name, '_2D_histograms.pdf', sep='')
-  #   ggsave(plots, file=paste(name, '_2D_histograms.pdf', sep=''))
-  # }
   return(plots)
 }
 
@@ -182,7 +173,6 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
 
   y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
   z = as.matrix(data)
-
   #some stuff for when x != min(x):max(x) to make 3d plot nice
   for (i in 1:length(x)){
     if (!i %in% x){
@@ -192,15 +182,7 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
       z = as.matrix(rbind(rbind(z_begin, rep(0, ncol(z))), z_end))
     }
   }
-
   x = min(x):max(x)
-
-  #rgl::open3d()
-  # if (!is.na(kwargs)){
-  #   if (!is.null(kwargs$axes)){
-  #
-  #   }
-  # }
 
   if (plot == TRUE){
     dev.new()
@@ -216,7 +198,7 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
     }
   }
 
-  #rgl::rgl.close()
+  ###these might work? for alternative labeling
   # #yticks
   # yticks = y
   # ylabel_pos = trans3d(max(x)+1, y-0.2, 0, bar3D)
@@ -226,6 +208,8 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   # zticks = seq(from=0.0, to=max(z, na.rm=TRUE)+0.01, by=round(max(z, na.rm=TRUE)/max(length(x),length(y)), digits = 1))
   # zlabel_pos = trans3d(min(x)-1, min(y)-1, zticks, bar3D)
   # text(zlabel_pos$x, zlabel_pos$y, labels=zticks, adj=c(0, NA), srt=0, cex=1)
+  # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
+  # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
 
   if (save3Dfilename != ''){
     filename = paste(gsub('\n', '', title), save3Dfilename, ".pdf", sep='')
@@ -233,8 +217,6 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
     plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
                    ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
                    lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
-    # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
-    # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
     dev.off()
   }
 }
@@ -249,9 +231,9 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
 #' @return A ggplot instance for aggregated histogram.
 plot_aggregate_histogram = function(observation_table, expected_table, freq_digit_place, name){
   if (abs(sum(freq_digit_place) - 1) > 0.001){
-    print(name)
-    print(sum(freq_digit_place)-1)
-    stop('freq_digit_place must sum to 1 to be a weight vector')
+    message = paste('freq_digit_place must sum to 1 to be a weight vector: In ', name,
+                    ', sum of frequency for all digits - 1 = ', sum(freq_digit_place)-1, sep='')
+    stop(message)
   }
   aggregate_expected = data.frame(matrix(nrow=0, ncol=1))
   colnames(aggregate_expected) = 'Aggregate Expected Frequency'
@@ -298,16 +280,12 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   else if (dim(digitdata@raw) != c(0,0) && digitdata@raw %in% c('round', 'unround')){
     #round numbers
     if (digitdata@raw[1,1] == 'round'){
-      # multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste('Rounded Data \n', title, sep='')) #multiple 2D histograms
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste('Rounded Data \n', title, sep='')) #plot aggregate histogram across digit place
-      # plots_list[['digitplace_barplot']] = multiple_hist
       plots_list[['aggregate_barplot']] = aggregate_hist
 
     }
     else if (digitdata@raw[1,1] == 'unround'){
-      # multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste('Unrounded Data \n', title, sep='')) #multiple 2D histograms
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste('Unround Data \n', title, sep='')) #plot aggregate histogram across digit place
-      # plots_list[['digitplace_barplot']] = multiple_hist
       plots_list[['aggregate_barplot']] = aggregate_hist
     }
     else {
@@ -324,27 +302,4 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   }
   return(plots_list)
 }
-
-
-# result = all_digits_test(digitdata = DigitData, contingency_table = contingency_table, data_columns = data_columns, digit_places = digit_places,
-#                          skip_first_digit = skip_first_digit, omit_05 = omit_05, break_out=NA, distribution='Benford', plot=TRUE, skip_last_digit = skip_last_digit, standard_df=TRUE)
-#
-# require("plot3Drgl")
-# plotrgl()
-
-
-
-# require(ggplot2)
-# load(file = "data/benford_table.RData")
-# ggplot(data=data.frame(x=rownames(benford_table), y=benford_table[[2]]), aes(x=x, y=y)) +
-#   geom_line(data = data.frame(x=rownames(benford_table), y=benford_table[[2]]), aes(x = x, y = y, group=1), color='red', lwd=1) +
-#   theme(axis.line.x = element_blank(),
-#         axis.line.y = element_line(colour = "black"),
-#         panel.grid.major = element_blank(),
-#         panel.grid.minor = element_blank(),
-#         panel.border = element_blank(),
-#         panel.background = element_blank(),
-#         legend.title=element_blank()) +
-#   xlab('Digits') + ylab('Expected Frequency') + ggtitle('Benford Distribution in Second Digit Place') +
-#   geom_hline(aes(yintercept=0), color='black', lwd=0.5)
 

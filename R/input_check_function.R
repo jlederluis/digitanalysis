@@ -6,8 +6,6 @@
 # Input check function in this file
 ############################################################
 
-#add
-
 #' Asserts the input to user accessible functions in this package are of correct type and form.
 #'
 #' @param digitdata Mandatory option. Check if it is of class \code{DigitAnalysis}
@@ -272,13 +270,4 @@ input_check = function(digitdata, contingency_table=NA, data_columns=NA, digit_p
     }
   }
 }
-# tryCatch(2+'2',
-#          error = function(e){
-#            message("An error occurred:\n", e)
-#          },
-#          warning = function(w){
-#            message("A warning occured:\n", w)
-#          },
-#          finally = {
-#            message("Finally done")
-#          })
+

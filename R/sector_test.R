@@ -31,13 +31,14 @@
 #'
 #' @examples
 #' sector_test(digitdata, break_out='column', category='sector', category_instance_analyzing='X')
-#' sector_test(digitdata, break_out='A', category='B', category_instance_analyzing='X', data_columns='Y', rounding_patterns_to_omit='00')
-sector_test = function(digitdata, break_out, category, category_instance_analyzing, data_columns=NA, duplicate_matching_cols='all',
+#' sector_test(digitdata, break_out='A', category='B', category_instance_analyzing='X', data_column='Y', rounding_patterns_to_omit='00')
+sector_test = function(digitdata, break_out, category, category_instance_analyzing, data_column=NA, duplicate_matching_cols='all',
                        break_out_grouping=NA, category_grouping=NA, rounding_patterns_to_omit=NA, plot=TRUE, remove_all_category_visualize=FALSE){
 
   #check input
-  input_check(digitdata=digitdata, data_columns=data_columns, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols,
-              category=category, category_grouping=category_grouping, rounding_patterns=rounding_patterns_to_omit, plot=plot)
+  input_check(digitdata=digitdata, data_columns=data_column, break_out=break_out, break_out_grouping=break_out_grouping, duplicate_matching_cols=duplicate_matching_cols,
+              category=category, category_grouping=category_grouping, rounding_patterns=rounding_patterns_to_omit, plot=plot,
+              remove_all_category_visualize=remove_all_category_visualize)
 
   #check if the sector columns are valid
   if (is.na(match(category, colnames(digitdata@cleaned)))){
@@ -71,16 +72,14 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   rownames(sample_sizes) = category_instance_analyzing
 
   #perform sector test on all
-  result_all = repeat_test(digitdata = digitdata, data_columns = data_columns, duplicate_matching_cols = duplicate_matching_cols,
+  result_all = repeat_test(digitdata = digitdata, data_column = data_column, duplicate_matching_cols = duplicate_matching_cols,
                            break_out = category, break_out_grouping = category_grouping, rounding_patterns_to_omit = rounding_patterns_to_omit, plot=FALSE)
   p_value = result_all$p_values[[category_instance_analyzing]]
   sample_size = result_all$sample_sizes[[category_instance_analyzing]]
   repeats_table = result_all$percent_repeats
-  #repeats_table = repeats_table[!(rownames(repeats_table) %in% c('All')), ]
 
   #update table and p value
   sector_repeats_table['All'] = NA
-  #return(list(a=sector_repeats_table, b=repeats_table))
   sector_repeats_table['All'][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
   p_values['All'] = format_p_values(p_value)
   sample_sizes['All'] = sample_size
@@ -96,12 +95,11 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
     digitdata_of_break_out = make_sub_digitdata(digitdata=digitdata, indexes=indexes_of_break_out)
 
     #repeats test
-    result_of_break_out = repeat_test(digitdata = digitdata_of_break_out, data_columns = data_columns, duplicate_matching_cols = duplicate_matching_cols,
+    result_of_break_out = repeat_test(digitdata = digitdata_of_break_out, data_column = data_column, duplicate_matching_cols = duplicate_matching_cols,
                                       break_out = category, break_out_grouping = category_grouping, rounding_patterns_to_omit = rounding_patterns_to_omit, plot=FALSE)
     p_value = result_of_break_out$p_values[[category_instance_analyzing]]
     sample_size = result_of_break_out$sample_sizes[[category_instance_analyzing]]
     repeats_table = result_of_break_out$percent_repeats
-    #repeats_table = t(repeats_table[!(rownames(repeats_table) %in% c('AllBreakout')), ])
 
     #update table and p value
     sector_repeats_table[break_out_name] = NA
@@ -120,7 +118,6 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
     if (remove_all_category_visualize){
       plot_data = sector_repeats_table[!(rownames(sector_repeats_table) %in% c('All')), ]
     }
-
     sector_plot = hist_2D_variables(data.frame(plot_data), data_style='row', xlab=break_out, ylab='Percent Repeats',
                                     title=paste('Sector Effect Test \n', 'Broken out by ', break_out, ', ', category, sep=''))
     if (plot == TRUE){

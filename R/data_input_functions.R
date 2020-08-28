@@ -27,7 +27,7 @@ DigitAnalysis = setClass('DigitAnalysis', slots = c(raw="data.frame", cleaned="d
                                                     numbers="data.frame", left_aligned="data.frame",
                                                     right_aligned="data.frame", left_aligned_column_names='character',
                                                     right_aligned_column_names='character', max='numeric'))
-#set some methods for DigitAnalysis only
+#set methods for DigitAnalysis only
 setMethod(f = 'show',
           signature = 'DigitAnalysis',
           definition = function(object){
@@ -35,20 +35,6 @@ setMethod(f = 'show',
             print('Slots:')
             print(slotNames(object))
           })
-
-#classof = function(x) {return("DigitAnalysis")}
-#method.skeleton("class", "DigitAnalysis")
-# setGeneric("class",
-#            function(x) {
-#              return("DigitAnalysis")
-#            })
-# setMethod(f = 'class',
-#           signature = c("DigitAnalysis"),
-#           definition = function(x) {
-#             class = 'DigitAnalysis'
-#             class
-#           })
-
 
 ############################################################
 #basic helper functions for data input function
@@ -81,7 +67,6 @@ align_digits = function(indata, outdata, naming_method, col_name, align_directio
   for (i in 1:max){
     outdata[[paste(col_name, naming_method[i])]] = NA
   }
-
   for (j in 1:length(indata)){
     #split each number into chars
     if (!(is.na(indata[j]))){
@@ -91,7 +76,6 @@ align_digits = function(indata, outdata, naming_method, col_name, align_directio
       if (align_direction == 'right'){
         chars = rev(chars)
       }
-
       for (k in 1:length(chars)){
         outdata[[paste(col_name, naming_method[k])]][j] = as.integer(chars[k])
       }
@@ -136,7 +120,6 @@ make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
   else {
     stop('Can either use filepath to load raw data or pass in a dataframe as raw data. Cannot do both or neither!')
   }
-
   #remove all unnecessary blank columns
   raw_data = raw_data[colSums(!is.na(raw_data)) > 0]
   return(raw_data)
@@ -202,7 +185,6 @@ make_aligned_data = function(cleaned_data, digit_columns, naming_method, align_d
 
     #replace 0 by NA for digit analysis
     indata[indata == 0] = NA
-
     aligned_data = align_digits(indata=indata, outdata=aligned_data, naming_method=naming_method, col_name=col_name, align_direction=align_direction) ###NAs introduced by coercion
   }
   return(aligned_data)
