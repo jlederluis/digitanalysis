@@ -54,7 +54,12 @@ counts_observed = function(digitdata, data_columns, omit_05, min_length, indexes
   return(c(counts, length(occurances) - counts))
 }
 
-#get the theoratical frequency of terminal digit pair frequency
+
+#' Computes the theoratical frequency of terminal digit pairs
+#'
+#' @param omit_05 Whether to omit 0 or 5. If omit 0, 00 will be excluded. If omit 5, 05 will be excluded.
+#'
+#' @return The theoratical frequency of terminal digit pairs
 freq_true = function(omit_05){
   total = 100 #100 combinations possible
   pairs = 10 #10 pairs possible

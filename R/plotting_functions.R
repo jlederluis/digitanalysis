@@ -288,7 +288,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
       plots_list[['aggregate_barplot']] = aggregate_hist
     }
     else {
-      stop('FUGMA happened in plot_all_digit_test in plotting_functions.R. Do traceback() or look at plotting_functions.R (note for developer).')
+      stop('Error happened in plot_all_digit_test in plotting_functions.R. Do traceback() or look at plotting_functions.R (note for developer).')
     }
   }
   else {

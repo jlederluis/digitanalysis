@@ -1,4 +1,3 @@
-export(Benford_simulation)
 export(Benford_table)
 export(DigitAnalysis)
 export(all_digits_test)

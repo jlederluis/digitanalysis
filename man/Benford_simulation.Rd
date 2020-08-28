@@ -2,7 +2,7 @@
 % Please edit documentation in R/padding_test.R
 \name{Benford_simulation}
 \alias{Benford_simulation}
-\title{Stimulates N Benford distribution datasets with matching digit places as the observed dataset. SHOULD I EXPORT THIS???!!!}
+\title{Simulates N Benford distribution datasets with matching digit places as the observed dataset.}
 \usage{
 Benford_simulation(N, freq_table, expected_mean, contingency_table)
 }
@@ -26,5 +26,5 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
 A dataframe for the mean of each simulated dataset in every digit place
 }
 \description{
-Stimulates N Benford distribution datasets with matching digit places as the observed dataset. SHOULD I EXPORT THIS???!!!
+Simulates N Benford distribution datasets with matching digit places as the observed dataset.
 }

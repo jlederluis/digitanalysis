@@ -167,14 +167,13 @@ get_observed_mean = function(data, num_digits, max_length, omit_05){
 }
 
 
-#' Stimulates N Benford distribution datasets with matching digit places as the observed dataset. SHOULD I EXPORT THIS???!!!
+#' Simulates N Benford distribution datasets with matching digit places as the observed dataset.
 #'
 #' @param freq_table \code{freq_table} item returned from \code{get_expected_mean}
 #' @param expected_mean \code{expected_mean} item returned from \code{get_expected_mean}
 #' @inheritParams padding_test
 #'
 #' @return A dataframe for the mean of each simulated dataset in every digit place
-#' @export
 Benford_simulation = function(N, freq_table, expected_mean, contingency_table){
   #sample each digit place from right according to frequency table of our observed dataset
   #initialize the returned table

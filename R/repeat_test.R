@@ -30,7 +30,7 @@ omit_rounded_numbers = function(data, data_column, rounding_patterns_to_omit){
     #update numbers; remove rounded rows from data
     if (length(matched_indexes) > 0){
       numbers = numbers[-matched_indexes]
-      temp_data = as.data.frame(data[-matched_indexes, ]) #OMG why do I have to do this!!!
+      temp_data = as.data.frame(data[-matched_indexes, ])
       colnames(temp_data) = colnames(data)
       data = temp_data
     }
@@ -46,13 +46,15 @@ omit_rounded_numbers = function(data, data_column, rounding_patterns_to_omit){
 #' @return The percentage of repeated numbers in input data
 find_percent_repeats = function(data, data_column, rounding_patterns_to_omit){
   #first of first omit NA entries in data_column!!!
-  data = data[!is.na(data[data_column]), ]
+  temp_data = as.data.frame(data[!is.na(data[data_column]), ])
+  colnames(temp_data) = colnames(data)
+  data = temp_data
   #omit rounded numbers
   if (!any(is.na(rounding_patterns_to_omit)) && !is.na(data_column)){
     data = omit_rounded_numbers(data, data_column, rounding_patterns_to_omit)
   }
   #find repeats based on specified definition of a repeat
-  unique_numbers = dim(unique(data))[1]   #this shit is having some issues on single column shit for some fucking reason!
+  unique_numbers = dim(unique(data))[1]
   total_numbers = dim(data)[1]
   num_repeats = total_numbers - unique_numbers
   percent_repeats = num_repeats / total_numbers
