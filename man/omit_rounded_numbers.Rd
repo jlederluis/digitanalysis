@@ -4,13 +4,12 @@
 \alias{omit_rounded_numbers}
 \title{Omits the numbers that are qualified as rounded numbers specified by \code{rounding_patterns_to_omit}.}
 \usage{
-omit_rounded_numbers(data, data_columns, rounding_patterns_to_omit)
+omit_rounded_numbers(data, data_column, rounding_patterns_to_omit)
 }
 \arguments{
 \item{data}{The The dataframe to compute percent repeat on}
 
-\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
-an array of column names, as characters; a single column name, as character.}
+\item{data_column}{The data column to omit rounding numbers upon. Must be a single column.}
 
 \item{rounding_patterns_to_omit}{The patterns to be counted as rounding digits to skip. Defaulted to NA.
 \itemize{

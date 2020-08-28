@@ -16,24 +16,24 @@
 #' @export
 #'
 #' @examples
-#' replicate_ELL_10_tests(fp=filepath)
+#' replicate_ELL_10_tests(filepath=fp)
 #' replicate_ELL_10_tests(raw_df=dataframe)
-replicate_ELL_10_tests = function(fp=NA, raw_df=NA, plot=TRUE){
+replicate_ELL_10_tests = function(filepath=NA, raw_df=NA, plot=TRUE){
   #data
   Data = NA
-  if (!is.na(fp) && is.na(raw_df)){
-    D <- read.csv(fp, stringsAsFactors = FALSE)
+  if (!is.na(filepath) && is.na(raw_df)){
+    D <- read.csv(filepath, stringsAsFactors = FALSE)
     D$SectorGroup <- D$SECTOR
     unique(D$SECTOR)
     D$SectorGroup[D$SectorGroup == "TRN" | D$SectorGroup == "TRAVEL" | D$SectorGroup == "VEHICLES"] <- "TRN_TRV_VEH"
     # D <- D[D$SECTOR != "MICRO", ]
     Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.Values", "BENM", "BENF"))
   }
-  else if (is.na(fp) && !is.na(raw_df)) {
+  else if (is.na(filepath) && !is.na(raw_df)) {
     Data = process_digit_data(raw_df = raw_df, digit_columns = c('ALEXP.Values', "BENTOT.Values", "BENM", "BENF"))
   }
   else {
-    stop("Must specify one of fp or raw_df to perform tests.")
+    stop("Must specify one of filepath or raw_df to perform tests.")
   }
 
   #All digits test except first with expenditure

@@ -79,7 +79,8 @@ Must be a dataframe of the form as \code{benford_table}. Defaulted to NA.
 }
 \value{
 \itemize{
-  \item A table of p-values for high low tests on each category
+  \item A table of p-values for high low test on each category
+  \item A table of sample sizes for high low test on each category
   \item Plots for each category if \code{plot = TRUE or 'Save'}
 }
 }

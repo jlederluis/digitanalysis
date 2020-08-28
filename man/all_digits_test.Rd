@@ -94,8 +94,10 @@ If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
 }
 \value{
 \itemize{
-  \item A table of p-values for all digit tests on each category
+  \item A table of p-values for all digit test on each category
+  \item A table of sample sizes for all digit test on each category
   \item Plots for each category if \code{plot = TRUE or 'Save'}
+  \item plot3Drgl::plotrgl() is a suggested function to turn 3D plots interactive
 }
 }
 \description{

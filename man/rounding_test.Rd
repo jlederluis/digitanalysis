@@ -42,7 +42,9 @@ an array of column names, as characters; a single column name, as character.}
 }
 \value{
 \itemize{
-  \item A table of p-values for rounding test on each category ordered by decreasing rounded percentage
+  \item A table of p values of t test for rounding test on each category
+  \item A table of percent rounded digits for rounding test on each category ordered by decreasing rounded percentage
+  \item A table of sample sizes for rounding test on each category
   \item Plots for each category if \code{plot = TRUE or 'Save'}
 }
 }

@@ -50,6 +50,7 @@ an array of column names, as characters; a single column name, as character.}
 \value{
 \itemize{
   \item A table of p-values for terminal digit pair test on each category
+  \item A table of sample sizes for terminal digit pair test on each category
   \item Plots for each category if \code{plot = TRUE or 'Save'}
 }
 }

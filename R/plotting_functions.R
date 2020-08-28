@@ -125,7 +125,6 @@ plot_multiple_hist2d = function(plot_list){
 #' @param observed_table The digits table for observed counts in each digits in each digit place
 #' @param expected_table The digits table for expected counts in each digits in each digit place
 #' @param name The subtitle to be put on each subplot after identifying its digit place in main title
-#' @inheritParams hist_2D
 #'
 #' @return A figure with each data column's value plotted against rownames
 plot_table_by_columns = function(observed_table, expected_table, name=''){

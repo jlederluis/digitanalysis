@@ -4,14 +4,14 @@
 \alias{replicate_ELL_10_tests}
 \title{Replicates Ensingmer & Leder-Luis 10 Tests}
 \usage{
-replicate_ELL_10_tests(fp = NA, raw_df = NA, plot = TRUE)
+replicate_ELL_10_tests(filepath = NA, raw_df = NA, plot = TRUE)
 }
 \arguments{
-\item{fp}{filepath for input data}
+\item{filepath}{Default to NA. If loading data using filepath, specify filepath as a string.}
 
-\item{raw_df}{dataframe for input data}
+\item{raw_df}{Default to NA. If loading data using a dataframe. Pass in the dataframe instance.}
 
-\item{plot}{TRUE or FALSE: If generate plot or not. Default to TRUE, might have bugs if set to FALSE lmao.}
+\item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 }
 \value{
 The test statistics table and the plots for Ensingmer & Leder-Luis 10 Tests
@@ -20,6 +20,6 @@ The test statistics table and the plots for Ensingmer & Leder-Luis 10 Tests
 Replicates Ensingmer & Leder-Luis 10 Tests
 }
 \examples{
-replicate_ELL_10_tests(fp=filepath)
+replicate_ELL_10_tests(filepath=fp)
 replicate_ELL_10_tests(raw_df=dataframe)
 }

@@ -10,7 +10,7 @@ sector_test(
   break_out,
   category,
   category_instance_analyzing,
-  data_columns = NA,
+  data_column = NA,
   duplicate_matching_cols = "all",
   break_out_grouping = NA,
   category_grouping = NA,
@@ -31,11 +31,10 @@ sector_test(
 
 \item{category_instance_analyzing}{The instance of the category to perform t test on.}
 
-\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
-an array of column names, as characters; a single column name, as character.}
+\item{data_column}{The data column to omit rounding numbers upon. Must be a single column.}
 
 \item{duplicate_matching_cols}{An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
-Must include all columns in \code{data_columns}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.}
+Must include \code{data_column}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.}
 
 \item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
 \itemize{
@@ -76,5 +75,5 @@ A wrapper function for \code{repeat_test}.
 }
 \examples{
 sector_test(digitdata, break_out='column', category='sector', category_instance_analyzing='X')
-sector_test(digitdata, break_out='A', category='B', category_instance_analyzing='X', data_columns='Y', rounding_patterns_to_omit='00')
+sector_test(digitdata, break_out='A', category='B', category_instance_analyzing='X', data_column='Y', rounding_patterns_to_omit='00')
 }

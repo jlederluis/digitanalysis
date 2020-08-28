@@ -93,8 +93,9 @@ If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
 \value{
 \itemize{
   \item A list of p-values for round and unround data break by \code{break_out} and \code{category} if specified
+  \item A list of sample sizes for  round and unround data break by \code{break_out} and \code{category} if specified
   \item A list of merged plots, rounded data plots, and un rounded data plots break by \code{break_out} and \code{category} if specified
-  if \code{plot = TRUE or 'Save'}
+  iff \code{plot = TRUE or 'Save'}
 }
 }
 \description{

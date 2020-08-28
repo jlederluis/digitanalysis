@@ -81,16 +81,12 @@ If TRUE, \code{suppress_second_division_plots} will also be set to TRUE.}
 \item{plot}{TRUE or FALSE or 'Save': If TRUE, display the plots and return them. If 'Save', return the plots but suppress display. If FALSE, no plot is produced. Default to TRUE.}
 }
 \value{
+A list with 4 elements
 \itemize{
-  \item A list with 5 elements
-  \itemize{
-    \item \code{expected_mean}: the expected mean by Benford's Law
-    \item \code{observed_mean}: the mean of the input data
-    \item \code{diff_in_mean}: the mean difference between observed_mean and expected_mean
-    \item \code{p_values}: the percentile of the observed dataset among all simulated datasets in decreasing order
-    \item \code{plot}: one ggplot instance per \code{break_out}
-  }
-  \item Plots on \code{diff_in_mean} for each category displayed if \code{plot = TRUE or 'Save'}
+  \item A list of p-values from Monte Carlo Simulation on each category
+  \item A list of difference in mean between observed_mean and expected_mean on each category
+  \item A sample size value that corresponds to N if \code{simulate = TRUE}
+  \item Plots for each category if \code{plot = TRUE or 'Save'}
 }
 }
 \description{

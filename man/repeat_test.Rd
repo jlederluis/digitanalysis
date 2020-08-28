@@ -7,7 +7,7 @@
 repeat_test(
   digitdata,
   break_out,
-  data_columns = NA,
+  data_column = NA,
   duplicate_matching_cols = "all",
   break_out_grouping = NA,
   rounding_patterns_to_omit = NA,
@@ -22,11 +22,10 @@ repeat_test(
   \item The first division (usually x-axis) shown in plots.
 }}
 
-\item{data_columns}{The names of numeric columns of data to be analyzed. Default can be 'all', where using all data columns in \code{numbers} df in \code{digitdata};
-an array of column names, as characters; a single column name, as character.}
+\item{data_column}{The data column to omit rounding numbers upon. Must be a single column.}
 
 \item{duplicate_matching_cols}{An array of names of data columns two rows need to match exactly in order to be defined as a repeat.
-Must include all columns in \code{data_columns}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.}
+Must include \code{data_column}. Default to 'all', meaning matching all columns in 'number' slot of \code{digitdata}.}
 
 \item{break_out_grouping}{A list of arrays, or defaulted to NA. Only effective if \code{break_out} is not NA.
 \itemize{
@@ -46,7 +45,9 @@ Must include all columns in \code{data_columns}. Default to 'all', meaning match
 }
 \value{
 \itemize{
-  \item A table of p-values for repeat test on each category possibly also on sector
+  \item A table of p values of t test for repeat test on each category
+  \item A table of percent repeated numbers for repeat test on each category ordered by decreasing repeats percentage
+  \item A table of sample sizes for repeat test on each category
   \item Plots for each category if \code{plot = TRUE or 'Save'}
   \item If NaN is in returned table, it means that there are no occurances of the data in that category --> 0/0 in percentage
 }

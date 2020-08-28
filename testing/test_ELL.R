@@ -29,8 +29,6 @@ Data = process_digit_data(raw_df = D, digit_columns = c('ALEXP.Values', "BENTOT.
 ADT_ALEXP = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', skip_first_digit = TRUE, omit_05 = c(0,5), break_out='DIST',
                             suppress_first_division_plots=TRUE, plot='Save')
 
-
-
 #First digit test with expenditure
 first_digit = all_digits_test(digitdata = Data, data_columns = 'ALEXP.Values', digit_places = 1, omit_05 = 0, break_out='DIST',
                               suppress_first_division_plots=TRUE, plot='Save')
@@ -69,11 +67,10 @@ padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_leng
                        simulate=T, suppress_first_division_plots=TRUE, plot='Save')
 
 #Last digit test except first with expenditure
-last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns = 'ALEXP.Values', omit_05 = c(0,5), break_out='DIST',
+last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns = 'ALEXP.Values', omit_05 = c(0,5), break_out="DIST",
                              suppress_first_division_plots=TRUE, plot='Save')
 
 #all tests worked
 fp = 'C:\\Users\\happy\\OneDrive - California Institute of Technology\\Desktop\\ARID MASTER FINAL.csv' #################
-ELL = digitanalysis::replicate_ELL_10_tests(fp = fp, plot = 'Save')
-
+ELL = digitanalysis::replicate_ELL_10_tests(filepath = fp, plot = 'Save')
 

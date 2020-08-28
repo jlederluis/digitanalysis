@@ -258,6 +258,7 @@ obtain_observation = function(digitdata, usable_data, digit_places, skip_first_d
     #omit 05
     if (!is.na(omit_05[1])){
       observation_table = data.frame(observation_table[!rownames(observation_table) %in% as.character(omit_05), ])
+      rownames(observation_table) = as.character(0:9)[!0:9 %in% omit_05]
     }
     #name the columns
     colnames(observation_table) = 'Last Digit'
@@ -325,6 +326,7 @@ parse_contingency_table = function(digitdata, contingency_table, digit_places, s
     last_digit_expected = digitanalysis::uniform_table[1]
     if (!is.na(omit_05[1])){
       last_digit_expected = data.frame(last_digit_expected[!rownames(last_digit_expected) %in% as.character(omit_05), ])
+      rownames(last_digit_expected) = as.character(0:9)[!0:9 %in% omit_05]
     }
     colnames(last_digit_expected) = 'Last Digit Place'
     return(last_digit_expected)
