@@ -51,6 +51,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   result = chi_square_gof(observation_table, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N)
   #return(list(a=contingency_table, b=observation_table))
   p_values = data.frame(All=result$p_value)
+  sample_sizes = data.frame(All=sum(result$observed_table, na.rm = TRUE))
   all_digit_test_plots = list()
 
   #plot
@@ -82,6 +83,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
       #chi square test
       result_in_category = chi_square_gof(obs_in_category, contingency_table, freq=TRUE, suppress_low_N=suppress_low_N)
       p_values[category_name] = result_in_category$p_value
+      sample_sizes[category_name] = sum(result_in_category$observed_table, na.rm = TRUE)
 
       #plot
       if (plot != FALSE){
@@ -101,7 +103,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
   if (length(all_digit_test_plots) == 0){
     all_digit_test_plots = paste(subset_name, 'plots suppressed since plot=FALSE')
   }
-  return(list(p_values=p_values, plots=all_digit_test_plots))
+  return(list(p_values=p_values, sample_sizes=sample_sizes, plots=all_digit_test_plots))
 }
 
 
@@ -221,12 +223,18 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
                                       save3Dfilename=save3Dfilename, kwargs=kwargs)
   #return(result_all)
   p_values_all = result_all$p_values
+  sample_sizes_all = result_all$sample_sizes
   plots_all = result_all$plots
 
   #p values to return
   p_values = data.frame(matrix(nrow = 0, ncol = ncol(p_values_all)))
   colnames(p_values) = colnames(p_values_all)
   p_values['All', ] = format_p_values(p_values_all)
+
+  #sample sizes to return
+  sample_sizes = data.frame(matrix(nrow = 0, ncol = ncol(sample_sizes_all)))
+  colnames(sample_sizes) = colnames(sample_sizes_all)
+  sample_sizes['All', ] = sample_sizes_all
 
   #plots to return
   plots = list(AllBreakout = plots_all)
@@ -249,9 +257,11 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
                                                   plot=plot, suppress_second_division_plots=suppress_second_division_plots,
                                                   save3Dfilename=save3Dfilename, kwargs=kwargs)
       p_values_of_category = result_of_category$p_values
+      sample_sizes_of_category = result_of_category$sample_sizes
       plots_of_category = result_of_category$plots
 
       p_values[category_name, ] = format_p_values(p_values_of_category)
+      sample_sizes[category_name, ] = sample_sizes_of_category
       plots[[category_name]] = plots_of_category
     }
     if (!(TRUE %in% grepl("\\D", rownames(p_values)[-1]))){
@@ -260,6 +270,6 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
       p_values = p_values[ordered_rows, ]
     }
   }
-  return(list(p_values=p_values, plots=plots))
+  return(list(p_values=p_values, sample_sizes=sample_sizes, plots=plots))
 }
 

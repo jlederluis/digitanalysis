@@ -163,6 +163,11 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
   #calculate p value by t test for each category
   p_values = data.frame(matrix(nrow=1, ncol=0))
   rownames(p_values) = 'p_value'
+
+  #sample size of each category
+  sample_sizes = data.frame(matrix(nrow=1, ncol=0))
+  rownames(sample_sizes) = 'sample size'
+
   #return(repeats_count_all)
 
   for (category_name in names(repeats_count_all)){
@@ -175,12 +180,15 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
     # print(sum(other_counts==0))
     # print(sum(other_counts==1))
     if (length(category_counts) < 2){
+      message = paste('Repeat counts for', category_name, 'is less than 2. Cannot perform t test. P value is set to NA for', category_name)
+      warning(message)
       p_value = NA #cannot perform t test...x too small
     }
     else {
       p_value = t.test(category_counts, other_counts, alternative = "greater")$p.value
     }
     p_values[category_name] = format_p_values(p_value)
+    sample_sizes[category_name] = length(category_counts)
   }
   if (!(TRUE %in% grepl("\\D", colnames(p_values)))){
     #then it is numeric..sort them
@@ -225,6 +233,6 @@ repeat_test = function(digitdata, break_out, data_columns=NA, duplicate_matching
   rownames(percent_repeats_table) = 'percent repeated numbers'
   #sort by decreasing rounded percentage
   percent_repeats_table = t(sort(percent_repeats_table, decreasing = TRUE))
-  return(list(p_values=p_values, percent_repeats=percent_repeats_table, plot=repeats_plot))
+  return(list(p_values=p_values, percent_repeats=percent_repeats_table, sample_sizes=sample_sizes, plot=repeats_plot))
 }
 

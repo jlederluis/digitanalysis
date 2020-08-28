@@ -19,7 +19,7 @@
 n_zeros_pattern = function(n){
   zeros = rep('0', n)
   for (i in 2:n){
-    zeros[i] = paste(zeros[i-1], zeros[i],sep='')
+    zeros[i] = paste(zeros[i-1], zeros[i], sep='')
   }
   return(zeros)
 }
@@ -139,6 +139,10 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   p_values = data.frame(matrix(nrow=1, ncol=0))
   rownames(p_values) = 'p_value'
 
+  #sample size of each category
+  sample_sizes = data.frame(matrix(nrow=1, ncol=0))
+  rownames(sample_sizes) = 'sample size'
+
   #return(list(a=rounded_digits_list, b=total_digits_list))
 
   for (category_name in names(rounded_digits_list)){
@@ -154,6 +158,8 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
     # print(length(other_rounded))
     p_value = t.test(category_rounded, other_rounded, alternative = "greater")$p.value
     p_values[category_name] = format_p_values(p_value)
+    sample_sizes[category_name] = length(category_rounded)
+
   }
   if (!(TRUE %in% grepl("\\D", colnames(p_values)))){
     #then it is numeric..sort them
@@ -199,6 +205,6 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   rownames(percent_rounded_table) = 'percent rounded digits'
   #sort by decreasing rounded percentage
   percent_rounded_table = t(sort(percent_rounded_table, decreasing = TRUE))
-  return(list(p_values=p_values, percent_rounded=percent_rounded_table, plot=rounding_plot))
+  return(list(p_values=p_values, percent_rounded=percent_rounded_table, sample_sizes=sample_sizes, plot=rounding_plot))
 }
 

@@ -48,7 +48,7 @@ rounding = rounding_test(digitdata = Data, data_columns = 'ALEXP.Values', break_
 
 #Repeat test with expenditure
 repeats = repeat_test(digitdata = Data, duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
-                      break_out='DIST', data_columns = 'ALEXP.Values', rounding_patterns_to_omit=c('000'), plot='Save')
+                      break_out='DIST', data_columns = 'ALEXP.Values', rounding_patterns_to_omit='000', plot='Save')
 
 #Sector test with expenditure
 sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matching_cols=c("ALEXP.Values", "YEAR", "DIST", "SECTOR"),
@@ -56,7 +56,7 @@ sector = sector_test(digitdata = Data, category='SectorGroup', duplicate_matchin
                      category_instance_analyzing = 'TRN_TRV_VEH', remove_all_category_visualize = T, plot='Save')
 
 #High low test with expenditure
-high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='YEAR',
+high_low = high_low_test(digitdata = Data, data_columns = 'ALEXP.Values', omit_05 = c(0,5), skip_first_digit=TRUE, break_out='DIST', category = 'YEAR',
                          remove_all_category_visualize = T, plot='Save')
 
 #Unpack rounded numbers test with participants
@@ -66,7 +66,7 @@ unpack = unpack_round_numbers_test(digitdata = Data, rounding_split_column="BENT
 
 #Padding test with expenditure
 padding = padding_test(digitdata = Data, data_columns = 'ALEXP.Values', max_length=7, num_digits=5, N=10, omit_05=c(0,5), break_out='DIST', category='SectorGroup',
-                       simulate=F, suppress_first_division_plots=TRUE, plot='Save')
+                       simulate=T, suppress_first_division_plots=TRUE, plot='Save')
 
 #Last digit test except first with expenditure
 last_digit = all_digits_test(digitdata = Data, digit_places = -1, data_columns = 'ALEXP.Values', omit_05 = c(0,5), break_out='DIST',

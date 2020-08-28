@@ -123,6 +123,9 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
   #dataframe of p values to return
   p_values = data.frame(All=format_p_values(p_value))
 
+  #dataframe of sample sizes to return
+  sample_sizes = data.frame(All=sum(counts, na.rm = TRUE))
+
   #freq of digit pairs for plotting
   freq_digit_pairs = data.frame(All=counts[1]/sum(counts))
 
@@ -137,6 +140,7 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
 
       p_value_in_category = binom.test(x=counts_in_category, p = p, alternative = test_alternative)$p.value ############
       p_values[category_name] = format_p_values(p_value_in_category) #p-value
+      sample_sizes[category_name] = sum(counts_in_category, na.rm = TRUE) #sample size
       freq_digit_pairs[category_name] = counts_in_category[1]/sum(counts_in_category) #for plotting
     }
     if (!(TRUE %in% grepl("\\D", colnames(p_values)[-1]))){
@@ -161,6 +165,6 @@ digit_pairs_test = function(digitdata, data_columns='all', omit_05=NA, min_lengt
     #tell user there is no plot
     digit_pair_plot = 'No plot with plot=FALSE or without break_out'
   }
-  return(list(p_values=p_values, plot=digit_pair_plot))
+  return(list(p_values=p_values, sample_sizes=sample_sizes, plot=digit_pair_plot))
 }
 

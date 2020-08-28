@@ -66,10 +66,15 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   p_values = data.frame(matrix(nrow=1, ncol=0))
   rownames(p_values) = category_instance_analyzing
 
+  #sample size of each category
+  sample_sizes = data.frame(matrix(nrow=1, ncol=0))
+  rownames(sample_sizes) = category_instance_analyzing
+
   #perform sector test on all
   result_all = repeat_test(digitdata = digitdata, data_columns = data_columns, duplicate_matching_cols = duplicate_matching_cols,
                            break_out = category, break_out_grouping = category_grouping, rounding_patterns_to_omit = rounding_patterns_to_omit, plot=FALSE)
   p_value = result_all$p_values[[category_instance_analyzing]]
+  sample_size = result_all$sample_sizes[[category_instance_analyzing]]
   repeats_table = result_all$percent_repeats
   #repeats_table = repeats_table[!(rownames(repeats_table) %in% c('All')), ]
 
@@ -78,6 +83,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
   #return(list(a=sector_repeats_table, b=repeats_table))
   sector_repeats_table['All'][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
   p_values['All'] = format_p_values(p_value)
+  sample_sizes['All'] = sample_size
 
   #get indexes for each category in the specified sector column
   indexes_of_categories = break_by_category(digitdata@cleaned, break_out, break_out_grouping) #this is a list since unequal number of entries for each category
@@ -93,6 +99,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
     result_of_break_out = repeat_test(digitdata = digitdata_of_break_out, data_columns = data_columns, duplicate_matching_cols = duplicate_matching_cols,
                                       break_out = category, break_out_grouping = category_grouping, rounding_patterns_to_omit = rounding_patterns_to_omit, plot=FALSE)
     p_value = result_of_break_out$p_values[[category_instance_analyzing]]
+    sample_size = result_of_break_out$sample_sizes[[category_instance_analyzing]]
     repeats_table = result_of_break_out$percent_repeats
     #repeats_table = t(repeats_table[!(rownames(repeats_table) %in% c('AllBreakout')), ])
 
@@ -100,6 +107,7 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
     sector_repeats_table[break_out_name] = NA
     sector_repeats_table[break_out_name][rownames(repeats_table), ] = repeats_table #match the rownames by using colnames
     p_values[break_out_name] = format_p_values(p_value)
+    sample_sizes[break_out_name] = sample_size
   }
   #remove NA rows if exist
   sector_repeats_table = sector_repeats_table[rowSums(is.na(sector_repeats_table)) != ncol(sector_repeats_table), ]
@@ -120,6 +128,6 @@ sector_test = function(digitdata, break_out, category, category_instance_analyzi
       print(sector_plot)
     }
   }
-  return(list(percent_repeats=sector_repeats_table, p_values=p_values, plot=sector_plot))
+  return(list(p_values=p_values, percent_repeats=sector_repeats_table, sample_sizes=sample_sizes, plot=sector_plot))
 }
 

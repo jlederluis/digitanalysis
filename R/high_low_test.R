@@ -173,6 +173,7 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
       #then it is numeric..sort them
       ordered_columns = c('All', as.character(sort(as.numeric(colnames(p_values)[-1]))))
       p_values = p_values[ordered_columns]
+      sample_sizes_table = sample_sizes_table[ordered_columns]
     }
   }
   aggregated_observed_high_freq = data.frame(matrix(nrow=1, ncol=0))
@@ -182,7 +183,14 @@ single_high_low_test = function(digitdata, contingency_table, data_columns, high
     aggregated_observed_high_freq[category] = sum(high_digits_freq_table[[category]] * sample_sizes_table[[category]] / sum(sample_sizes_table[[category]], na.rm = TRUE), na.rm = TRUE)
     aggregated_expected_high_freq[category] = sum(result$high_freq_theoretical[1:nrow(high_digits_freq_table)] * sample_sizes_table[[category]] / sum(sample_sizes_table[[category]], na.rm = TRUE), na.rm = TRUE)
   }
-  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), sample_sizes_table=t(sample_sizes_table), high_freq_theoretical=result$high_freq_theoretical,
+  if (ncol(aggregated_observed_high_freq) != 1 && !(TRUE %in% grepl("\\D", colnames(aggregated_observed_high_freq)[-1]))){
+    #then it is numeric..sort them
+    ordered_columns = c('All', as.character(sort(as.numeric(colnames(aggregated_observed_high_freq)[-1]))))
+    aggregated_observed_high_freq = aggregated_observed_high_freq[ordered_columns]
+    aggregated_expected_high_freq = aggregated_expected_high_freq[ordered_columns]
+  }
+  # print(as.data.frame(t(colSums(sample_sizes_table))))
+  return(list(p_values=p_values, high_digits_freq_table=t(high_digits_freq_table), sample_sizes_table=as.data.frame(t(colSums(sample_sizes_table))), high_freq_theoretical=result$high_freq_theoretical,
               aggregated_observed_high_freq=aggregated_observed_high_freq, aggregated_expected_high_freq=aggregated_expected_high_freq))
 }
 
@@ -232,9 +240,13 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
   }
   #perform high low test on all data
   result = single_high_low_test(digitdata, contingency_table, data_columns, high, omit_05, skip_first_digit, skip_last_digit, category, category_grouping, test_type)
-  p_values_table = data.frame(matrix(nrow = 0, ncol = ncol(result$p_values)))
+  p_values_table = data.frame(matrix(nrow = 0, ncol = ncol(result$p_values))) #p values table
   colnames(p_values_table) = colnames(result$p_values)
   p_values_table['All', ] = result$p_values
+
+  sample_sizes_table = data.frame(matrix(nrow = 0, ncol = ncol(result$sample_sizes_table))) #sample sizes table
+  colnames(sample_sizes_table) = colnames(result$sample_sizes_table)
+  sample_sizes_table['All', ] = result$sample_sizes_table
 
   #for plotting
   observed_freq_table = data.frame(All = result$aggregated_observed_high_freq)
@@ -280,6 +292,7 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       result_of_category = single_high_low_test(digitdata_of_category, contingency_table, data_columns, high, omit_05, skip_first_digit,
                                                 skip_last_digit, category, category_grouping, test_type)
       p_values_table[category_name, ][colnames(result_of_category$p_values)] = result_of_category$p_values
+      sample_sizes_table[category_name, ][colnames(result_of_category$sample_sizes_table)] = result_of_category$sample_sizes_table
 
       #for plotting
       #this is weird af
@@ -318,6 +331,8 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       #then it is numeric..sort them
       ordered_rows = c('All', as.character(sort(as.numeric(rownames(p_values_table)[-1]))))
       p_values_table = p_values_table[ordered_rows, ]
+      sample_sizes_table = sample_sizes_table[ordered_rows, ]
+      observed_freq_table = observed_freq_table[ordered_rows, ]
     }
   }
 
@@ -351,6 +366,6 @@ high_low_test = function(digitdata, data_columns='all', high=c(6,7,8,9), omit_05
       print(high_low_plot)
     }
   }
-  return(list(p_values=p_values_table, percent_high_digits=observed_freq_table, statistical_test=test_type, plot=high_low_plot))
+  return(list(p_values=p_values_table, percent_high_digits=observed_freq_table, sample_sizes=sample_sizes_table, statistical_test=test_type, plot=high_low_plot))
 }
 

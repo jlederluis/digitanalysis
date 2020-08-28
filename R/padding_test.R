@@ -479,8 +479,10 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       stop('contingency_table is invalid, and distribution is not one of "benford" or "uniform"!')
     }
   }
-  #list of results from all break out category to be returned
-  padding_test_results = list()
+
+  # p_values =
+  # #list of results from all break out category to be returned
+  # padding_test_results = list()
 
   #printing for user
   if (simulate){
@@ -491,7 +493,13 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
   #perform padding test on all data
   result = single_padding_test(digitdata, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping, simulate)
   #return(result)
-  padding_test_results[['AllBreakout']] = result
+
+  #p values table to return
+  p_values_table = list(All=result$p_values)
+  #diff in mean table to return
+  diff_in_mean_table = list(All=result$diff_in_mean)
+  #plots to return
+  plots = list()
 
   if (plot != FALSE){
     #2D histogram
@@ -507,7 +515,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
     else {
       padding_plot = hist_2D_variables(result$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', subtitle, sep=''))
     }
-    padding_test_results[['AllBreakout']][['plot']] = padding_plot
+    plots[['All']] = padding_plot
     if (plot == TRUE){
       dev.new()
       print(padding_plot)
@@ -541,7 +549,11 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
 
       #perform padding test on this category
       result_of_category = single_padding_test(digitdata_of_category, contingency_table, data_columns, max_length, num_digits, N, omit_05, category, category_grouping, simulate)
-      padding_test_results[[break_out_name]] = result_of_category
+
+      #update return tables
+      p_values_table[[break_out_name]] = result_of_category$p_values
+      #diff in mean table to return
+      diff_in_mean_table[[break_out_name]] = result_of_category$diff_in_mean
 
       if (plot != FALSE){
         padding_plot = NA
@@ -553,7 +565,7 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
         else {
           padding_plot = hist_2D_variables(result_of_category$diff_in_mean, data_style='row', xlab='Digit Place', ylab='Deviation from Mean', title=paste('Padding Test \n', 'Broken out by ', break_out_name,  sep=''))
         }
-        padding_test_results[[break_out_name]][['plot']] = padding_plot
+        plots[[break_out_name]] = padding_plot
 
         if (plot == TRUE){
           dev.new()
@@ -562,10 +574,13 @@ padding_test = function(digitdata, data_columns='all', max_length=8, num_digits=
       }
     }
   }
+  sample_size = 'No sample size since simulate=FALSE'
   if (simulate){
     print('Complete')
+    print(paste('Ignore warning:', "In mean.default(simulated_numbers): argument is not numeric or logical: returning NA"))
+    sample_size = N
   }
   print(paste('Minimum possible p-value =', 1/N))
-  return(padding_test_results)
+  return(list(p_values=p_values_table, diff_in_mean=diff_in_mean_table, sample_size=sample_size, plots=plots))
 }
 
