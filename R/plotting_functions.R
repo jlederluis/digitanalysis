@@ -213,14 +213,14 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
   # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
 
-  if (save3Dfilename != ''){
-    filename = paste(gsub('\n', '', title), save3Dfilename, ".pdf", sep='')
-    pdf(file = filename)
-    plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
-                   ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
-                   lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
-    dev.off()
-  }
+  # if (save3Dfilename != ''){
+  #   filename = paste(gsub('\n', '', title), save3Dfilename, ".pdf", sep='')
+  #   pdf(file = filename)
+  #   plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
+  #                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
+  #                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
+  #   dev.off()
+  # }
 }
 
 #' Plot aggregated histogram for each digit weighted average across each digit place with expected distribution.
