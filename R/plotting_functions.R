@@ -293,7 +293,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   }
   else {
     test_type = 'All Digit Test'
-    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep=''), plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs) #3D histogram
+    #hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep=''), plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs) #3D histogram
     multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n', title, sep='')) #plot aggregate histogram across digit place
     plots_list[['digitplace_barplot']] = multiple_hist
