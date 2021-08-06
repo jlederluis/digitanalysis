@@ -198,7 +198,7 @@ hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Fr
   #     xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
   #     text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
   #   }
-  }
+  # }
 
   ###these might work? for alternative labeling
   # #yticks
