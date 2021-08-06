@@ -72,8 +72,11 @@ compute_percent_rounded_digits = function(data, rounding_patterns) {
   }
   #might have NA entries
   NA_indexes = which(is.na(total_digits))
-  total_digits = total_digits[-NA_indexes]
-  rounded_digits = rounded_digits[-NA_indexes]
+  if(length(NA_indexes) > 0){
+    total_digits = total_digits[-NA_indexes]
+    rounded_digits = rounded_digits[-NA_indexes]
+  }
+  
   return(list(rounded_digits=rounded_digits, total_digits=total_digits, percent_rounded=mean(rounded_digits/total_digits)))
 }
 
