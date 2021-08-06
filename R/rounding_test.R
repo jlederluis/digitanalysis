@@ -121,6 +121,8 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   rounded_digits_list = list()
   total_digits_list = list()
 
+  print(result_all)
+
   #df to store stats for plotting
   percent_rounded_table = data.frame(All=result_all$percent_rounded)
 
@@ -150,8 +152,6 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
                            use.names=FALSE) / unlist(total_digits_list[!(names(total_digits_list) %in% c(category_name))],
                                                      use.names=FALSE) #counts in all other categories
     #perform t test
-    print(category_rounded)
-    print(other_rounded)
     p_value = t.test(category_rounded, other_rounded, alternative = "greater")$p.value
     p_values[category_name] = format_p_values(p_value)
     sample_sizes[category_name] = length(category_rounded)
