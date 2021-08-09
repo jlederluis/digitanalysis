@@ -55,6 +55,7 @@ single_all_digits_test = function(digitdata, contingency_table, data_columns, di
 
   #plot
   if (plot != FALSE){
+    print("Line 58")
     sub_subset_name = ''
     if (!is.na(category)){
       sub_subset_name = paste(', All ', category, sep='')
