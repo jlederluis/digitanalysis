@@ -274,7 +274,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     plots_list[['aggregate_barplot']] = aggregate_hist
     if (plot == TRUE){
       dev.new()
-      dev.print(aggregate_hist)
+      ggplot2::print(aggregate_hist)
     }
   }
   #unpack rounded test
