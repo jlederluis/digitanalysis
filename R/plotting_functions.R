@@ -158,72 +158,68 @@ plot_table_by_columns = function(observed_table, expected_table, name=''){
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
 hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, plot=TRUE, save3Dfilename='', kwargs=NA){
   
+  assert digitdata is of correct class
 
-  # 3D histogram disabled due to issues in underlying package (Plot3D) as of August, 2021
+  input_check(digitdata=digitdata)
 
+  x = NA
+  need_better_labels = FALSE
+  if (NA %in% as.numeric(rownames(data))){
+    x = 1:length(rownames(data))
+    need_better_labels = TRUE
+  }
+  else {
+    x = as.numeric(rownames(data))
+  }
 
-  #assert digitdata is of correct class
+  y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
+  z = as.matrix(data)
+  #some stuff for when x != min(x):max(x) to make 3d plot nice
+  for (i in 1:length(x)){
+    if (!i %in% x){
+      #new_rows = data.frame(matrix(0, ncol=ncol(z), nrow=1))
+      z_begin = as.matrix(as.data.frame(z[1:i-1, ]))
+      z_end = as.matrix(as.data.frame(z[i:nrow(z), ]))
+      z = as.matrix(rbind(rbind(z_begin, rep(0, ncol(z))), z_end))
+    }
+  }
+  x = min(x):max(x)
 
-  # input_check(digitdata=digitdata)
+  if (plot == TRUE){
+    dev.new()
+    bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-1,
+                           ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
+                           lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
 
-  # x = NA
-  # need_better_labels = FALSE
-  # if (NA %in% as.numeric(rownames(data))){
-  #   x = 1:length(rownames(data))
-  #   need_better_labels = TRUE
-  # }
-  # else {
-  #   x = as.numeric(rownames(data))
-  # }
+    #xticks only when the rownames are not int
+    if (need_better_labels){
+      xticks = rownames(data)
+      xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
+      text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
+    }
+  }
 
-  # y = as.numeric(which(digitdata@left_aligned_column_names %in% colnames(data)))
-  # z = as.matrix(data)
-  # #some stuff for when x != min(x):max(x) to make 3d plot nice
-  # for (i in 1:length(x)){
-  #   if (!i %in% x){
-  #     #new_rows = data.frame(matrix(0, ncol=ncol(z), nrow=1))
-  #     z_begin = as.matrix(as.data.frame(z[1:i-1, ]))
-  #     z_end = as.matrix(as.data.frame(z[i:nrow(z), ]))
-  #     z = as.matrix(rbind(rbind(z_begin, rep(0, ncol(z))), z_end))
-  #   }
-  # }
-  # x = min(x):max(x)
+  ##these might work? for alternative labeling
+  #yticks
+  yticks = y
+  ylabel_pos = trans3d(max(x)+1, y-0.2, 0, bar3D)
+  text(ylabel_pos$x, ylabel_pos$y, labels=yticks, adj=c(0, NA), srt=0, cex=1)
+  
+  #zticks
+  zticks = seq(from=0.0, to=max(z, na.rm=TRUE)+0.01, by=round(max(z, na.rm=TRUE)/max(length(x),length(y)), digits = 1))
+  zlabel_pos = trans3d(min(x)-1, min(y)-1, zticks, bar3D)
+  text(zlabel_pos$x, zlabel_pos$y, labels=zticks, adj=c(0, NA), srt=0, cex=1)
+  plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
+  plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
 
-  # if (plot == TRUE){
-  #   dev.new()
-  #   bar3D = plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y))-1,
-  #                          ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
-  #                          lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)
-
-  #   #xticks only when the rownames are not int
-  #   if (need_better_labels){
-  #     xticks = rownames(data)
-  #     xlabel_pos = trans3d(x+0.2, min(y)-1.25, 0, bar3D)
-  #     text(xlabel_pos$x, xlabel_pos$y, labels=xticks, adj=c(0, NA), srt=320, cex=1)
-  #   }
-  # }
-
-  ###these might work? for alternative labeling
-  # #yticks
-  # yticks = y
-  # ylabel_pos = trans3d(max(x)+1, y-0.2, 0, bar3D)
-  # text(ylabel_pos$x, ylabel_pos$y, labels=yticks, adj=c(0, NA), srt=0, cex=1)
-  #
-  # #zticks
-  # zticks = seq(from=0.0, to=max(z, na.rm=TRUE)+0.01, by=round(max(z, na.rm=TRUE)/max(length(x),length(y)), digits = 1))
-  # zlabel_pos = trans3d(min(x)-1, min(y)-1, zticks, bar3D)
-  # text(zlabel_pos$x, zlabel_pos$y, labels=zticks, adj=c(0, NA), srt=0, cex=1)
-  # plot3D::text3D(x = 1:length(x)+0.3, y = rep(1.15, length(x)), z = rep(0, length(x)), labels = x, add = TRUE, adj = 0)
-  # plot3D::text3D(x = rep(0, length(y)), y = 1:length(y)+0.5, z = rep(1, length(y)), labels = y, add = TRUE, adj = 1)
-
-  # if (save3Dfilename != ''){
-  #   filename = paste(gsub('\n', '', title), save3Dfilename, ".pdf", sep='')
-  #   pdf(file = filename)
-  #   plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
-  #                  ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
-  #                  lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
-  #   dev.off()
-  # }
+  if (save3Dfilename != ''){
+    filename = paste(gsub('\n', '', title), save3Dfilename, ".pdf", sep='')
+    pdf(file = filename)
+    plot3D::hist3D(x=x, y=y, z=z, zlim=c(0,max(z, na.rm=TRUE)+0.01), bty = "b2", theta=theta, phi=phi, axes=TRUE, label=TRUE, nticks=max(length(x),length(y)),
+                   ticktype="detailed", space=0, expand=0.5, d=2, col='grey', colvar=NA, border='black', shade=0,
+                   lighting=list('ambient'=0.6, 'diffuse'=0.6), main=title, xlab=xlab, ylab=ylab, zlab=zlab)#, cex.axis = 1e-9)
+    dev.off()
+  }
 }
 
 #' Plot aggregated histogram for each digit weighted average across each digit place with expected distribution.
@@ -277,6 +273,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     plots_list[['aggregate_barplot']] = aggregate_hist
     if (plot == TRUE){
+      print("NewDev")
       dev.new()
       dev.print(aggregate_hist)
     }
@@ -299,7 +296,10 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
   }
   else {
     test_type = 'All Digit Test'
-    hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep=''), plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs) #3D histogram
+
+    # hist_3d(observation_table, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title=paste(test_type, ' \n', title, sep=''), plot=plot, save3Dfilename=save3Dfilename, kwargs=kwargs) #3D histogram
+    # 3D histogram disabled due to issues in underlying package (Plot3D) as of August, 2021
+  
     multiple_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste(test_type, ' \n', title, sep='')) #plot aggregate histogram across digit place
     plots_list[['digitplace_barplot']] = multiple_hist
