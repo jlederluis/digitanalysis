@@ -158,7 +158,7 @@ plot_table_by_columns = function(observed_table, expected_table, name=''){
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
 hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, plot=TRUE, save3Dfilename='', kwargs=NA){
   
-  assert digitdata is of correct class
+  # assert digitdata is of correct class
 
   input_check(digitdata=digitdata)
 
