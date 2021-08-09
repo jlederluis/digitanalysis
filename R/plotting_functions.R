@@ -157,9 +157,12 @@ plot_table_by_columns = function(observed_table, expected_table, name=''){
 #'
 #' @return Nothing is returned. Displays a \code{plot3D} 3d plot automatically.
 hist_3d = function(data, digitdata, xlab='Digits', ylab='Digit Places', zlab='Frequency', title='3D Barplot', theta=55, phi=16, plot=TRUE, save3Dfilename='', kwargs=NA){
-  #assert digitdata is of correct class
   
-  print("3D histogram disabled due to issues in underlying package (Plot3D) as of August, 2021")
+
+  # 3D histogram disabled due to issues in underlying package (Plot3D) as of August, 2021
+
+
+  #assert digitdata is of correct class
 
   # input_check(digitdata=digitdata)
 
@@ -259,7 +262,7 @@ plot_aggregate_histogram = function(observation_table, expected_table, freq_digi
 #' @inheritParams all_digits_test
 #'
 #' @return Nothing is returned. Displays plots automatically.
-plot_all_digit_test = function(digitdata, observation_table, expected_table, digit_places, title='', plot=TRUE, save3Dfilename='', kwargs=NA){
+plot_all_digit_test = function(digitdata, observation_table, expected_table, digit_places, title='', plot=FALSE, save3Dfilename='', kwargs=NA){
   plots_list = list()
   test_type = NA
   freq_digit_place = data.frame(t(colSums(observation_table))) / sum(observation_table) # for aggregate histogram

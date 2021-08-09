@@ -216,8 +216,7 @@ all_digits_test = function(digitdata, data_columns='all', digit_places='all', br
   if (!is.na(break_out)){
     subset_name = paste('All ', break_out, sep='')
   }
-  print("plot variable")
-  print(plot)
+
   result_all = single_all_digits_test(digitdata, contingency_table, data_columns, digit_places, skip_first_digit, omit_05,
                                       category, category_grouping, skip_last_digit, suppress_low_N, subset_name=subset_name,
                                       plot=plot, suppress_second_division_plots=suppress_second_division_plots,
