@@ -278,7 +278,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     plots_list[['aggregate_barplot']] = aggregate_hist
     if (plot == TRUE){
       dev.new()
-      print(aggregate_hist)
+      dev.print(aggregate_hist)
     }
   }
   #unpack rounded test
