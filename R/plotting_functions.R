@@ -273,7 +273,6 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     aggregate_hist = plot_table_by_columns(observation_table, expected_table, name=paste(test_type, ' \n', title, sep='')) #multiple 2D histograms
     plots_list[['aggregate_barplot']] = aggregate_hist
     if (plot == TRUE){
-      print("NewDev")
       dev.new()
       dev.print(aggregate_hist)
     }
