@@ -97,7 +97,7 @@ make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
   raw_data = NA
   #load with fp
   #data format: row is observation; column is category; must be csv or excel!!!
-  if (!(is.na(filepath)) && is.na(raw_df)){
+  if (!any(is.na(filepath)) && is.na(raw_df)){
     if (filetype == 'csv'){
       raw_data = read.csv(filepath, sep=delim, stringsAsFactors=FALSE)
     }
@@ -111,7 +111,7 @@ make_raw_data = function(filepath=NA, filetype='csv', delim=',', raw_df=NA){
     }
   }
   #pass in a dataframe
-  else if (!(is.na(raw_df)) && is.na(filepath)){
+  else if (!any(is.na(raw_df)) && is.na(filepath)){
     if (!(is.data.frame(raw_df))){
       stop('"raw_df" must be a dataframe')
     }
