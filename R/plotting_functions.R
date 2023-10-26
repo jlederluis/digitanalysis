@@ -278,7 +278,7 @@ plot_all_digit_test = function(digitdata, observation_table, expected_table, dig
     }
   }
   #unpack rounded test
-  else if (dim(digitdata@raw) != c(0,0) && digitdata@raw %in% c('round', 'unround')){
+  else if (any(dim(digitdata@raw) != c(0,0)) && any(digitdata@raw %in% c('round', 'unround'))){
     #round numbers
     if (digitdata@raw[1,1] == 'round'){
       aggregate_hist = plot_aggregate_histogram(observation_table, expected_table, freq_digit_place, name=paste('Rounded Data \n', title, sep='')) #plot aggregate histogram across digit place
