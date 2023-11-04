@@ -186,6 +186,7 @@ rounding_test = function(digitdata, rounding_patterns, break_out, data_columns='
   #sort by decreasing rounded percentage
   #percent_rounded_table = t(sort(percent_rounded_table, decreasing = TRUE))
   # Commented out in Nov 2023 -- sorting breaks due to xtfrm errors in the order() function
+  percent_rounded_table = t(percent_rounded_table)
   return(list(p_values=p_values, percent_rounded=percent_rounded_table, sample_sizes=sample_sizes, plot=rounding_plot))
 }
 
