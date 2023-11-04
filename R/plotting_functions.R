@@ -37,6 +37,7 @@ hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', titl
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
   }
+  print(data)
   plotting_data = data.frame(x=rownames(data), y=data)
   colnames(plotting_data) = c('x', 'y') #ensure col name are correct
 
