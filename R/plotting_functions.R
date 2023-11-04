@@ -33,6 +33,13 @@ number_ticks <- function(n) {function(limits) pretty(limits, n)}
 #'
 #' @return A ggplot instance.
 hist_2D = function(data, data_style='row', xlab='Digits', ylab='Frequency', title='2D Barplot', hline=NA, hline_name='', abline=NA, width=0.5){
+  
+  # If no data -- like if there's a category with no values -- short circuit to returning a blank
+  if (nrow(data) == 0){
+    return(ggplot(data.frame()))
+  }
+  
+  
   if (data_style == 'row'){
     #transpose it to column style, what ggplot wants
     data = data.frame(t(data))
