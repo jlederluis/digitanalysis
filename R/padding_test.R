@@ -42,7 +42,6 @@ get_benford_mean = function(contingency_table, omit_05=NA){
 #' @export
 combine_by_columns = function(digitdata, data_columns, indexes=NA){
   data = single_column_aligned(digitdata, desired_col=data_columns[1], align_direction='right')
-  print(data)
   #get subset of data if specified
   if (!(is.na(indexes[1]))){
     data = data[indexes, ]
